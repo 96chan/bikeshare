@@ -116,6 +116,7 @@ d3.csv("_data/station_data.csv", function(data) {
                 geodesic: true,
                 strokeColor: '#FF0A0A',
                 strokeOpacity: 0.6,
+                //data[i][j] = # of traffic from i station to j station
                 strokeWeight: data[i][j]/200
            });
            trafficline.setMap(map);   

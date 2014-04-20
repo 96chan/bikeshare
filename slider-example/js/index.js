@@ -23,5 +23,13 @@ $(document).ready(function() {
 		}
 	}
 
-
+	$('#control').click(function() {
+		if($(this).attr('class') == 'pause') {
+			$(this).attr('class', 'play');
+			clearTimeout(timer);
+		} else {
+			$(this).attr('class', 'pause');
+			timer = setInterval(increment, 1000);
+		}
+	});
 });

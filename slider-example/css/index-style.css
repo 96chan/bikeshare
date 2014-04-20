@@ -1,0 +1,222 @@
+body {
+    padding-bottom: 50px;
+}
+
+
+/* header */
+
+#header {
+    padding: 5px;
+    color: #000;
+    background: url(../img/binding_dark.png) repeat;
+    box-shadow: 1px 1px 10px #696969;
+    -moz-box-shadow: 1px 1px 10px #696969;
+    -webkit-box-shadow: 1px 1px 10px #696969;
+}
+
+#header i {
+    margin-left: 10px;
+    margin-right: 40px;
+    font-size: 40px;
+    line-height: 30px;
+}
+
+#container {
+    min-width: 800px;
+}
+
+
+/* photo-holder */
+
+#photo-holder {
+    min-height: 250px;
+    background: url(../img/binding_light.png) repeat;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.slideshow {
+    margin: 0 auto;
+    width: 400px;
+    padding: 39px 19px 14px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+
+
+
+/* criteria */
+
+#criteria {
+    text-align: center;
+    font-size: 24px;
+    margin: 0 auto;
+    padding-left: 120px;
+    min-height: 70px;
+    line-height: 70px;
+    background: url(../img/binding_dark.png) repeat;
+    color: #000;
+}
+
+#slider {
+    top: 4px;
+    position: relative;
+    width: 250px;
+    margin: 0 auto;
+    display: inline-block;
+}
+
+.ui-slider .ui-slider-handle {
+    width: 0.7em !important;
+    margin-left: -0.35em !important;
+    cursor: default;
+}
+
+#sliderVal {
+    display:inline-block;
+    margin-left: 30px;
+}
+
+#sort-by {
+    float: right;
+}
+
+#error {
+    font-size: 20px;
+    color: #f88;
+    /*opacity: 0;*/
+    display: none;
+}
+
+#criteria input[type="text"] {
+    width: 100px;
+    margin-top: 8px;
+}
+
+
+#criteria input[type="button"] {
+    margin-left: 10px;
+    position: relative;
+    top: -2px;
+}
+
+/* criteria / icons */
+
+#criteria i {
+    font-size: 30px;
+    color: #fff;
+    margin-right: 20px;
+    margin-bottom: 7px;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    display: inline-block;
+    opacity: .3;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    vertical-align: middle;
+    text-align: center
+}
+
+#criteria a {
+    text-decoration: none;
+}
+
+#criteria a:hover i {
+    color: #0063DC;
+    border: 3px solid #FF0084;
+    text-decoration: none;
+}
+
+#criteria i.selected {
+    color: #0063DC;
+    border: 3px solid #FF0084;
+    text-decoration: none;
+}
+
+/* charts */
+
+#d3_charts {
+    padding: 30px;
+    text-align: center;
+    position: relative;
+}
+
+.bar {
+    fill: #405D85;
+    opacity: 1;
+}
+
+.bar:hover {
+    cursor: pointer;
+}
+
+.barLabel {
+    fill: #333;
+    font-family: sans-serif;
+    font-size: 11px;
+}
+
+.axisLabel {
+    fill: #333;
+    font-family: sans-serif;
+    font-size: 13px;
+}
+
+.countLabel {
+    color: #999;
+    font-family: sans-serif;
+    font-size: 14px;
+}
+
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #666;
+  shape-rendering: crispEdges;
+}
+
+.axis path {
+    stroke: none;
+}
+
+.axis text {
+    fill: #666;
+    font-family: sans-serif;
+    font-size: 11px;
+}
+
+.grid {
+    fill:none; stroke:#ccc; stroke-dasharray:5,5; stroke-width:1px;
+}
+
+#count-popup {
+    color: #fff;
+    display: none;
+    font-size: 11px;
+    left: 0;
+    height: 20px;
+    position: absolute;
+    text-align: center;
+    top: 0;
+    width: 70px;
+    z-index: 100;
+}
+
+.graphTitle {
+    fill: #444;
+    font-family: sans-serif;
+    font-size: 29px;
+}
+
+/* content */
+
+.column {
+    width: 650px;
+    margin: 0 auto;
+}

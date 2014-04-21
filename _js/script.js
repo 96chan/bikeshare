@@ -26,11 +26,11 @@ function increment() {
 }
 
 $('#control').click(function() {
-  if($(this).attr('class') == 'pause') {
-    $(this).attr('class', 'play');
+  if($("#controlimg").attr('src') == '_img/pause.png') {
+    $('#controlimg').attr('src', '_img/play.png');
     clearTimeout(timer);
   } else {
-    $(this).attr('class', 'pause');
+    $('#controlimg').attr('src', '_img/pause.png');
     timer = setInterval(increment, 1000);
   }
 });

@@ -1,18 +1,39 @@
 $(document).ready(function() {
 
-  // // slider
-  // $( "#slider" ).slider({
-  // min: 0,
-  // max: 10,
-  // step: 1,
-  // value: 0,
-  // slide: function( event, ui ) {
-  //   $('#sliderVal').text(ui.value);
-  // }
-  // });
+// slider
+$( "#slider" ).slider({
+min: 0,
+max: 10,
+step: 1,
+value: 0,
+slide: function( event, ui ) {
+  $('#sliderVal').text(ui.value);
+}
+});
 
-  // $('#sliderVal').text(0);
+$('#sliderVal').text(0);
 
+var timer = setInterval(increment, 1000);
+
+function increment() {
+  var value = $('#slider').slider('value');
+  var newval = value+1;
+    $('#slider').slider("value", newval);
+  $('#sliderVal').text(newval);
+  if(newval == 10) {
+    clearTimeout(timer);
+  }
+}
+
+$('#control').click(function() {
+  if($(this).attr('class') == 'pause') {
+    $(this).attr('class', 'play');
+    clearTimeout(timer);
+  } else {
+    $(this).attr('class', 'pause');
+    timer = setInterval(increment, 1000);
+  }
+});
 
 // Map Style
 var styleArray =[{"featureType":"landscape","stylers":[{"saturation":-100},{"lightness":65},{"visibility":"on"}]},{"featureType":"poi","stylers":[{"saturation":-100},{"lightness":51},{"visibility":"simplified"}]},{"featureType":"road.highway","stylers":[{"saturation":-100},{"visibility":"simplified"}]},{"featureType":"road.arterial","stylers":[{"saturation":-100},{"lightness":30},{"visibility":"on"}]},{"featureType":"road.local","stylers":[{"saturation":-100},{"lightness":40},{"visibility":"on"}]},{"featureType":"transit","stylers":[{"saturation":-100},{"visibility":"simplified"}]},{"featureType":"administrative.province","stylers":[{"visibility":"off"}]},{"featureType":"water","elementType":"labels","stylers":[{"visibility":"on"},{"lightness":-25},{"saturation":-100}]},{"featureType":"water","elementType":"geometry","stylers":[{"hue":"#ffff00"},{"lightness":-25},{"saturation":-97}]},{"elementType": "labels.icon", "stylers":[{"visibility":"off"}]}];

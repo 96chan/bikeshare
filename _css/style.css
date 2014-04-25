@@ -63,6 +63,17 @@ html, body, #map {
   left:0;
 }
 
+#legend {
+  background-color: #fff;
+  position: absolute;
+  z-index: 99;
+  left: 100px;
+  top: 100px;
+  height: 300px;
+  width: 100px;
+}
+
+
 #sidebar {
   width: 30%;
   background: rgba(0,0,0,0.8);
@@ -136,7 +147,6 @@ html, body, #map {
   stroke: black;
   stroke-width: 1.5px;
 }
-
 
 /* slider controls and play/pause button */
 #slider {

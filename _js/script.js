@@ -1,3 +1,5 @@
+
+var map ='';
 var sf_latlng = new google.maps.LatLng(37.78992,-122.3822776); // San Francisco
 var sj_latlng = new google.maps.LatLng(37.339508, -121.872193);       // San Jose
 var rc_latlng = new google.maps.LatLng(37.485217, -122.212308);       // Redwood City
@@ -6,7 +8,7 @@ var pa_latlng = new google.maps.LatLng(37.436707, -122.131716);       // Palo Al
 
 $(document).ready(function() {
   initialize();
-
+  initial_station_list();
 });
 //---------------------------------
 // slider
@@ -61,7 +63,7 @@ function initialize(){
       mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'map_style']
     }
   };
-  var map = new google.maps.Map(document.getElementById('map'),
+  map = new google.maps.Map(document.getElementById('map'),
       mapOptions);
   map.mapTypes.set('map_style', styledMap);
   map.setMapTypeId('map_style');
@@ -76,6 +78,15 @@ function initialize(){
     overlay.onAdd = function() {
       var layer = d3.select(this.getPanes().overlayLayer).append("div")
           .attr("class", "stations");
+//MouseTarget
+// // set this as locally scoped var so event does not get confused
+// var me = this;
+
+// // Add a listener - we'll accept clicks anywhere on this div, but you may want
+// // to validate the click i.e. verify it occurred in some portion of your overlay.
+// google.maps.event.addDomListener('.stations', 'click', function() {
+//     google.maps.event.trigger(me);
+// });
 
       // Draw each marker as a separate SVG element.
       // We could use a single SVG, but what size would it have?
@@ -139,24 +150,36 @@ function initialize(){
         }
     });
   });
-
+}
 
 //---------------------------------
 // city tab
 //---------------------------------
-// select options
-
+// initial
+function initial_station_list(){
+    $.getJSON( "./_data/station_data.json", function( data ) {
+    var items = ["<option value='none'>CHOOSE A STATION</option>"];
+    $.each( data, function( key, val ) {
+      if (val.region == 'San Francisco'){
+        items.push( "<option id='" + val.station_name + "'>" + val.station_name + "</option>" );
+      }
+    });
+    $('#station_list').html(items);
+  });
+}
 
 // tab
 $('#region li').click(function(){
   $el = $(this);
   $el.parent().find('li').removeClass('active');
   $el.addClass('active');
+  var flag = $el.text();
 
   if($el.text() == 'San Francisco'){
     map.setCenter(sf_latlng);
   }else if($el.text() == 'San Jose'){
-    map.setCenter(sj_latlng);    
+    map.setCenter(sj_latlng);
+
   }else if($el.text() == 'Redwood City'){
     map.setCenter(rc_latlng);    
   }else if($el.text() == 'Mountain View'){
@@ -164,5 +187,17 @@ $('#region li').click(function(){
   }else if($el.text() == 'Palo Alto'){
     map.setCenter(pa_latlng);    
   }
+
+  $.getJSON( "./_data/station_data.json", function( data ) {
+    var items = ["<option value='none'>CHOOSE A STATION</option>"];
+    $.each( data, function( key, val ) {
+      if (val.region == flag){
+        items.push( "<option id='" + val.station_name + "'>" + val.station_name + "</option>" );
+      }
+    });
+ 
+    $('#station_list').html(items);
+  });
+
+
 });
-}

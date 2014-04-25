@@ -1,0 +1,416 @@
+[
+    {
+        "rank": 5, 
+        "score": 0.00032059312500000003, 
+        "station_id": "2", 
+        "station_name": "San Jose Diridon Caltrain Station"
+    }, 
+    {
+        "rank": "NA", 
+        "score": "NA", 
+        "station_id": "3", 
+        "station_name": "San Jose Civic Center"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.00012941666666666665, 
+        "station_id": "4", 
+        "station_name": "Santa Clara at Almaden"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.0, 
+        "station_id": "5", 
+        "station_name": "Adobe on Almaden"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.0, 
+        "station_id": "6", 
+        "station_name": "San Pedro Square"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.0, 
+        "station_id": "7", 
+        "station_name": "Paseo de San Antonio"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.0, 
+        "station_id": "8", 
+        "station_name": "San Salvador at 1st"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.0, 
+        "station_id": "9", 
+        "station_name": "Japantown"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.0011653466666666668, 
+        "station_id": "10", 
+        "station_name": "San Jose City Hall"
+    }, 
+    {
+        "rank": "NA", 
+        "score": "NA", 
+        "station_id": "11", 
+        "station_name": "MLK Library"
+    }, 
+    {
+        "rank": "NA", 
+        "score": "NA", 
+        "station_id": "12", 
+        "station_name": "SJSU 4th at San Carlos"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.0, 
+        "station_id": "13", 
+        "station_name": "St James Park"
+    }, 
+    {
+        "rank": "NA", 
+        "score": "NA", 
+        "station_id": "14", 
+        "station_name": "Arena Green / SAP Center"
+    }, 
+    {
+        "rank": "NA", 
+        "score": "NA", 
+        "station_id": "16", 
+        "station_name": "SJSU - San Salvador at 9th"
+    }, 
+    {
+        "rank": "NA", 
+        "score": "NA", 
+        "station_id": "21", 
+        "station_name": "Franklin at Maple"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.0, 
+        "station_id": "22", 
+        "station_name": "Redwood City Caltrain Station"
+    }, 
+    {
+        "rank": "NA", 
+        "score": "NA", 
+        "station_id": "23", 
+        "station_name": "San Mateo County Center"
+    }, 
+    {
+        "rank": "NA", 
+        "score": "NA", 
+        "station_id": "24", 
+        "station_name": "Redwood City Public Library"
+    }, 
+    {
+        "rank": "NA", 
+        "score": "NA", 
+        "station_id": "25", 
+        "station_name": "Broadway at Main"
+    }, 
+    {
+        "rank": "NA", 
+        "score": "NA", 
+        "station_id": "26", 
+        "station_name": "Redwood City Medical Center"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.0, 
+        "station_id": "27", 
+        "station_name": "Mountain View City Hall"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.0, 
+        "station_id": "28", 
+        "station_name": "Mountain View Caltrain Station"
+    }, 
+    {
+        "rank": "NA", 
+        "score": "NA", 
+        "station_id": "29", 
+        "station_name": "San Antonio Caltrain Station"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.0, 
+        "station_id": "30", 
+        "station_name": "Evelyn Park and Ride"
+    }, 
+    {
+        "rank": "NA", 
+        "score": "NA", 
+        "station_id": "31", 
+        "station_name": "San Antonio Shopping Center"
+    }, 
+    {
+        "rank": "NA", 
+        "score": "NA", 
+        "station_id": "32", 
+        "station_name": "Castro Street and El Camino Real"
+    }, 
+    {
+        "rank": "NA", 
+        "score": "NA", 
+        "station_id": "33", 
+        "station_name": "Rengstorff Avenue / California Street"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.002527955, 
+        "station_id": "34", 
+        "station_name": "Palo Alto Caltrain Station"
+    }, 
+    {
+        "rank": "NA", 
+        "score": "NA", 
+        "station_id": "35", 
+        "station_name": "University and Emerson"
+    }, 
+    {
+        "rank": "NA", 
+        "score": "NA", 
+        "station_id": "36", 
+        "station_name": "California Ave Caltrain Station"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.0, 
+        "station_id": "37", 
+        "station_name": "Cowper at University"
+    }, 
+    {
+        "rank": "NA", 
+        "score": "NA", 
+        "station_id": "38", 
+        "station_name": "Park at Olive"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.004575438928571428, 
+        "station_id": "41", 
+        "station_name": "Clay at Battery"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.0025100945454545453, 
+        "station_id": "42", 
+        "station_name": "Davis at Jackson"
+    }, 
+    {
+        "rank": 4, 
+        "score": 0.014542388787878786, 
+        "station_id": "45", 
+        "station_name": "Commercial at Montgomery"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.0, 
+        "station_id": "46", 
+        "station_name": "Washington at Kearney"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.0040524141379310345, 
+        "station_id": "47", 
+        "station_name": "Post at Kearney"
+    }, 
+    {
+        "rank": 3, 
+        "score": 0.02148177346153846, 
+        "station_id": "48", 
+        "station_name": "Embarcadero at Vallejo"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.0011956891304347825, 
+        "station_id": "49", 
+        "station_name": "Spear at Folsom"
+    }, 
+    {
+        "rank": 4, 
+        "score": 0.012452859454545452, 
+        "station_id": "50", 
+        "station_name": "Harry Bridges Plaza (Ferry Building)"
+    }, 
+    {
+        "rank": 3, 
+        "score": 0.015444529259259262, 
+        "station_id": "51", 
+        "station_name": "Embarcadero at Folsom"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.002541272272727273, 
+        "station_id": "53", 
+        "station_name": "Powell Street BART"
+    }, 
+    {
+        "rank": 3, 
+        "score": 0.017758903928571428, 
+        "station_id": "54", 
+        "station_name": "Embarcadero at Bryant"
+    }, 
+    {
+        "rank": 2, 
+        "score": 0.0382160005263158, 
+        "station_id": "55", 
+        "station_name": "Temporary Transbay Terminal (Howard at Beale)"
+    }, 
+    {
+        "rank": 4, 
+        "score": 0.008300309062499999, 
+        "station_id": "56", 
+        "station_name": "Beale at Market"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.001551741923076923, 
+        "station_id": "57", 
+        "station_name": "5th at Howard"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.0008189333333333333, 
+        "station_id": "58", 
+        "station_name": "San Francisco City Hall"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.003531516363636364, 
+        "station_id": "59", 
+        "station_name": "Golden Gate at Polk"
+    }, 
+    {
+        "rank": 4, 
+        "score": 0.012656882407407406, 
+        "station_id": "60", 
+        "station_name": "Embarcadero at Sansome"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.0012402876470588237, 
+        "station_id": "61", 
+        "station_name": "2nd at Townsend"
+    }, 
+    {
+        "rank": 2, 
+        "score": 0.02307889627906977, 
+        "station_id": "62", 
+        "station_name": "2nd at Folsom"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.003855203333333333, 
+        "station_id": "63", 
+        "station_name": "Howard at 2nd"
+    }, 
+    {
+        "rank": 3, 
+        "score": 0.017356718125, 
+        "station_id": "64", 
+        "station_name": "2nd at South Park"
+    }, 
+    {
+        "rank": 4, 
+        "score": 0.008210225306122448, 
+        "station_id": "65", 
+        "station_name": "Townsend at 7th"
+    }, 
+    {
+        "rank": 3, 
+        "score": 0.01853528730769231, 
+        "station_id": "66", 
+        "station_name": "South Van Ness at Market"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.0038392173170731705, 
+        "station_id": "67", 
+        "station_name": "Market at 10th"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.0024486115, 
+        "station_id": "68", 
+        "station_name": "Yerba Buena Center of the Arts (3rd @ Howard)"
+    }, 
+    {
+        "rank": 4, 
+        "score": 0.015046452045454546, 
+        "station_id": "69", 
+        "station_name": "San Francisco Caltrain 2 (330 Townsend)"
+    }, 
+    {
+        "rank": "NA", 
+        "score": 0.07514729764705881, 
+        "station_id": "70", 
+        "station_name": "San Francisco Caltrain (Townsend at 4th)"
+    }, 
+    {
+        "rank": 4, 
+        "score": 0.011787869999999997, 
+        "station_id": "71", 
+        "station_name": "Powell at Post (Union Square)"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.004709716785714286, 
+        "station_id": "72", 
+        "station_name": "Civic Center BART (7th at Market)"
+    }, 
+    {
+        "rank": 1, 
+        "score": 0.04895257217391304, 
+        "station_id": "73", 
+        "station_name": "Grant Avenue at Columbus Avenue"
+    }, 
+    {
+        "rank": 4, 
+        "score": 0.006042060212765958, 
+        "station_id": "74", 
+        "station_name": "Steuart at Market"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.0017473141666666668, 
+        "station_id": "75", 
+        "station_name": "Mechanics Plaza (Market at Battery)"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.0033987342857142847, 
+        "station_id": "76", 
+        "station_name": "Market at 4th"
+    }, 
+    {
+        "rank": 5, 
+        "score": 0.0026873422222222225, 
+        "station_id": "77", 
+        "station_name": "Market at Sansome"
+    }, 
+    {
+        "rank": "NA", 
+        "score": "NA", 
+        "station_id": "80", 
+        "station_name": "San Jose Government Center"
+    }, 
+    {
+        "rank": "NA", 
+        "score": "NA", 
+        "station_id": "82", 
+        "station_name": "Broadway St at Battery St"
+    }, 
+    {
+        "rank": "NA", 
+        "score": "NA", 
+        "station_id": "83", 
+        "station_name": "Mezes Park"
+    }
+]

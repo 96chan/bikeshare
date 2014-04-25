@@ -5,13 +5,30 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 		<style>
 			/* tell the SVG path to be a thin blue line without any area fill */
-			path.outflow {
+			.labelbox {
+				opacity: 0.7;
+				fill: #fff;
+			}
+
+			.outflow {
 				stroke: steelblue;
 				stroke-width: 1;
 				fill: none;
 			}
 
-			path.empty {
+			.outflowtext {
+				font-family: sans-serif;
+				font-size: 10px;
+				fill: steelblue;
+			}
+
+			.emptytext {
+				font-family: sans-serif;
+				font-size: 10px;
+				fill: lightcoral;
+			}
+
+			.empty {
 				stroke: lightcoral;
 				stroke-width: 1;
 				fill: none;
@@ -173,6 +190,7 @@ function drawGraph(graph, stationid) {
 			return y2(d.stations[stationindex].tot_empty_duration); 
 		})
 
+	// axes
 	var xAxis = d3.svg.axis().scale(x).ticks(0).tickSize(0,0);
 	graph.append("svg:g")
 	      .attr("class", "x axis")
@@ -192,8 +210,44 @@ function drawGraph(graph, stationid) {
 	      .attr("transform", "translate(" + w + ",0)")
 	      .call(yAxisRight);
 
+	// lines on top of axes
 	var linepath = graph.append("svg:path").attr("d", line(data)).attr("class", "outflow");
 	var linepath = graph.append("svg:path").attr("d", emptyline(data)).attr("class", "empty");
+
+	// labels
+	graph.append('rect')
+		.attr('x', w-78)
+		.attr('y', 5)
+		.attr('width', 68)
+		.attr('height', 35)
+		.attr('class', 'labelbox');
+
+	graph.append('svg:line')
+		.attr('x1', w-70)
+		.attr('y1', 15)
+		.attr('x2', w-55)
+		.attr('y2', 15)
+		.attr('class', 'outflow');
+	graph.append('svg:line')
+		.attr('x1', w-70)
+		.attr('y1', 30)
+		.attr('x2', w-55)
+		.attr('y2', 30)
+		.attr('class', 'empty');
+
+	graph.append('svg:text')
+		.attr('x', w-50)
+		.attr('y', 15)
+		.attr('alignment-baseline', 'middle')
+		.text('outflow')
+		.attr('class', 'outflowtext');
+	graph.append('svg:text')
+		.attr('x', w-50)
+		.attr('y', 30)
+		.attr('alignment-baseline', 'middle')
+		.text('empty')
+		.attr('class', 'emptytext');
+
 }
 
 

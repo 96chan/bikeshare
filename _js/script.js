@@ -161,7 +161,7 @@ function initial_station_list(){
     var items = ["<option value='none'>CHOOSE A STATION</option>"];
     $.each( data, function( key, val ) {
       if (val.region == 'San Francisco'){
-        items.push( "<option id='" + val.station_name + "'>" + val.station_name + "</option>" );
+        items.push( "<option id='" +'station'+ val.station_id + "'>" + val.station_name + "</option>" );
       }
     });
     $('#station_list').html(items);
@@ -192,7 +192,7 @@ $('#region li').click(function(){
     var items = ["<option value='none'>CHOOSE A STATION</option>"];
     $.each( data, function( key, val ) {
       if (val.region == flag){
-        items.push( "<option id='" + val.station_name + "'>" + val.station_name + "</option>" );
+        items.push( "<option id='" +'station'+ val.station_id + "'>" + val.station_name + "</option>" );
       }
     });
  

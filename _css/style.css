@@ -167,3 +167,8 @@ html, body, #map {
     vertical-align: middle;
     /*background-image:url('_img/pause.png');*/
 }
+.info-content{
+  color:#333;
+  min-width:100px;
+  overflow:hidden;
+}

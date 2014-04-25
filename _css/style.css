@@ -67,10 +67,10 @@ html, body, #map {
   background-color: #fff;
   position: absolute;
   z-index: 99;
-  left: 100px;
-  top: 100px;
-  height: 300px;
-  width: 100px;
+  left: 50px;
+  bottom: 50px;
+  height: 250px;
+  width: 150px;
 }
 
 
@@ -147,6 +147,80 @@ html, body, #map {
   stroke: black;
   stroke-width: 1.5px;
 }
+
+/* graphs */
+.labelbox {
+  opacity: 0;
+  fill: #222;
+}
+
+.outflow {
+  stroke: steelblue;
+  stroke-width: 1;
+  fill: none;
+}
+
+.score {
+  stroke: crimson;
+  stroke-width: 1;
+  fill: non;
+}
+
+.outflowtext {
+  font-family: sans-serif;
+  font-size: 10px;
+  fill: steelblue;
+}
+
+.emptytext {
+  font-family: sans-serif;
+  font-size: 10px;
+  fill: pink;
+}
+
+.scoretext {
+  font-family: sans-serif;
+  font-size: 10px;
+  fill: crimson;
+}
+
+.empty {
+  stroke: pink;
+  stroke-width: 1;
+  fill: none;
+}
+
+path.score {
+  stroke: crimson;
+  stroke-width: 1;
+  fill: none;
+}
+
+.axis {
+  shape-rendering: crispEdges;
+}
+
+.axis text {
+  font-family: sans-serif;
+  font-size: 10px;
+}
+
+.y.axis line, .y.axis path, .x.axis path {
+  stroke: #777;
+  stroke-width: 0.5px;
+  fill: none;
+}
+
+.y1.axis text {
+  fill: steelblue;
+}
+.y2.axis text {
+  fill: pink;
+}
+.y3.axis text {
+  fill: #666;
+}
+
 
 /* slider controls and play/pause button */
 #slider {

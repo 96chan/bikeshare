@@ -10,6 +10,26 @@ var infowindow = new google.maps.InfoWindow({
         maxWidth: 300,      //Doesn't work
 });
 
+// define dimensions of graph
+var m = [20, 20, 20, 20]; // margins
+var w = 300 - m[1] - m[3]; // width
+var h = 200 - m[0] - m[2]; // height
+var x, y, y1, y2;
+var alldata;
+var alldata_loaded = 0; // global indicator of when we're done loading all data
+
+var graph1 = d3.select("#graph1").append("svg:svg")
+      .attr("width", w + m[1] + m[3])
+      .attr("height", h + m[0] + m[2])
+      .append("svg:g")
+      .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+var graph2 = d3.select("#graph2").append("svg:svg")
+      .attr("width", w + m[1] + m[3])
+      .attr("height", h + m[0] + m[2])
+      .append("svg:g")
+      .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+
+
 $(document).ready(function() {
   initialize();
   initial_station_list();
@@ -67,7 +87,16 @@ function setMarkerMessage(marker) {
     $('#station_list').val(json.station_name);
     google.maps.event.addListener(infowindow, 'closeclick', function () {
         infowindow.close();
-    });    
+    });
+
+    // show graph for station
+    // make sure it's done loading
+    if(alldata_loaded) {
+      drawGraph(graph1, json.station_id);
+      drawSingleGraph(graph2, json.station_id);
+    } else {
+      alert("not loaded yet. try again laer");
+    }
   });
 }
 
@@ -150,6 +179,13 @@ function initialize(){
     // Bind our overlay to the map…
     overlay.setMap(map);
 
+    // load all of our timed station metrics 
+    $.getJSON('_data/array_scores.json',function(d) {
+      alldata = d;
+      alldata_loaded = 1;
+    });
+
+
     // Traffic line
     d3.json("_data/all_trips.json", function(error, data){
         for (var i=0;i<dataset.length+1;i++){
@@ -174,6 +210,195 @@ function initialize(){
         }
     });
   });
+}
+
+
+//---------------------------------
+// graphs
+//---------------------------------
+
+// also requires global vars data, x, y1, y2
+function drawGraph(graph, stationid) {
+  var stationindex;
+
+  // get array index for station
+  for(var i = 0 ; i < alldata[0].stations.length ; ++i) {
+    if(alldata[0].stations[i].station_id == stationid) {
+      stationindex = i;
+    }
+  }
+
+  // get max outflow and empty, for scale
+  var maxoutflow = 0;
+  var maxempty = 0;
+  for(var i = 0 ; i < alldata.length; ++i) {
+    if(alldata[i].stations[stationindex].tot_outflow > maxoutflow)
+      maxoutflow = alldata[i].stations[stationindex].tot_outflow;
+    if(alldata[i].stations[stationindex].tot_empty_duration > maxempty)
+      maxempty = alldata[i].stations[stationindex].tot_empty_duration;
+  }
+
+  x = d3.scale.linear().domain([0, alldata.length]).range([0, w]);
+  y1 = d3.scale.linear().domain([0, maxoutflow]).range([h, 0]);
+  y2 = d3.scale.linear().domain([0, maxempty]).range([h, 0]);
+
+  // create a line function that can convert data[] into x and y points
+  var line = d3.svg.line()
+    .x(function(d,i) { 
+      return x(i); 
+    })
+    .y(function(d) { 
+      return y1(d.stations[stationindex].tot_outflow); 
+    })
+
+  var emptyline = d3.svg.line()
+    .x(function(d,i) { 
+      return x(i); 
+    })
+    .y(function(d) { 
+      return y2(d.stations[stationindex].tot_empty_duration); 
+    })
+
+  // axes
+  var xAxis = d3.svg.axis().scale(x).ticks(0).tickSize(0,0);
+  graph.append("svg:g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + h + ")")
+        .call(xAxis);
+
+
+  var yAxisLeft = d3.svg.axis().scale(y1).ticks(3).tickSize(0,0).orient("left");
+  var yAxisRight = d3.svg.axis().scale(y2).ticks(3).tickSize(0,0).orient("right");
+
+  if(graph.select("path.outflow").empty()) {
+    graph.append("svg:g")
+          .attr("class", "y y1 axis")
+          .attr("transform", "translate(0,0)")
+          .call(yAxisLeft);
+    graph.append("svg:g")
+          .attr("class", "y y2 axis")
+          .attr("transform", "translate(" + w + ",0)")
+          .call(yAxisRight);
+
+    var linepath = graph.append("svg:path").attr("d", line(alldata)).attr("class", "outflow");
+    var emptypath = graph.append("svg:path").attr("d", emptyline(alldata)).attr("class", "empty");
+
+    // labels
+    graph.append('rect')
+      .attr('x', w-78)
+      .attr('y', 5)
+      .attr('width', 68)
+      .attr('height', 35)
+      .attr('class', 'labelbox');
+
+    // graph.append('svg:line')
+    //   .attr('x1', w-70)
+    //   .attr('y1', 15)
+    //   .attr('x2', w-55)
+    //   .attr('y2', 15)
+    //   .attr('class', 'outflow');
+    // graph.append('svg:line')
+    //   .attr('x1', w-70)
+    //   .attr('y1', 30)
+    //   .attr('x2', w-55)
+    //   .attr('y2', 30)
+    //   .attr('class', 'empty');
+
+    graph.append('svg:text')
+      .attr('x', w-50)
+      .attr('y', 15)
+      .attr('alignment-baseline', 'middle')
+      .text('outflow')
+      .attr('class', 'outflowtext');
+    graph.append('svg:text')
+      .attr('x', w-50)
+      .attr('y', 30)
+      .attr('alignment-baseline', 'middle')
+      .text('empty')
+      .attr('class', 'emptytext');
+
+  } else {
+    var linepath = graph.select("path.outflow").transition().attr("d", line(alldata));
+    var emptypath = graph.select("path.empty").transition().attr("d", emptyline(alldata));
+
+    graph.select(".y1").transition().call(yAxisLeft);
+    graph.select(".y2").transition().call(yAxisRight);
+  }
+}
+
+// draw single graph for score
+function drawSingleGraph(graph, stationid) {
+  var stationindex;
+
+  // get array index for station
+  for(var i = 0 ; i < alldata[0].stations.length ; ++i) {
+    if(alldata[0].stations[i].station_id == stationid) {
+      // found it
+      stationindex = i;
+    }
+  }
+
+  // get max score
+  var maxscore = 0;
+  for(var i = 0 ; i < alldata.length; ++i) {
+    if(alldata[i].stations[stationindex].score > maxscore)
+      maxscore = alldata[i].stations[stationindex].score;
+  }
+
+  x = d3.scale.linear().domain([0, alldata.length]).range([0, w]);
+  y = d3.scale.linear().domain([0, maxscore]).range([h, 0]);
+
+  // create a line function that can convert data[] into x and y points
+  var line = d3.svg.line()
+    .x(function(d,i) { 
+      return x(i);
+    })
+    .y(function(d) { 
+      return y(d.stations[stationindex].score); 
+    })
+
+  var xAxis = d3.svg.axis().scale(x).ticks(0).tickSize(0,0);
+  var yAxisLeft = d3.svg.axis().scale(y).ticks(0).tickSize(0,0).orient("left");
+
+  if(graph.select("path.score").empty()) {
+    graph.append("svg:g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + h + ")")
+          .call(xAxis);
+
+    graph.append("svg:g")
+          .attr("class", "y y3 axis")
+          .attr("transform", "translate(0,0)")
+          .call(yAxisLeft);
+
+    var linepath = graph.append("svg:path").attr("d", line(alldata)).attr("class", "score");
+
+    // labels
+    graph.append('rect')
+      .attr('x', w-78)
+      .attr('y', 5)
+      .attr('width', 68)
+      .attr('height', 35)
+      .attr('class', 'labelbox');
+
+    // graph.append('svg:line')
+    //   .attr('x1', w-70)
+    //   .attr('y1', 15)
+    //   .attr('x2', w-55)
+    //   .attr('y2', 15)
+    //   .attr('class', 'score');
+
+    graph.append('svg:text')
+      .attr('x', w-50)
+      .attr('y', 15)
+      .attr('alignment-baseline', 'middle')
+      .text('frustration')
+      .attr('class', 'scoretext');
+  } else {
+    var linepath = graph.select("path.score").transition().attr("d", line(alldata));
+    var yAxisLeft = d3.svg.axis().scale(y).ticks(3).tickSize(0,0).orient("left");
+    graph.select(".y3").transition().call(yAxisLeft);
+  }
 }
 
 //---------------------------------

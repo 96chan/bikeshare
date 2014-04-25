@@ -6,7 +6,7 @@
 		<style>
 			/* tell the SVG path to be a thin blue line without any area fill */
 			.labelbox {
-				opacity: 0.7;
+				opacity: 0.75;
 				fill: #fff;
 			}
 
@@ -87,9 +87,9 @@
  
 	<script>
 // define dimensions of graph
-var m = [80, 80, 80, 80]; // margins
-var w = 400 - m[1] - m[3]; // width
-var h = 300 - m[0] - m[2]; // height
+var m = [20, 20, 20, 20]; // margins
+var w = 300 - m[1] - m[3]; // width
+var h = 200 - m[0] - m[2]; // height
 var x, y;
 
 // inputs: station id and variable to graph.
@@ -145,8 +145,6 @@ $.getJSON('array_scores.json',function(d) {
 		redrawGraph(graph2, stationid);
 		redrawSingle(graph3, stationid);
 	});
-
-
 });
 
 function drawGraph(graph, stationid) {
@@ -212,7 +210,7 @@ function drawGraph(graph, stationid) {
 
 	// lines on top of axes
 	var linepath = graph.append("svg:path").attr("d", line(data)).attr("class", "outflow");
-	var linepath = graph.append("svg:path").attr("d", emptyline(data)).attr("class", "empty");
+	var emptypath = graph.append("svg:path").attr("d", emptyline(data)).attr("class", "empty");
 
 	// labels
 	graph.append('rect')

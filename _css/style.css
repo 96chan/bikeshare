@@ -71,6 +71,15 @@ html, body, #map {
   bottom: 50px;
   height: 250px;
   width: 150px;
+  padding: 10px;
+}
+
+#legend p {
+  font-size: 14px;
+  padding-right:5px ;
+  font-weight: normal;
+  color:black;
+  line-height: 20px;
 }
 
 

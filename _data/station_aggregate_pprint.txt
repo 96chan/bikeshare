@@ -3599,7 +3599,7 @@
                 "station_id": "53"
             }
         ], 
-        "rank": 5, 
+        "rank": 4, 
         "score": 0.0020037416666666666, 
         "station_id": "41", 
         "station_name": "Clay at Battery", 
@@ -4187,7 +4187,7 @@
                 "station_id": "53"
             }
         ], 
-        "rank": 5, 
+        "rank": 3, 
         "score": 0.0059010690625, 
         "station_id": "45", 
         "station_name": "Commercial at Montgomery", 
@@ -4775,7 +4775,7 @@
                 "station_id": "53"
             }
         ], 
-        "rank": 5, 
+        "rank": 4, 
         "score": 0.0016052009374999997, 
         "station_id": "47", 
         "station_name": "Post at Kearney", 
@@ -5071,7 +5071,7 @@
                 "station_id": "53"
             }
         ], 
-        "rank": 4, 
+        "rank": 3, 
         "score": 0.0063465333333333354, 
         "station_id": "48", 
         "station_name": "Embarcadero at Vallejo", 
@@ -5663,7 +5663,7 @@
                 "station_id": "53"
             }
         ], 
-        "rank": 4, 
+        "rank": 3, 
         "score": 0.007134450729166665, 
         "station_id": "50", 
         "station_name": "Harry Bridges Plaza (Ferry Building)", 
@@ -5959,7 +5959,7 @@
                 "station_id": "53"
             }
         ], 
-        "rank": 5, 
+        "rank": 3, 
         "score": 0.004908814270833334, 
         "station_id": "51", 
         "station_name": "Embarcadero at Folsom", 
@@ -6259,7 +6259,7 @@
                 "station_id": "53"
             }
         ], 
-        "rank": 5, 
+        "rank": 4, 
         "score": 0.0012373836458333335, 
         "station_id": "53", 
         "station_name": "Powell Street BART", 
@@ -6555,7 +6555,7 @@
                 "station_id": "53"
             }
         ], 
-        "rank": 4, 
+        "rank": 3, 
         "score": 0.006265028229166667, 
         "station_id": "54", 
         "station_name": "Embarcadero at Bryant", 
@@ -6851,7 +6851,7 @@
                 "station_id": "53"
             }
         ], 
-        "rank": 4, 
+        "rank": 1, 
         "score": 0.015410274895833341, 
         "station_id": "55", 
         "station_name": "Temporary Transbay Terminal (Howard at Beale)", 
@@ -7147,7 +7147,7 @@
                 "station_id": "53"
             }
         ], 
-        "rank": 5, 
+        "rank": 4, 
         "score": 0.0035852490624999987, 
         "station_id": "56", 
         "station_name": "Beale at Market", 
@@ -8311,7 +8311,7 @@
                 "station_id": "53"
             }
         ], 
-        "rank": 4, 
+        "rank": 3, 
         "score": 0.007528218958333332, 
         "station_id": "60", 
         "station_name": "Embarcadero at Sansome", 
@@ -8907,7 +8907,7 @@
                 "station_id": "53"
             }
         ], 
-        "rank": 4, 
+        "rank": 2, 
         "score": 0.01106095802083333, 
         "station_id": "62", 
         "station_name": "2nd at Folsom", 
@@ -9199,7 +9199,7 @@
                 "station_id": "53"
             }
         ], 
-        "rank": 5, 
+        "rank": 4, 
         "score": 0.0017169864583333326, 
         "station_id": "63", 
         "station_name": "Howard at 2nd", 
@@ -9495,7 +9495,7 @@
                 "station_id": "53"
             }
         ], 
-        "rank": 4, 
+        "rank": 2, 
         "score": 0.009112359895833333, 
         "station_id": "64", 
         "station_name": "2nd at South Park", 
@@ -9787,7 +9787,7 @@
                 "station_id": "53"
             }
         ], 
-        "rank": 5, 
+        "rank": 3, 
         "score": 0.004300385312500001, 
         "station_id": "65", 
         "station_name": "Townsend at 7th", 
@@ -10079,7 +10079,7 @@
                 "station_id": "53"
             }
         ], 
-        "rank": 5, 
+        "rank": 3, 
         "score": 0.0058975434375, 
         "station_id": "66", 
         "station_name": "South Van Ness at Market", 
@@ -10371,7 +10371,7 @@
                 "station_id": "53"
             }
         ], 
-        "rank": 5, 
+        "rank": 4, 
         "score": 0.0019949915625, 
         "station_id": "67", 
         "station_name": "Market at 10th", 
@@ -10963,7 +10963,7 @@
                 "station_id": "53"
             }
         ], 
-        "rank": 4, 
+        "rank": 3, 
         "score": 0.0071362953125000015, 
         "station_id": "69", 
         "station_name": "San Francisco Caltrain 2 (330 Townsend)", 
@@ -11263,7 +11263,7 @@
                 "station_id": "53"
             }
         ], 
-        "rank": 2, 
+        "rank": 1, 
         "score": 0.04040574885416666, 
         "station_id": "70", 
         "station_name": "San Francisco Caltrain (Townsend at 4th)", 
@@ -11559,7 +11559,7 @@
                 "station_id": "53"
             }
         ], 
-        "rank": 5, 
+        "rank": 4, 
         "score": 0.003953325208333335, 
         "station_id": "71", 
         "station_name": "Powell at Post (Union Square)", 
@@ -11859,7 +11859,7 @@
                 "station_id": "53"
             }
         ], 
-        "rank": 5, 
+        "rank": 4, 
         "score": 0.0016751963541666668, 
         "station_id": "72", 
         "station_name": "Civic Center BART (7th at Market)", 
@@ -12155,7 +12155,7 @@
                 "station_id": "53"
             }
         ], 
-        "rank": 4, 
+        "rank": 2, 
         "score": 0.013548209583333333, 
         "station_id": "73", 
         "station_name": "Grant Avenue at Columbus Avenue", 
@@ -12451,7 +12451,7 @@
                 "station_id": "53"
             }
         ], 
-        "rank": 5, 
+        "rank": 4, 
         "score": 0.0030842272916666667, 
         "station_id": "74", 
         "station_name": "Steuart at Market", 
@@ -13051,7 +13051,7 @@
                 "station_id": "53"
             }
         ], 
-        "rank": 5, 
+        "rank": 4, 
         "score": 0.002315130729166666, 
         "station_id": "76", 
         "station_name": "Market at 4th", 
@@ -13347,7 +13347,7 @@
                 "station_id": "53"
             }
         ], 
-        "rank": 5, 
+        "rank": 4, 
         "score": 0.0016127749999999997, 
         "station_id": "77", 
         "station_name": "Market at Sansome", 

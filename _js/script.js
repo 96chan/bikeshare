@@ -342,19 +342,6 @@ function drawGraph(graph, stationid) {
       .attr('height', 35)
       .attr('class', 'labelbox');
 
-    // graph.append('svg:line')
-    //   .attr('x1', w-70)
-    //   .attr('y1', 15)
-    //   .attr('x2', w-55)
-    //   .attr('y2', 15)
-    //   .attr('class', 'outflow');
-    // graph.append('svg:line')
-    //   .attr('x1', w-70)
-    //   .attr('y1', 30)
-    //   .attr('x2', w-55)
-    //   .attr('y2', 30)
-    //   .attr('class', 'empty');
-
     graph.append('svg:text')
       .attr('x', 0)
       .attr('y', -24)
@@ -371,24 +358,6 @@ function drawGraph(graph, stationid) {
       .text('% chance empty')
       .attr('class', 'emptytext')
       .attr('transform', 'rotate(-90)');
-
-    // graph.append("text")
-    //   .attr("class", "axislabel outflowtext")
-    //   .attr("text-anchor", "end")
-    //   .attr("x", 3)
-    //   .attr("y", 10)
-    //   .attr("dy", ".75em")
-    //   .attr("transform", "rotate(-90)")
-    //   .text("avg # outgoing bikes");
-
-    // graph.append("text")
-    //   .attr("class", "axislabel emptytext")
-    //   .attr("text-anchor", "end")
-    //   // .attr("x"
-    //   .attr("y", 10)
-    //   .attr("dy", ".75em")
-    //   .attr("transform", "rotate(-90)")
-    //   .text("chance station is empty");
 
     graph.append("text")
       .attr("class", "axislabel timetext")
@@ -443,9 +412,10 @@ function drawSingleGraph(graph, stationid) {
     if(alldata[i].stations[stationindex].score > maxscore)
       maxscore = alldata[i].stations[stationindex].score;
   }
+  var maxdomain = Math.round((maxscore/0.6977672)*100);
 
   x = d3.scale.linear().domain([0, alldata.length]).range([0, w]);
-  y = d3.scale.linear().domain([0, 0.5]).range([h, 0]);
+  y = d3.scale.linear().domain([0, maxdomain]).range([h, 0]);
 
   // create a line function that can convert data[] into x and y points
   var line = d3.svg.line()
@@ -453,11 +423,12 @@ function drawSingleGraph(graph, stationid) {
       return x(i);
     })
     .y(function(d) { 
-      return y(d.stations[stationindex].score); 
+      // scale is a % of the max 0.6977672 (caltrain at townsend and 4th)
+      return y((d.stations[stationindex].score / .6977672)*100); 
     })
 
   var xAxis = d3.svg.axis().scale(x).ticks(0).tickSize(0,0);
-  var yAxisLeft = d3.svg.axis().scale(y).ticks(0).tickSize(0,0).orient("left");
+  var yAxisLeft = d3.svg.axis().scale(y).ticks(0).tickSize(0,0).tickValues(y.domain()).orient("left");
 
   if(graph.select("path.score").empty()) {
     graph.append("svg:g")
@@ -480,17 +451,9 @@ function drawSingleGraph(graph, stationid) {
       .attr('height', 35)
       .attr('class', 'labelbox');
 
-    // graph.append('svg:line')
-    //   .attr('x1', w-70)
-    //   .attr('y1', 15)
-    //   .attr('x2', w-55)
-    //   .attr('y2', 15)
-    //   .attr('class', 'score');
-
-
     graph.append('svg:text')
       .attr('x', -0)
-      .attr('y', -10)
+      .attr('y', -24)
       .attr('alignment-baseline', 'start')
       .attr('text-anchor', 'end')
       .text('frustration score')
@@ -525,7 +488,14 @@ function drawSingleGraph(graph, stationid) {
 
   } else {
     var linepath = graph.select("path.score").transition().attr("d", line(alldata));
+    var maxdomain = Math.round((maxscore/0.6977672)*100);
+
+    y = d3.scale.linear().domain([0, maxdomain]).range([h, 0]);
+
+    yAxisLeft = d3.svg.axis().scale(y).ticks(0).tickSize(0,0).tickValues(y.domain()).orient("left");
+
     graph.select(".y3").transition().call(yAxisLeft);
+
   }
 }
 

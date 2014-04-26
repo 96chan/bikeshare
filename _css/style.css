@@ -196,7 +196,7 @@ html, body, #map {
 .timetext {
   font-family: sans-serif;
   font-size: 12px;
-  fill: #999;
+  fill: #aaa;
 }
 
 .empty {
@@ -221,7 +221,7 @@ path.score {
 }
 
 .y.axis line, .y.axis path, .x.axis path {
-  stroke: #777;
+  stroke: #aaa;
   stroke-width: 0.5px;
   fill: none;
 }
@@ -233,7 +233,7 @@ path.score {
   fill: pink;
 }
 .y3.axis text {
-  fill: #666;
+  fill: #aaa;
 }
 
 .axislabel {

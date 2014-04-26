@@ -35,6 +35,7 @@ var graph2 = d3.select("#graph2").append("svg:svg")
 $(document).ready(function() {
   initialize();
   initial_station_list();
+  toggles.init();
 });
 //---------------------------------
 // slider
@@ -558,3 +559,14 @@ $('#station_list').change(function(){
       }
   }
 });
+
+var toggles = {
+    init : function() {
+    $("#legend h2 a").on("click", function() {
+      $(this).toggleClass("closed");
+      $("#legend-detail").slideToggle(300);
+      return false;
+    });
+    }
+}
+

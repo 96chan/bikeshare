@@ -42,6 +42,9 @@ table {
   border-collapse: collapse;
   border-spacing: 0;
 }
+a{
+  text-decoration: none;
+}
 
 /* CSS */
 
@@ -62,7 +65,7 @@ html, body, #map {
   position: absolute;
   left:0;
 }
-#legend {
+/*#legend {
 background: #fff;
 color: #666;
 float: right;
@@ -71,6 +74,7 @@ right: 390px;
 width: 200px;
 top: 0;
 }
+
 #legend h2 a{
 background: url(../_images/arrows.png) 15px 11px #ddd no-repeat;
 color: #222;
@@ -81,6 +85,33 @@ padding: 5px 0 8px 0;
 -o-transition: background .2s ease-in;
 transition: background .2s ease-in;
 }
+#legend h2 a.closed {
+background: url(../_images/arrows.png) 15px -57px #ddd no-repeat;
+color: #222;
+}*/
+
+/* legend */
+#legend                       {background:#fff; color:#666; float:right; position:fixed; right:390px; width:200px; top:0;}
+#legend h2                      {font-size:2em; font-weight:bold; margin:0; text-align:center;}
+#legend h2 a                    {background:url(../_img/arrows.png) 15px 11px #ddd no-repeat; color:#222; display:block; padding:5px 0 8px 0;
+                          -webkit-transition:background .2s ease-in;  
+                          -moz-transition:background .2s ease-in;  
+                          -o-transition:background .2s ease-in;  
+                          transition:background .2s ease-in;
+}
+#legend h2 a:hover                  {background-color:#eee; background-position:15px 9px; color:#222;}
+#legend h2 a.closed                 {background:url(../_img/arrows.png) 15px -57px #ddd no-repeat; color:#222;}
+#legend h2 a.closed:hover             {background-color:#eee; background-position:15px -55px;}
+#legend h3                      {font-size:.75em; font-weight:700; margin:0 0 5px 0; text-transform:uppercase;}
+#legend hr                      {border-top:1px dotted #ccc; margin:15px 0;}
+
+#legend-detail                    {border-bottom:1px solid #999; display:none; line-height:1.25; padding:10px 15px; width:170px;}
+#legend-detail li                 {font-size:.75em; margin:0 0 5px 0; overflow:hidden;}
+#legend-detail li svg                 {display:block; float:left; margin:0 5px 0 0;}
+#legend-detail li span                  {display:block; float:left; padding:2px 0 0 0;}
+#legend-detail li span.c-01               {width:85px;}
+#legend-detail li span.c-02               {text-align:right; width:85px;}
+
 
 #sidebar {
   width: 350px;

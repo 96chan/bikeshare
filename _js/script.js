@@ -11,8 +11,8 @@ var infowindow = new google.maps.InfoWindow({
 });
 
 // define dimensions of graph
-var m = [20, 20, 20, 20]; // margins
-var w = 300 - m[1] - m[3]; // width
+var m = [35, 35, 35, 35]; // margins
+var w = 320 - m[1] - m[3]; // width
 var h = 200 - m[0] - m[2]; // height
 var x, y, y1, y2;
 var alldata;
@@ -240,7 +240,7 @@ function drawGraph(graph, stationid) {
 
   x = d3.scale.linear().domain([0, alldata.length]).range([0, w]);
   y1 = d3.scale.linear().domain([0, maxoutflow]).range([h, 0]);
-  y2 = d3.scale.linear().domain([0, maxempty]).range([h, 0]);
+  y2 = d3.scale.linear().domain([0, 50]).range([h, 0]);
 
   // create a line function that can convert data[] into x and y points
   var line = d3.svg.line()
@@ -255,8 +255,9 @@ function drawGraph(graph, stationid) {
     .x(function(d,i) { 
       return x(i); 
     })
-    .y(function(d) { 
-      return y2(d.stations[stationindex].tot_empty_duration); 
+    .y(function(d) {
+      // percent empty. total empty duration / 900 seconds * 100
+      return y2(d.stations[stationindex].tot_empty_duration / 9); 
     })
 
   // axes
@@ -268,7 +269,7 @@ function drawGraph(graph, stationid) {
 
 
   var yAxisLeft = d3.svg.axis().scale(y1).ticks(3).tickSize(0,0).orient("left");
-  var yAxisRight = d3.svg.axis().scale(y2).ticks(3).tickSize(0,0).orient("right");
+  var yAxisRight = d3.svg.axis().scale(y2).ticks(2).tickSize(0,0).orient("right");
 
   if(graph.select("path.outflow").empty()) {
     graph.append("svg:g")
@@ -305,17 +306,65 @@ function drawGraph(graph, stationid) {
     //   .attr('class', 'empty');
 
     graph.append('svg:text')
-      .attr('x', w-50)
-      .attr('y', 15)
-      .attr('alignment-baseline', 'middle')
-      .text('outflow')
-      .attr('class', 'outflowtext');
+      .attr('x', 0)
+      .attr('y', -24)
+      .attr('alignment-baseline', 'start')
+      .attr('text-anchor', 'end')
+      .text('outgoing traffic (# bikes)')
+      .attr('class', 'outflowtext')
+      .attr('transform', 'rotate(-90)');
     graph.append('svg:text')
-      .attr('x', w-50)
-      .attr('y', 30)
+      .attr('x', 0)
+      .attr('y', w+23)
       .attr('alignment-baseline', 'middle')
-      .text('empty')
-      .attr('class', 'emptytext');
+      .attr('text-anchor', 'end')
+      .text('% chance empty')
+      .attr('class', 'emptytext')
+      .attr('transform', 'rotate(-90)');
+
+    // graph.append("text")
+    //   .attr("class", "axislabel outflowtext")
+    //   .attr("text-anchor", "end")
+    //   .attr("x", 3)
+    //   .attr("y", 10)
+    //   .attr("dy", ".75em")
+    //   .attr("transform", "rotate(-90)")
+    //   .text("avg # outgoing bikes");
+
+    // graph.append("text")
+    //   .attr("class", "axislabel emptytext")
+    //   .attr("text-anchor", "end")
+    //   // .attr("x"
+    //   .attr("y", 10)
+    //   .attr("dy", ".75em")
+    //   .attr("transform", "rotate(-90)")
+    //   .text("chance station is empty");
+
+    graph.append("text")
+      .attr("class", "axislabel timetext")
+      .attr("text-anchor", "start")
+      .attr("x", 0)
+      .attr("y", h+13)
+      .text("12am");
+    graph.append("text")
+      .attr("class", "axislabel timetext")
+      .attr("text-anchor", "middle")
+      .attr("x", (w/3))
+      .attr("y", h+13)
+      .text("8am");
+    graph.append("text")
+      .attr("class", "axislabel timetext")
+      .attr("text-anchor", "middle")
+      .attr("x", (w/24)*17)
+      .attr("y", h+13)
+      .text("5pm");
+    graph.append("text")
+      .attr("class", "axislabel timetext")
+      .attr("text-anchor", "end")
+      .attr("x", w)
+      .attr("y", h+13)
+      .text("12am");
+
 
   } else {
     var linepath = graph.select("path.outflow").transition().attr("d", line(alldata));
@@ -346,7 +395,7 @@ function drawSingleGraph(graph, stationid) {
   }
 
   x = d3.scale.linear().domain([0, alldata.length]).range([0, w]);
-  y = d3.scale.linear().domain([0, maxscore]).range([h, 0]);
+  y = d3.scale.linear().domain([0, 0.5]).range([h, 0]);
 
   // create a line function that can convert data[] into x and y points
   var line = d3.svg.line()
@@ -388,15 +437,44 @@ function drawSingleGraph(graph, stationid) {
     //   .attr('y2', 15)
     //   .attr('class', 'score');
 
+
     graph.append('svg:text')
-      .attr('x', w-50)
-      .attr('y', 15)
-      .attr('alignment-baseline', 'middle')
-      .text('frustration')
-      .attr('class', 'scoretext');
+      .attr('x', -0)
+      .attr('y', -10)
+      .attr('alignment-baseline', 'start')
+      .attr('text-anchor', 'end')
+      .text('frustration score')
+      .attr('class', 'scoretext')
+      .attr('transform', 'rotate(-90)');
+
+    graph.append("text")
+      .attr("class", "axislabel timetext")
+      .attr("text-anchor", "start")
+      .attr("x", 0)
+      .attr("y", h+13)
+      .text("12am");
+    graph.append("text")
+      .attr("class", "axislabel timetext")
+      .attr("text-anchor", "middle")
+      .attr("x", (w/3))
+      .attr("y", h+13)
+      .text("8am");
+    graph.append("text")
+      .attr("class", "axislabel timetext")
+      .attr("text-anchor", "middle")
+      .attr("x", (w/24)*17)
+      .attr("y", h+13)
+      .text("5pm");
+    graph.append("text")
+      .attr("class", "axislabel timetext")
+      .attr("text-anchor", "end")
+      .attr("x", w)
+      .attr("y", h+13)
+      .text("12am");
+
+
   } else {
     var linepath = graph.select("path.score").transition().attr("d", line(alldata));
-    var yAxisLeft = d3.svg.axis().scale(y).ticks(3).tickSize(0,0).orient("left");
     graph.select(".y3").transition().call(yAxisLeft);
   }
 }

@@ -101,7 +101,7 @@ html, body, #map {
   line-height: 20px;
 }
 #region{
-  margin-bottom:30px;
+  margin-bottom:0px;
 }
 #region p{
   font-size: 10px;
@@ -168,20 +168,26 @@ html, body, #map {
 
 .outflowtext {
   font-family: sans-serif;
-  font-size: 10px;
+  font-size: 12px;
   fill: steelblue;
 }
 
 .emptytext {
   font-family: sans-serif;
-  font-size: 10px;
+  font-size: 12px;
   fill: pink;
 }
 
 .scoretext {
   font-family: sans-serif;
-  font-size: 10px;
+  font-size: 12px;
   fill: crimson;
+}
+
+.timetext {
+  font-family: sans-serif;
+  font-size: 12px;
+  fill: #999;
 }
 
 .empty {
@@ -202,7 +208,7 @@ path.score {
 
 .axis text {
   font-family: sans-serif;
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .y.axis line, .y.axis path, .x.axis path {
@@ -221,6 +227,10 @@ path.score {
   fill: #666;
 }
 
+.axislabel {
+  font-family: sans-serif;;
+  font-size: 12px;
+}
 
 /* slider controls and play/pause button */
 #slider {

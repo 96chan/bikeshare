@@ -14,7 +14,7 @@ var out_in_switch = 0; // 0: outflow, 1: inflow
 
 // define dimensions of graph
 var m = [35, 35, 35, 35]; // margins
-var w = 320 - m[1] - m[3]; // width
+var w = 350 - m[1] - m[3]; // width
 var h = 200 - m[0] - m[2]; // height
 var x, y, y1, y2;
 var alldata;
@@ -126,7 +126,7 @@ function setMarkerMessage(marker) {
                       path: traffic,
                       geodesic: true,
                       strokeColor: flow_color,
-                      strokeOpacity: 0.7,
+                      strokeOpacity: 0.6,
                       strokeWeight: 30*flow_stations[j].count/total_cnt
                  });                                
                  trafficlines.push(trafficline);
@@ -583,7 +583,7 @@ $('#station_list').change(function(){
   for(var i=0;i<gmarkers.length;i++){
       var json = $.parseJSON(JSON.stringify(eval("(" + gmarkers[i].getTitle() + ")")));
       if(this.value == json.station_name){
-      new google.maps.event.trigger( gmarkers[i], 'click');
+        new google.maps.event.trigger( gmarkers[i], 'click');
       }
   }
 });

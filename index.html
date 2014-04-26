@@ -3,18 +3,18 @@
   <head>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
     <link href='http://fonts.googleapis.com/css?family=Oxygen:300' rel='stylesheet' type='text/css'>
-    <link href='http://fonts.googleapis.com/css?family=Lato:300,300italic' rel='stylesheet' type='text/css'>
     <link href='_css/style.css' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+    <!-- <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"> -->
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
   </head>
+  <title>Dude, Where's My Bike?</title>
   <body>
     <div id="map"></div>
     <div id="legend">
-      <h2><a href="#" class="closed">Legend</a></h2>
+      <h2><a href="#">Legend</a></h2>
       <div id="legend-detail">
         <ul>
-          <li><svg width="20" height="20"><path d="M0 10 L20 10 Z" stroke="#FF0A0A" stroke-width="2" /></svg><span>outflow<span></li>
+          <li><svg width="20" height="20"><path d="M0 10 L20 10 Z" stroke="#FF0A0A" stroke-width="2" /></svg><span>outgoing bike traffic<span></li>
           <li><svg width="20" height="20"><circle cx="10" cy="10" r="7" fill="#FFEE0A"    stroke="black"
   stroke-width="1.5"/></svg><span>station</span></li>
         </ul>
@@ -55,8 +55,10 @@
         </select>
       </div>
       <p class="subtitle">FRUSTRATION SCORE<p>
+      <p class="explain">We calculate the frustration score by combining the chance the station is empty with the bike traffic out of the station at a particular time. The more people who use the station on a typical day, and the more likely the station is empty, then the more frustrating it is.</p>
+      <div id="loadingimage" class="hidden"><img src="_img/loader.gif" id="loader">Loading...</div>
       <div id="graph2"></div>
-      <p class="subtitle">OUTGOING TRAFFIC & BIKE EMPTINESS <p>
+      <p id="outgoingsubtitle" class="subtitle hidden">OUTGOING TRAFFIC & BIKE EMPTINESS <p>
       <div id="graph1"></div>
 <!--         <div id="control"><img id="controlimg" src="_img/pause.png"></div>
         <div id="slider"></div>

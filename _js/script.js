@@ -529,7 +529,6 @@ $('#region li').click(function(){
     map.setCenter(sf_latlng);
   }else if($el.text() == 'San Jose'){
     map.setCenter(sj_latlng);
-
   }else if($el.text() == 'Redwood City'){
     map.setCenter(rc_latlng);    
   }else if($el.text() == 'Mountain View'){

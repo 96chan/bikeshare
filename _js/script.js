@@ -19,6 +19,7 @@ var h = 200 - m[0] - m[2]; // height
 var x, y, y1, y2;
 var alldata;
 var alldata_loaded = 0; // global indicator of when we're done loading all data
+var clicked_but_not_loaded = 0; // they selected a station but we're not loaded yet
 
 var graph1 = d3.select("#graph1").append("svg:svg")
       .attr("width", w + m[1] + m[3])
@@ -142,11 +143,19 @@ function setMarkerMessage(marker) {
     // make sure it's done loading
     if(alldata_loaded) {
       drawGraph(graph1, json.station_id);
-      $('.hidden').removeClass('hidden');
-      $('.explain').remove();
+      $('#outgoingsubtitle').removeClass('hidden');
+      $('.explain').fadeOut(250, function() {
+        $(this).remove();
+      });
       drawSingleGraph(graph2, json.station_id);
     } else {
-      alert("system data not loaded yet. please wait a little bit and try again");
+      $('.explain').fadeOut(250, function() {
+        $(this).remove();
+      });
+
+      // show loading image
+      $('#loadingimage').removeClass('hidden');
+      clicked_but_not_loaded = 1;
     }
   });
 }
@@ -180,7 +189,7 @@ function initialize(){
 
   // Load the station data. When the data comes back, create an overlay.
   var dataset = [];
-  d3.json("_data/station_data.Json", function(data) { 
+  d3.json("_data/station_data.json", function(data) { 
     station_dataset = data.map(function(d) { return [ d["station_id"], d["station_name"], +d["lat"], +d["long"] ]; }); 
 
     var overlay = new google.maps.OverlayView();
@@ -236,6 +245,25 @@ function initialize(){
     $.getJSON('_data/array_scores.json',function(d) {
       alldata = d;
       alldata_loaded = 1;
+      if(clicked_but_not_loaded == 1) {
+        // this means we've finally loaded all the data... but someone's already clicked on the station!
+        // show subtitle
+        $('#outgoingsubtitle').removeClass('hidden');
+
+        // remove loading image, explain
+        $('.explain').remove();
+        $('.explain').fadeOut(250, function() {
+          $(this).remove();
+        });
+        $('#loadingimage').remove();
+
+        // get selected station id
+        var selected_stationid = $('#station_list :selected').attr('id').substring(7);
+
+        drawGraph(graph1, selected_stationid);
+        drawSingleGraph(graph2, selected_stationid);
+      }
+
     });
 
 

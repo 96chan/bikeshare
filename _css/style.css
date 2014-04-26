@@ -62,30 +62,28 @@ html, body, #map {
   position: absolute;
   left:0;
 }
-
 #legend {
-  background-color: #fff;
-  position: absolute;
-  z-index: 99;
-  left: 50px;
-  bottom: 50px;
-  height: 250px;
-  width: 150px;
-  padding: 10px;
+background: #fff;
+color: #666;
+float: right;
+position: fixed;
+right: 390px;
+width: 200px;
+top: 0;
 }
-
-#legend p {
-  font-size: 14px;
-  padding-right:5px ;
-  font-weight: normal;
-  color:black;
-  line-height: 20px;
+#legend h2 a{
+background: url(../_images/arrows.png) 15px 11px #ddd no-repeat;
+color: #222;
+display: block;
+padding: 5px 0 8px 0;
+-webkit-transition: background .2s ease-in;
+-moz-transition: background .2s ease-in;
+-o-transition: background .2s ease-in;
+transition: background .2s ease-in;
 }
-
 
 #sidebar {
-  width: 30%;
-  max-width: 350px;
+  width: 350px;
   background: rgba(0,0,0,0.8);
   height: 100%;
   position: absolute;

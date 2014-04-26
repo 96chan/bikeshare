@@ -1,14 +1,16 @@
 
 var map ='';
 var gmarkers = [];    
+var trafficlines = [];    // bike traffic line
+var station_dataset = []; // station information 
 var sf_latlng = new google.maps.LatLng(37.78992,-122.3822776); // San Francisco
 var sj_latlng = new google.maps.LatLng(37.339508, -121.872193);       // San Jose
 var rc_latlng = new google.maps.LatLng(37.485217, -122.212308);       // Redwood City
 var mv_latlng = new google.maps.LatLng(37.395499, -122.078598);       // Mountain View
 var pa_latlng = new google.maps.LatLng(37.436707, -122.131716);       // Palo Alto
-var infowindow = new google.maps.InfoWindow({
-        maxWidth: 300,      //Doesn't work
-});
+var infowindow = new google.maps.InfoWindow({maxWidth: 300 });
+var out_in_switch = 0; // 0: outflow, 1: inflow
+
 
 // define dimensions of graph
 var m = [35, 35, 35, 35]; // margins
@@ -74,21 +76,67 @@ $('#control').click(function() {
 //---------------------------------
 // map
 //---------------------------------
-// Marker
+// When Marker cliked
 function setMarkerMessage(marker) { 
   google.maps.event.addListener(marker, 'click', function() {
     var target = this;
     var json = $.parseJSON(JSON.stringify(eval("(" + target.getTitle() + ")")));
-
+    var sid = json.station_id;
     // Marker content
     var content = "<div class='info-content'>"+json.station_name+"</div>";
     infowindow.setContent(content);
     infowindow.open(map, target);
     $('#station_list').val(json.station_name);
-    google.maps.event.addListener(infowindow, 'closeclick', function () {
-        infowindow.close();
-    });
+    
+    // Reset polylines in google map
+    for(var i=0;i<trafficlines.length;i++){
+      trafficlines[i].setMap(null);
+    }
 
+    // Draw polylines
+    $.getJSON('_data/station_aggregate.json',function(data){
+      var flow_stations, flow_color;
+      for(var i=0;i<data.length;i++){
+        if(sid == data[i].station_id){
+          if(out_in_switch == 0){
+            flow_stations = data[i].outflow_stations;
+            flow_color = '#FF0A0A';
+          }else{
+            flow_stations = data[i].inflow_stations;
+            flow_color = '#2ecc71';
+          }
+          var sid_long, sid_lat, total_cnt;
+
+          for(var k=0;k<station_dataset.length;k++){
+            if(sid == station_dataset[k][0]){
+                 sid_lat = station_dataset[k][2];
+                 sid_long = station_dataset[k][3];
+            }
+          }
+          for(var k=0;k<station_dataset.length;k++){
+            total_cnt = 0;
+            for(var j=0;j<flow_stations.length;j++){           
+              total_cnt += flow_stations[j].count;
+              if(flow_stations[j].station_id == station_dataset[k][0]){
+                 var traffic = [
+                      new google.maps.LatLng(sid_lat,sid_long),
+                      new google.maps.LatLng(station_dataset[k][2],station_dataset[k][3])
+                 ];
+                 var trafficline = new google.maps.Polyline({
+                      path: traffic,
+                      geodesic: true,
+                      strokeColor: flow_color,
+                      strokeOpacity: 0.7,
+                      strokeWeight: 30*flow_stations[j].count/total_cnt
+                 });                                
+                 trafficlines.push(trafficline);
+                 trafficline.setMap(map);                    
+              }
+            }
+          }
+        }
+      }
+    });
     // show graph for station
     // make sure it's done loading
     if(alldata_loaded) {
@@ -99,6 +147,7 @@ function setMarkerMessage(marker) {
     }
   });
 }
+
 
 var marker_image = new google.maps.MarkerImage("_img/icon.png",
         null, 
@@ -129,7 +178,7 @@ function initialize(){
   // Load the station data. When the data comes back, create an overlay.
   var dataset = [];
   d3.json("_data/station_data.Json", function(data) { 
-    dataset = data.map(function(d) { return [ d["station_id"], d["station_name"], +d["lat"], +d["long"] ]; }); 
+    station_dataset = data.map(function(d) { return [ d["station_id"], d["station_name"], +d["lat"], +d["long"] ]; }); 
 
     var overlay = new google.maps.OverlayView();
     // Add the container when the overlay is added to the map.
@@ -144,7 +193,7 @@ function initialize(){
             padding = 10;
 
         var marker = layer.selectAll("svg")
-            .data(d3.entries(dataset))
+            .data(d3.entries(station_dataset))
             .each(transform) // update existing markers
           .enter().append("svg:svg")
             .each(transform)
@@ -188,14 +237,14 @@ function initialize(){
 
     // Traffic line
     d3.json("_data/all_trips.json", function(error, data){
-        for (var i=0;i<dataset.length+1;i++){
-          for (var j=i+1;j<dataset.length;j++){
+        for (var i=0;i<station_dataset.length+1;i++){
+          for (var j=i+1;j<station_dataset.length;j++){
             // dataset[i][0] = station_id
             // dataset[i][2] = lat
             // dataset[i][2] = long
              var traffic = [
-                  new google.maps.LatLng(dataset[i][2],dataset[i][3]),
-                  new google.maps.LatLng(dataset[j][2],dataset[j][3])
+                  new google.maps.LatLng(station_dataset[i][2],station_dataset[i][3]),
+                  new google.maps.LatLng(station_dataset[j][2],station_dataset[j][3])
              ];
              var trafficline = new google.maps.Polyline({
                   path: traffic,
@@ -205,6 +254,7 @@ function initialize(){
                   //data[i][j] = # of traffic from i station to j station
                   strokeWeight: data[i][j]/200
              });
+             trafficlines.push(trafficline);
              trafficline.setMap(map);   
           } 
         }
@@ -479,6 +529,7 @@ function drawSingleGraph(graph, stationid) {
   }
 }
 
+
 //---------------------------------
 // city tab
 //---------------------------------
@@ -525,6 +576,14 @@ $('#region li').click(function(){
  
     $('#station_list').html(items);
   });
+});
 
-
+// list changing invokes marker in google map
+$('#station_list').change(function(){
+  for(var i=0;i<gmarkers.length;i++){
+      var json = $.parseJSON(JSON.stringify(eval("(" + gmarkers[i].getTitle() + ")")));
+      if(this.value == json.station_name){
+      new google.maps.event.trigger( gmarkers[i], 'click');
+      }
+  }
 });

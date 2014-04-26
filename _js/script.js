@@ -142,6 +142,7 @@ function setMarkerMessage(marker) {
     // make sure it's done loading
     if(alldata_loaded) {
       drawGraph(graph1, json.station_id);
+      $('.hidden').removeClass('hidden');
       $('.explain').remove();
       drawSingleGraph(graph2, json.station_id);
     } else {

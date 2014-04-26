@@ -105,8 +105,8 @@ color: #222;
 #legend h3                      {font-size:.75em; font-weight:700; margin:0 0 5px 0; text-transform:uppercase;}
 #legend hr                      {border-top:1px dotted #ccc; margin:15px 0;}
 
-#legend-detail                    {border-bottom:1px solid #999; display:none; line-height:1.25; padding:10px 15px; width:170px;}
-#legend-detail li                 {font-size:.75em; margin:0 0 5px 0; overflow:hidden;}
+#legend-detail                    {border-bottom:1px solid #999; display:block; line-height:1.25; padding:10px 15px; width:170px;}
+#legend-detail li                 {font-size:1em; margin:0 0 5px 0; overflow:hidden;}
 #legend-detail li svg                 {display:block; float:left; margin:0 5px 0 0;}
 #legend-detail li span                  {display:block; float:left; padding:2px 0 0 0;}
 #legend-detail li span.c-01               {width:85px;}
@@ -145,6 +145,9 @@ color: #222;
 .subtitle{
   font-size: 10px;
   margin-bottom:10px;
+}
+.hidden{
+  display:none;
 }
 p.explain{
   font-size: 13px;

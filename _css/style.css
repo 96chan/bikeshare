@@ -117,6 +117,9 @@ html, body, #map {
   font-size: 10px;
   margin-bottom:10px;
 }
+p.explain{
+  font-size: 13px;
+}
 #region li{
   text-align: center;
   vertical-align: middle;

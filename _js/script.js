@@ -141,6 +141,7 @@ function setMarkerMessage(marker) {
     // make sure it's done loading
     if(alldata_loaded) {
       drawGraph(graph1, json.station_id);
+      $('.explain').remove();
       drawSingleGraph(graph2, json.station_id);
     } else {
       alert("system data not loaded yet. please wait a little bit and try again");

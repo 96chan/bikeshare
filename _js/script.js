@@ -147,12 +147,30 @@ function setMarkerMessage(marker) {
       $('.explain').fadeOut(250, function() {
         $(this).remove();
       });
-      drawSingleGraph(graph2, json.station_id);
-    } else {
-      $('.explain').fadeOut(250, function() {
-        $(this).remove();
+      $('#info').removeClass('hidden');
+      // info ??? tooltip
+      $('#info').hover(function(){
+        // Hover over code
+        var title = $(this).attr('title');
+        $(this).data('tipText', title).removeAttr('title');
+        $('<p class="tooltip"></p>')
+        .text(title)
+        .appendTo('body')
+        .fadeIn('slow');
+      }, function() {
+        // Hover out code
+        $(this).attr('title', $(this).data('tipText'));
+        $('.tooltip').remove();
+      }).mousemove(function(e) {
+        var mousex = e.pageX + 20; //Get X coordinates
+        var mousey = e.pageY + 10; //Get Y coordinates
+        $('.tooltip')
+        .css({ top: mousey, left: mousex })
       });
 
+
+      drawSingleGraph(graph2, json.station_id);
+    } else {
       // show loading image
       $('#loadingimage').removeClass('hidden');
       clicked_but_not_loaded = 1;
@@ -252,9 +270,7 @@ function initialize(){
 
         // remove loading image, explain
         $('.explain').remove();
-        $('.explain').fadeOut(250, function() {
-          $(this).remove();
-        });
+        $('#info').removeClass('hidden');
         $('#loadingimage').remove();
 
         // get selected station id

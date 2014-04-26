@@ -143,7 +143,7 @@ function setMarkerMessage(marker) {
       drawGraph(graph1, json.station_id);
       drawSingleGraph(graph2, json.station_id);
     } else {
-      alert("not loaded yet. try again laer");
+      alert("system data not loaded yet. please wait a little bit and try again");
     }
   });
 }
@@ -203,7 +203,8 @@ function initialize(){
         marker.append("svg:circle")
             .attr("r", 4.5)
             .attr("cx", padding)
-            .attr("cy", padding);
+            .attr("cy", padding)
+            .attr("class", "rank1");
 
         function transform(d) {
           var m_title = '{"station_id":"'+d.value[0]+'","station_name":"'+d.value[1]+'"}';

@@ -149,6 +149,9 @@ color: #222;
 .hidden{
   display:none;
 }
+#hidden{
+  display:none;
+}
 p.explain{
   font-size: 13px;
 }

@@ -143,7 +143,7 @@ function setMarkerMessage(marker) {
     // make sure it's done loading
     if(alldata_loaded) {
       drawGraph(graph1, json.station_id);
-      $('#outgoingsubtitle').removeClass('hidden');
+      $('.outgoingsubtitle').removeClass('hidden');
       $('.explain').fadeOut(250, function() {
         $(this).remove();
       });
@@ -248,7 +248,7 @@ function initialize(){
       if(clicked_but_not_loaded == 1) {
         // this means we've finally loaded all the data... but someone's already clicked on the station!
         // show subtitle
-        $('#outgoingsubtitle').removeClass('hidden');
+        $('.outgoingsubtitle').removeClass('hidden');
 
         // remove loading image, explain
         $('.explain').remove();

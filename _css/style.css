@@ -191,7 +191,7 @@ p.explain{
 }
 
 .stations circle {
-  fill:  #FFEE0A;
+  /*fill:  black;*/
   stroke: black;
   stroke-width: 1.5px;
 }

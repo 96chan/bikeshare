@@ -189,9 +189,8 @@ function initialize(){
 
   // Load the station data. When the data comes back, create an overlay.
   var dataset = [];
-  d3.json("_data/station_data.json", function(data) { 
-    station_dataset = data.map(function(d) { return [ d["station_id"], d["station_name"], +d["lat"], +d["long"] ]; }); 
-
+  d3.json("_data/station_data_with_scores.json", function(data) { 
+    station_dataset = data.map(function(d) { return [ d["station_id"], d["station_name"], +d["lat"], +d["long"], d["rank"] ]; }); 
     var overlay = new google.maps.OverlayView();
     // Add the container when the overlay is added to the map.
     overlay.onAdd = function() {
@@ -216,6 +215,26 @@ function initialize(){
             .attr("r", 4.5)
             .attr("cx", padding)
             .attr("cy", padding)
+            .attr("fill",function(d){
+              if(d.value[4]==1){
+                return "#a6611a";
+              }
+              else if(d.value[4]==2){
+                return "#dfc27d";
+              }
+              else if(d.value[4]==3){
+                return "#f5f5f5";
+              }
+              else if(d.value[4]==4){
+                return "#80cdc1";
+              }
+              else if(d.value[4]==5){
+                return "#018571";
+              }
+              else{
+                return "black";
+              }
+            })
             .attr("class", "rank1");
 
         function transform(d) {
@@ -236,6 +255,7 @@ function initialize(){
               .style("left", (d.x - padding) + "px")
               .style("top", (d.y - padding) + "px");
         }
+
       };
     };
     // Bind our overlay to the map…

@@ -96,7 +96,7 @@ function setMarkerMessage(marker) {
     }
 
     // Draw polylines
-    $.getJSON('_data/station_data_switchedranks.json',function(data){
+    $.getJSON('_data/station_aggregate.json',function(data){
       var flow_stations, flow_color;
       for(var i=0;i<data.length;i++){
         if(sid == data[i].station_id){
@@ -189,7 +189,7 @@ function initialize(){
 
   // Load the station data. When the data comes back, create an overlay.
   var dataset = [];
-  d3.json("_data/station_data_with_scores.json", function(data) { 
+  d3.json("_data/station_data_switchedranks.json", function(data) { 
     station_dataset = data.map(function(d) { return [ d["station_id"], d["station_name"], +d["lat"], +d["long"], d["rank"] ]; }); 
     var overlay = new google.maps.OverlayView();
     // Add the container when the overlay is added to the map.
@@ -216,19 +216,19 @@ function initialize(){
             .attr("cx", padding)
             .attr("cy", padding)
             .attr("fill",function(d){
-              if(d.value[4]==1){
+              if(d.value[4]==5){
                 return "#BD1A00";
               }
-              else if(d.value[4]==2){
+              else if(d.value[4]==4){
                 return "#DE4B53";
               }
               else if(d.value[4]==3){
                 return "#DDDAC1";
               }
-              else if(d.value[4]==4){
+              else if(d.value[4]==2){
                 return "#72B582";
               }
-              else if(d.value[4]==5){
+              else if(d.value[4]==1){
                 return "#438875";
               }
               else{

@@ -96,7 +96,7 @@ function setMarkerMessage(marker) {
     }
 
     // Draw polylines
-    $.getJSON('_data/station_aggregate.json',function(data){
+    $.getJSON('_data/station_data_switchedranks.json',function(data){
       var flow_stations, flow_color;
       for(var i=0;i<data.length;i++){
         if(sid == data[i].station_id){
@@ -217,19 +217,19 @@ function initialize(){
             .attr("cy", padding)
             .attr("fill",function(d){
               if(d.value[4]==1){
-                return "#a6611a";
+                return "#BD1A00";
               }
               else if(d.value[4]==2){
-                return "#dfc27d";
+                return "#DE4B53";
               }
               else if(d.value[4]==3){
-                return "#f5f5f5";
+                return "#DDDAC1";
               }
               else if(d.value[4]==4){
-                return "#80cdc1";
+                return "#72B582";
               }
               else if(d.value[4]==5){
-                return "#018571";
+                return "#438875";
               }
               else{
                 return "black";

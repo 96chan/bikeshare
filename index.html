@@ -7,7 +7,7 @@
     <!-- <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"> -->
     <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
   </head>
-  <title>Dude, Where's My Bike?</title>
+  <title>Hey, Where's My Bike?</title>
   <body>
     <div id="map"></div>
     <div id="legend">
@@ -15,10 +15,25 @@
       <div id="legend-detail">
         <ul>
           <li><svg width="20" height="20"><path d="M0 10 L20 10 Z" stroke="#FF0A0A" stroke-width="2" /></svg><span>outgoing bike traffic<span></li>
-          <li><svg width="20" height="20"><circle cx="10" cy="10" r="7" fill="#FFEE0A"    stroke="black"
+          <li><svg width="20" height="20"><circle cx="10" cy="10" r="4.5" fill="white" stroke="black"
   stroke-width="1.5"/></svg><span>station</span></li>
+          <li><h3>Frustration Rank</h3></li>
+          <li><span class="c-01">less<br/>frustrating</span>
+            <span class="c-02">more<br/>frustrating</span></li>
+          <li>
+            <svg width="29" height="20"><circle cx="10" cy="10" r="5" fill="#438875" stroke="black"
+  stroke-width="1.5"/></svg>
+            <svg width="29" height="20"><circle cx="10" cy="10" r="5" fill="#72B582" stroke="black"
+  stroke-width="1.5"/></svg>
+            <svg width="29" height="20"><circle cx="10" cy="10" r="5" fill="#DDDAC1" stroke="black"
+  stroke-width="1.5"/></svg>
+            <svg width="29" height="20"><circle cx="10" cy="10" r="5" fill="#DE4B53" stroke="black"
+  stroke-width="1.5"/></svg>
+            <svg width="29" height="20"><circle cx="10" cy="10" r="5" fill="#BD1A00" stroke="black"
+  stroke-width="1.5"/></svg>
+          </li>
         </ul>
-        <hr/>
+        <!--<hr/>
         <ul>
           <li>
             <svg width="170" height="10">
@@ -33,12 +48,12 @@
             <span class="c-01">less<br/>traffic</span>
             <span class="c-02">more<br/>traffic</span>
           </li>
-        </ul>
+        </ul>-->
       </div>
     </div>
     <div id="sidebar">
       <div id="intro">
-        <h1>Dude, Where's My Bike?</h1>
+        <h1>Hey, Where's My Bike?</h1>
         <p>When you need a bike at a certain station, will there be one available for you? How effectively are Bikeshare stations handling user demand at any given time? Select a station to explore: </p>
       </div>
       <div id="region">
@@ -56,9 +71,10 @@
       </div>
       <p class="subtitle">FRUSTRATION SCORE<p>
       <p class="explain">We calculate the frustration score by combining the chance the station is empty with the bike traffic out of the station at a particular time. The more people who use the station on a typical day, and the more likely the station is empty, then the more frustrating it is.</p>
+      <p class="outgoingsubtitle hidden">(More outgoing traffic + More emptiness = More Frustration)</p>
       <div id="loadingimage" class="hidden"><img src="_img/loader.gif" id="loader">Loading...</div>
       <div id="graph2"></div>
-      <p id="outgoingsubtitle" class="subtitle hidden">OUTGOING TRAFFIC & BIKE EMPTINESS <p>
+      <p class="outgoingsubtitle subtitle hidden">OUTGOING TRAFFIC & BIKE EMPTINESS <p>
       <div id="graph1"></div>
 <!--         <div id="control"><img id="controlimg" src="_img/pause.png"></div>
         <div id="slider"></div>

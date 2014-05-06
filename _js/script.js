@@ -144,7 +144,7 @@ function setMarkerMessage(marker) {
     // make sure it's done loading
     if(alldata_loaded) {
       drawGraph(graph1, json.station_id);
-      $('#outgoingsubtitle').removeClass('hidden');
+      $('.outgoingsubtitle').removeClass('hidden');
       $('.explain').fadeOut(250, function() {
         $(this).remove();
       });
@@ -190,9 +190,8 @@ function initialize(){
 
   // Load the station data. When the data comes back, create an overlay.
   var dataset = [];
-  d3.json("_data/station_data.json", function(data) { 
-    station_dataset = data.map(function(d) { return [ d["station_id"], d["station_name"], +d["lat"], +d["long"] ]; }); 
-
+  d3.json("_data/station_data_switchedranks.json", function(data) { 
+    station_dataset = data.map(function(d) { return [ d["station_id"], d["station_name"], +d["lat"], +d["long"], d["rank"] ]; }); 
     var overlay = new google.maps.OverlayView();
     // Add the container when the overlay is added to the map.
     overlay.onAdd = function() {
@@ -217,6 +216,26 @@ function initialize(){
             .attr("r", 4.5)
             .attr("cx", padding)
             .attr("cy", padding)
+            .attr("fill",function(d){
+              if(d.value[4]==5){
+                return "#BD1A00";
+              }
+              else if(d.value[4]==4){
+                return "#DE4B53";
+              }
+              else if(d.value[4]==3){
+                return "#DDDAC1";
+              }
+              else if(d.value[4]==2){
+                return "#72B582";
+              }
+              else if(d.value[4]==1){
+                return "#438875";
+              }
+              else{
+                return "black";
+              }
+            })
             .attr("class", "rank1");
 
         function transform(d) {
@@ -237,6 +256,7 @@ function initialize(){
               .style("left", (d.x - padding) + "px")
               .style("top", (d.y - padding) + "px");
         }
+
       };
     };
     // Bind our overlay to the map…
@@ -249,7 +269,7 @@ function initialize(){
       if(clicked_but_not_loaded == 1) {
         // this means we've finally loaded all the data... but someone's already clicked on the station!
         // show subtitle
-        $('#outgoingsubtitle').removeClass('hidden');
+        $('.outgoingsubtitle').removeClass('hidden');
 
         // remove loading image, explain
         $('.explain').remove();

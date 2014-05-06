@@ -102,7 +102,7 @@ color: #222;
 #legend h2 a:hover                  {background-color:#eee; background-position:15px 9px; color:#222;}
 #legend h2 a.closed                 {background:url(../_img/arrows.png) 15px -57px #ddd no-repeat; color:#222;}
 #legend h2 a.closed:hover             {background-color:#eee; background-position:15px -55px;}
-#legend h3                      {font-size:.75em; font-weight:700; margin:0 0 5px 0; text-transform:uppercase;}
+#legend h3                      {font-size:1em; font-weight:700; margin:0 0 7px 0; text-transform:uppercase;}
 #legend hr                      {border-top:1px dotted #ccc; margin:15px 0;}
 
 #legend-detail                    {border-bottom:1px solid #999; display:block; line-height:1.25; padding:10px 15px; width:170px;}
@@ -147,6 +147,9 @@ color: #222;
   margin-bottom:10px;
 }
 .hidden{
+  display:none;
+}
+#hidden{
   display:none;
 }
 p.explain{
@@ -204,7 +207,7 @@ p.tooltip {
 }
 
 .stations circle {
-  fill:  #FFEE0A;
+  /*fill:  black;*/
   stroke: black;
   stroke-width: 1.5px;
 }

@@ -93,6 +93,7 @@ function setMarkerMessage(marker) {
     // Reset polylines in google map
     for(var i=0;i<trafficlines.length;i++){
       trafficlines[i].setMap(null);
+      trafficlines[i] = 
     }
 
     // Draw polylines

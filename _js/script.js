@@ -721,6 +721,9 @@ var timetext2 = focus2.append('text')
   .text('0');
 
 // attach mouse handlers for each svg obj
+var drag = d3.behavior.drag()
+    .on("drag", dragmove);
+
 tsvg.append("rect")
   .attr({"opacity": 0, "width": tw , "height": 50})
   .style("cursor", "pointer")
@@ -746,7 +749,8 @@ tsvg.append("rect")
       activateTimeline();
     },
     "mousemove": mousemove
-  });
+  })
+  .call(drag);
 
 graph1.append("rect")
   .attr({"opacity": 0, "width": w , "height": h})
@@ -788,8 +792,6 @@ function mousemove() {
 
 
 // drag/click behavior for timeline circle
-var drag = d3.behavior.drag()
-    .on("drag", dragmove);
 tsvg.append('circle')
   .attr('r', 6)
   .attr('cx', 30)
@@ -812,7 +814,7 @@ tsvg.append('circle')
 
 function dragmove(d) {
   var x = d3.event.x;
-  d3.select(this)
+  tsvg.select('circle')
     .attr('cx', function() {
       if(x<0)
         return 0;

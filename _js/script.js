@@ -594,8 +594,6 @@ function drawSingleGraph(graph, stationid) {
       .attr("x", w)
       .attr("y", h+13)
       .text("12am");
-
-
   } else {
     var linepath = graph.select("path.score").transition().attr("d", line(alldata));
     var maxdomain = Math.round((maxscore/0.6977672)*100);
@@ -626,6 +624,18 @@ function deactivateTimeline() {
   tsvg.selectAll('text').attr('class', 'timelinetext');
   $('#allday input').prop('checked', true);
 }
+function showHover() {
+  if(!graph1.select("path.score").empty()) {
+    focus.style("display", null);
+    focus2.style("display", null);
+  }
+}
+function hideHover() {
+  focus.style("display", "none");
+  focus2.style("display", "none");
+}
+
+// the timeline
 tsvg.append('line')
   .attr('x1', 0)
   .attr('x2', tw)
@@ -645,6 +655,7 @@ tsvg.append('line')
   .attr('y2', 20)
   .attr('class', 'timeline');
 
+// timeline time labels
 tsvg.append("text")
   .attr("class", "axislabel timelinetext")
   .attr("text-anchor", "middle")
@@ -670,18 +681,17 @@ tsvg.append("text")
   .attr("y", 32)
   .text("12am");
 
-// add cross hairs and floating value on axis
+// hover/focus line and times for each graph
 var focus = graph1.append("g")
   .attr("class","focus")
   .style("display", "none");
 focus.append("line")
   .attr({
     "x1": 0,
-    "y1": 20,
+    "y1": 15,
     "x2": 0,
     "y2": h,
-    'stroke-width': '1px',
-    'stroke': 'red'
+    'class': 'focusLine'
   });
 var timetext = focus.append('text')
   .attr('class', 'axislabel timetext')
@@ -691,19 +701,16 @@ var timetext = focus.append('text')
   .attr('class', 'timetext')
   .text('0');
 
-// same for graph2
-// add cross hairs and floating value on axis
 var focus2 = graph2.append("g")
   .attr("class","focus")
   .style("display", "none");
 focus2.append("line")
   .attr({
     "x1": 0,
-    "y1": 20,
+    "y1": 15,
     "x2": 0,
     "y2": h,
-    'stroke-width': '1px',
-    'stroke': 'red'
+    'class': 'focusLine'
   });
 var timetext2 = focus2.append('text')
   .attr('class', 'axislabel timetext')
@@ -716,14 +723,13 @@ var timetext2 = focus2.append('text')
 // attach mouse handlers for each svg obj
 tsvg.append("rect")
   .attr({"opacity": 0, "width": tw , "height": 50})
+  .style("cursor", "pointer")
   .on({
     "mouseover": function() {
-      focus.style("display", null);
-      focus2.style("display", null);
+      showHover();
     },
     "mouseout":  function() {
-      focus.style("display", "none");
-      focus2.style("display", "none");
+      hideHover();
     },
     "click": function() {
       var x = d3.mouse(this)[0];
@@ -746,12 +752,10 @@ graph1.append("rect")
   .attr({"opacity": 0, "width": w , "height": h})
   .on({
     "mouseover": function() {
-      focus.style("display", null);
-      focus2.style("display", null);
+      showHover();
     },
     "mouseout":  function() {
-      focus.style("display", "none");
-      focus2.style("display", "none");
+      hideHover();
     }, 
     "mousemove": mousemove
   });
@@ -759,12 +763,10 @@ graph2.append("rect")
   .attr({"opacity": 0, "width": w , "height": h})
   .on({
     "mouseover": function() {
-      focus.style("display", null);
-      focus2.style("display", null);
+      showHover();
     },
     "mouseout":  function() {
-      focus.style("display", "none");
-      focus2.style("display", "none");
+      hideHover();
     }, 
     "mousemove": mousemove
   });
@@ -785,6 +787,7 @@ function mousemove() {
 }
 
 
+// drag/click behavior for timeline circle
 var drag = d3.behavior.drag()
     .on("drag", dragmove);
 tsvg.append('circle')
@@ -795,12 +798,10 @@ tsvg.append('circle')
   .style("cursor", "pointer")
   .on({
     "mouseover": function() {
-      focus.style("display", null);
-      focus2.style("display", null);
+      showHover();
     },
     "mouseout": function() {
-      focus.style("display", "none");
-      focus2.style("display", "none");
+      hideHover();
     },
     "click": function() {
       activateTimeline();
@@ -824,6 +825,7 @@ function dragmove(d) {
   activateTimeline();
 }
 
+// the all day checkbox behavior
 $('#allday input:checkbox').click(function() {
   if($(this).is(':checked')) {
     // all day is checked, disable the timeline

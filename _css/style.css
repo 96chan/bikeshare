@@ -292,8 +292,14 @@ path.score {
 }
 
 .axislabel {
-  font-family: sans-serif;;
+  font-family: sans-serif;
   font-size: 12px;
+}
+
+.focusLine {
+  stroke-width: 1px;
+  stroke: #fff;
+  opacity: 0.07;
 }
 
 .timeline {

@@ -843,7 +843,7 @@ $('#allday input:checkbox').click(function() {
 // initial
 function initial_station_list(){
   $.getJSON( "./_data/station_data.json", function( data ) {
-    var items = ["<option value='none'>CHOOSE A STATION</option>"];
+    var items = ["<option value='none'>Choose a station ...</option>"];
     data.sort(function(a,b) {return a.station_name.toLowerCase() > b.station_name.toLowerCase() ? 1 : -1;});
     $.each( data, function( key, val ) {
       if (val.region == 'San Francisco'){
@@ -853,7 +853,6 @@ function initial_station_list(){
     $('#station_list').html(items);
   });
 }
-
 
 // tab
 $('#region li').click(function(){
@@ -875,7 +874,7 @@ $('#region li').click(function(){
   }
 
   $.getJSON( "./_data/station_data.json", function( data ) {
-    var items = ["<option value='none'>CHOOSE A STATION</option>"];
+    var items = ["<option value='none'>Choose a station</option>"];
     data.sort(function(a,b) {return a.station_name.toLowerCase() > b.station_name.toLowerCase() ? 1 : -1;});
     $.each( data, function( key, val ) {
       if (val.region == flag){

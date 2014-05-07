@@ -143,7 +143,7 @@ color: #222;
   margin-bottom:0px;
 }
 .subtitle{
-  font-size: 10px;
+  font-size: 11px;
   margin-bottom:10px;
 }
 .hidden{
@@ -154,6 +154,22 @@ color: #222;
 }
 p.explain{
   font-size: 13px;
+}
+#info{
+  cursor: help;
+  text-decoration: underline;
+}
+p.tooltip {
+  display:none;
+  position:absolute;
+  border:1px solid #333;
+  background-color:#161616;
+  border-radius:5px;
+  padding:10px;
+  color:#fff;
+  font-size:12px;
+  letter-spacing: 1px;
+  line-height: 14px;
 }
 #region li{
   text-align: center;
@@ -203,7 +219,7 @@ p.explain{
 }
 
 .outflow {
-  stroke: steelblue;
+  stroke: skyblue;
   stroke-width: 1;
   fill: none;
 }
@@ -217,7 +233,7 @@ p.explain{
 .outflowtext {
   font-family: sans-serif;
   font-size: 12px;
-  fill: steelblue;
+  fill: skyblue;
 }
 
 .emptytext {
@@ -235,7 +251,7 @@ p.explain{
 .timetext {
   font-family: sans-serif;
   font-size: 12px;
-  fill: #aaa;
+  fill: #ccc;
 }
 
 .empty {
@@ -256,7 +272,7 @@ path.score {
 
 .axis text {
   font-family: sans-serif;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .y.axis line, .y.axis path, .x.axis path {
@@ -266,13 +282,13 @@ path.score {
 }
 
 .y1.axis text {
-  fill: steelblue;
+  fill: skyblue;
 }
 .y2.axis text {
   fill: pink;
 }
 .y3.axis text {
-  fill: #aaa;
+  fill: #ccc;
 }
 
 .axislabel {

@@ -148,12 +148,30 @@ function setMarkerMessage(marker) {
       $('.explain').fadeOut(250, function() {
         $(this).remove();
       });
-      drawSingleGraph(graph2, json.station_id);
-    } else {
-      $('.explain').fadeOut(250, function() {
-        $(this).remove();
+      $('#info').removeClass('hidden');
+      // info ??? tooltip
+      $('#info').hover(function(){
+        // Hover over code
+        var title = $(this).attr('title');
+        $(this).data('tipText', title).removeAttr('title');
+        $('<p class="tooltip"></p>')
+        .text(title)
+        .appendTo('body')
+        .fadeIn('slow');
+      }, function() {
+        // Hover out code
+        $(this).attr('title', $(this).data('tipText'));
+        $('.tooltip').remove();
+      }).mousemove(function(e) {
+        var mousex = e.pageX + 20; //Get X coordinates
+        var mousey = e.pageY + 10; //Get Y coordinates
+        $('.tooltip')
+        .css({ top: mousey, left: mousex })
       });
 
+
+      drawSingleGraph(graph2, json.station_id);
+    } else {
       // show loading image
       $('#loadingimage').removeClass('hidden');
       clicked_but_not_loaded = 1;
@@ -323,7 +341,7 @@ function initialize(){
     overlay.setMap(map);
 
     // load all of our timed station metrics 
-    $.getJSON('_data/array_scores.json',function(d) {
+    $.getJSON('_data/array_scores_minify.json',function(d) {
       alldata = d;
       alldata_loaded = 1;
       if(clicked_but_not_loaded == 1) {
@@ -333,9 +351,7 @@ function initialize(){
 
         // remove loading image, explain
         $('.explain').remove();
-        $('.explain').fadeOut(250, function() {
-          $(this).remove();
-        });
+        $('#info').removeClass('hidden');
         $('#loadingimage').remove();
 
         // get selected station id
@@ -359,8 +375,8 @@ function drawGraph(graph, stationid) {
   var stationindex;
 
   // get array index for station
-  for(var i = 0 ; i < alldata[0].stations.length ; ++i) {
-    if(alldata[0].stations[i].station_id == stationid) {
+  for(var i = 0 ; i < alldata[0].s.length ; ++i) {
+    if(alldata[0].s[i].SID == stationid) {
       stationindex = i;
     }
   }
@@ -369,10 +385,10 @@ function drawGraph(graph, stationid) {
   var maxoutflow = 0;
   var maxempty = 0;
   for(var i = 0 ; i < alldata.length; ++i) {
-    if(alldata[i].stations[stationindex].tot_outflow > maxoutflow)
-      maxoutflow = alldata[i].stations[stationindex].tot_outflow;
-    if(alldata[i].stations[stationindex].tot_empty_duration > maxempty)
-      maxempty = alldata[i].stations[stationindex].tot_empty_duration;
+    if(alldata[i].s[stationindex].TO > maxoutflow)
+      maxoutflow = alldata[i].s[stationindex].TO;
+    if(alldata[i].s[stationindex].TED > maxempty)
+      maxempty = alldata[i].s[stationindex].TED;
   }
 
   x = d3.scale.linear().domain([0, alldata.length]).range([0, w]);
@@ -385,7 +401,7 @@ function drawGraph(graph, stationid) {
       return x(i); 
     })
     .y(function(d) { 
-      return y1(d.stations[stationindex].tot_outflow); 
+      return y1(d.s[stationindex].TO); 
     })
 
   var emptyline = d3.svg.line()
@@ -394,7 +410,7 @@ function drawGraph(graph, stationid) {
     })
     .y(function(d) {
       // percent empty. total empty duration / 900 seconds * 100
-      return y2(d.stations[stationindex].tot_empty_duration / 9); 
+      return y2(d.s[stationindex].TED / 9); 
     })
 
   // axes
@@ -486,8 +502,8 @@ function drawSingleGraph(graph, stationid) {
   var stationindex;
 
   // get array index for station
-  for(var i = 0 ; i < alldata[0].stations.length ; ++i) {
-    if(alldata[0].stations[i].station_id == stationid) {
+  for(var i = 0 ; i < alldata[0].s.length ; ++i) {
+    if(alldata[0].s[i].SID == stationid) {
       // found it
       stationindex = i;
     }
@@ -496,8 +512,8 @@ function drawSingleGraph(graph, stationid) {
   // get max score
   var maxscore = 0;
   for(var i = 0 ; i < alldata.length; ++i) {
-    if(alldata[i].stations[stationindex].score > maxscore)
-      maxscore = alldata[i].stations[stationindex].score;
+    if(alldata[i].s[stationindex].S > maxscore)
+      maxscore = alldata[i].s[stationindex].S;
   }
   var maxdomain = Math.round((maxscore/0.6977672)*100);
 
@@ -511,7 +527,7 @@ function drawSingleGraph(graph, stationid) {
     })
     .y(function(d) { 
       // scale is a % of the max 0.6977672 (caltrain at townsend and 4th)
-      return y((d.stations[stationindex].score / .6977672)*100); 
+      return y((d.s[stationindex].S / .6977672)*100); 
     })
 
   var xAxis = d3.svg.axis().scale(x).ticks(0).tickSize(0,0);
@@ -626,6 +642,7 @@ $('#region li').click(function(){
 
   $.getJSON( "./_data/station_data.json", function( data ) {
     var items = ["<option value='none'>CHOOSE A STATION</option>"];
+    data.sort(function(a,b) {return a.station_name.toLowerCase() > b.station_name.toLowerCase() ? 1 : -1;});
     $.each( data, function( key, val ) {
       if (val.region == flag){
         items.push( "<option id='" +'station'+ val.station_id + "'>" + val.station_name + "</option>" );

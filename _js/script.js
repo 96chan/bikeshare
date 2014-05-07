@@ -16,10 +16,17 @@ var out_in_switch = 0; // 0: outflow, 1: inflow
 var m = [35, 35, 35, 35]; // margins
 var w = 350 - m[1] - m[3]; // width
 var h = 200 - m[0] - m[2]; // height
+var tw = w - 75; //timeline width is shorter to allow for checkbox
 var x, y, y1, y2;
 var alldata;
 var alldata_loaded = 0; // global indicator of when we're done loading all data
 var clicked_but_not_loaded = 0; // they selected a station but we're not loaded yet
+
+var tsvg = d3.select("#timeline").append("svg:svg")
+      .attr("width", tw + m[1] + m[3])
+      .attr("height", 50)
+      .append("svg:g")
+      .attr("transform", "translate(" + m[3] + ",0)");
 
 var graph1 = d3.select("#graph1").append("svg:svg")
       .attr("width", w + m[1] + m[3])
@@ -41,39 +48,39 @@ $(document).ready(function() {
 //---------------------------------
 // slider
 //---------------------------------
-$( "#slider" ).slider({
-  min: 0,
-  max: 10,
-  step: 1,
-  value: 0,
-  slide: function( event, ui ) {
-    $('#sliderVal').text(ui.value);
-  }
-});
+// $( "#slider" ).slider({
+//   min: 0,
+//   max: 10,
+//   step: 1,
+//   value: 0,
+//   slide: function( event, ui ) {
+//     $('#sliderVal').text(ui.value);
+//   }
+// });
 
-$('#sliderVal').text(0);
+// $('#sliderVal').text(0);
 
-var timer = setInterval(increment, 1000);
+// var timer = setInterval(increment, 1000);
 
-function increment() {
-  var value = $('#slider').slider('value');
-  var newval = value+1;
-    $('#slider').slider("value", newval);
-  $('#sliderVal').text(newval);
-  if(newval == 10) {
-    clearTimeout(timer);
-  }
-}
+// function increment() {
+//   var value = $('#slider').slider('value');
+//   var newval = value+1;
+//     $('#slider').slider("value", newval);
+//   $('#sliderVal').text(newval);
+//   if(newval == 10) {
+//     clearTimeout(timer);
+//   }
+// }
 
-$('#control').click(function() {
-  if($("#controlimg").attr('src') == '_img/pause.png') {
-    $('#controlimg').attr('src', '_img/play.png');
-    clearTimeout(timer);
-  } else {
-    $('#controlimg').attr('src', '_img/pause.png');
-    timer = setInterval(increment, 1000);
-  }
-});
+// $('#control').click(function() {
+//   if($("#controlimg").attr('src') == '_img/pause.png') {
+//     $('#controlimg').attr('src', '_img/play.png');
+//     clearTimeout(timer);
+//   } else {
+//     $('#controlimg').attr('src', '_img/pause.png');
+//     timer = setInterval(increment, 1000);
+//   }
+// });
 
 //---------------------------------
 // map
@@ -566,6 +573,231 @@ function drawSingleGraph(graph, stationid) {
 
   }
 }
+
+
+
+//---------------------------------
+// timeline
+//---------------------------------
+function activateTimeline() {
+  tsvg.selectAll('line').attr('class', 'timelineactive');
+  tsvg.select('circle').attr('class', 'timecirclefill');
+  tsvg.selectAll('text').attr('class', 'timelinetextactive');
+  $('#allday input').prop('checked', false);
+}
+function deactivateTimeline() {
+  tsvg.selectAll('line').attr('class', 'timeline');
+  tsvg.select('circle').attr('class', 'timecircle');
+  tsvg.selectAll('text').attr('class', 'timelinetext');
+  $('#allday input').prop('checked', true);
+}
+tsvg.append('line')
+  .attr('x1', 0)
+  .attr('x2', tw)
+  .attr('y1', 10)
+  .attr('y2', 10)
+  .attr('class', 'timeline');
+tsvg.append('line')
+  .attr('x1', 0)
+  .attr('x2', 0)
+  .attr('y1', 0)
+  .attr('y2', 20)
+  .attr('class', 'timeline');
+tsvg.append('line')
+  .attr('x1', tw)
+  .attr('x2', tw)
+  .attr('y1', 0)
+  .attr('y2', 20)
+  .attr('class', 'timeline');
+
+tsvg.append("text")
+  .attr("class", "axislabel timelinetext")
+  .attr("text-anchor", "middle")
+  .attr("x", 0)
+  .attr("y", 32)
+  .text("12am");
+tsvg.append("text")
+  .attr("class", "axislabel timelinetext")
+  .attr("text-anchor", "middle")
+  .attr("x", (tw/3))
+  .attr("y", 32)
+  .text("8am");
+tsvg.append("text")
+  .attr("class", "axislabel timelinetext")
+  .attr("text-anchor", "middle")
+  .attr("x", (tw/24)*17)
+  .attr("y", 32)
+  .text("5pm");
+tsvg.append("text")
+  .attr("class", "axislabel timelinetext")
+  .attr("text-anchor", "middle")
+  .attr("x", tw)
+  .attr("y", 32)
+  .text("12am");
+
+// add cross hairs and floating value on axis
+var focus = graph1.append("g")
+  .attr("class","focus")
+  .style("display", "none");
+focus.append("line")
+  .attr({
+    "x1": 0,
+    "y1": 20,
+    "x2": 0,
+    "y2": h,
+    'stroke-width': '1px',
+    'stroke': 'red'
+  });
+var timetext = focus.append('text')
+  .attr('class', 'axislabel timetext')
+  .attr('text-anchor', 'middle')
+  .attr('x', 0)
+  .attr('y', 10)
+  .attr('class', 'timetext')
+  .text('0');
+
+// same for graph2
+// add cross hairs and floating value on axis
+var focus2 = graph2.append("g")
+  .attr("class","focus")
+  .style("display", "none");
+focus2.append("line")
+  .attr({
+    "x1": 0,
+    "y1": 20,
+    "x2": 0,
+    "y2": h,
+    'stroke-width': '1px',
+    'stroke': 'red'
+  });
+var timetext2 = focus2.append('text')
+  .attr('class', 'axislabel timetext')
+  .attr('text-anchor', 'middle')
+  .attr('x', 0)
+  .attr('y', 10)
+  .attr('class', 'timetext')
+  .text('0');
+
+// attach mouse handlers for each svg obj
+tsvg.append("rect")
+  .attr({"opacity": 0, "width": tw , "height": 50})
+  .on({
+    "mouseover": function() {
+      focus.style("display", null);
+      focus2.style("display", null);
+    },
+    "mouseout":  function() {
+      focus.style("display", "none");
+      focus2.style("display", "none");
+    },
+    "click": function() {
+      var x = d3.mouse(this)[0];
+      var position;
+      if(x < 0)
+        position=0;
+      else if(x>tw)
+        position=tw;
+      else
+        position=x;
+
+      tsvg.select('circle').attr('cx',position);
+
+      activateTimeline();
+    },
+    "mousemove": mousemove
+  });
+
+graph1.append("rect")
+  .attr({"opacity": 0, "width": w , "height": h})
+  .on({
+    "mouseover": function() {
+      focus.style("display", null);
+      focus2.style("display", null);
+    },
+    "mouseout":  function() {
+      focus.style("display", "none");
+      focus2.style("display", "none");
+    }, 
+    "mousemove": mousemove
+  });
+graph2.append("rect")
+  .attr({"opacity": 0, "width": w , "height": h})
+  .on({
+    "mouseover": function() {
+      focus.style("display", null);
+      focus2.style("display", null);
+    },
+    "mouseout":  function() {
+      focus.style("display", "none");
+      focus2.style("display", "none");
+    }, 
+    "mousemove": mousemove
+  });
+
+function mousemove() {
+  // move it only by 15minute increments. 96 time incremenets (24 hours / 15 min)
+  var percent = (d3.mouse(this)[0]) / w;
+  var sizeOfInterval = w / 96.0; // size of each 15 minutes
+  var x = Math.round(percent*96) * sizeOfInterval; // the closest 15 minute interval in pixels
+  focus.attr("transform", "translate(" + x + ",0)");
+  focus2.attr("transform", "translate(" + x + ",0)");
+
+  var dt = new Date(2014,0,0);
+  dt = new Date(dt.getTime() + 15*Math.round(percent*96)*60000);
+  var timestr = (dt.getMinutes() == 0) ? (dt.getHours() + ':0' + dt.getMinutes()) : (dt.getHours() + ':' + dt.getMinutes());
+  timetext.text(timestr);
+  timetext2.text(timestr);
+}
+
+
+var drag = d3.behavior.drag()
+    .on("drag", dragmove);
+tsvg.append('circle')
+  .attr('r', 6)
+  .attr('cx', 30)
+  .attr('cy', 10)
+  .attr('class', 'timecircle')
+  .style("cursor", "pointer")
+  .on({
+    "mouseover": function() {
+      focus.style("display", null);
+      focus2.style("display", null);
+    },
+    "mouseout": function() {
+      focus.style("display", "none");
+      focus2.style("display", "none");
+    },
+    "click": function() {
+      activateTimeline();
+    },
+    "mousemove": mousemove
+  })
+  .call(drag);
+
+function dragmove(d) {
+  var x = d3.event.x;
+  d3.select(this)
+    .attr('cx', function() {
+      if(x<0)
+        return 0;
+      else if(x>tw)
+        return tw;
+      else
+        return x;
+  });
+  
+  activateTimeline();
+}
+
+$('#allday input:checkbox').click(function() {
+  if($(this).is(':checked')) {
+    // all day is checked, disable the timeline
+    deactivateTimeline();
+  } else {
+    // unchecked. enable timelime
+    activateTimeline();
+  }
+});
 
 
 //---------------------------------

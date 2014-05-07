@@ -55,7 +55,7 @@ html, body, #map {
   margin: 0;
   padding: 0;
   font-family: "Oxygen", sans-serif;
-  font-size: 10px;
+  font-size: 11px;
   color: #fff;
 }
 
@@ -293,6 +293,45 @@ path.score {
 
 .axislabel {
   font-family: sans-serif;;
+  font-size: 12px;
+}
+
+.timeline {
+  stroke: #777;
+  stroke-width: 1px;
+}
+
+.timelineactive {
+  stroke: #eee;
+  stroke-width: 1px;
+}
+
+.timelinetext {
+  fill: #777;
+}
+
+.timelinetextactive {
+  fill: #eee;
+}
+
+#timeline {
+  float: left;
+}
+
+.timecircle {
+  fill: #333;
+  stroke-width: 1px;
+  stroke: #ccc;
+}
+
+.timecirclefill {
+  fill: #fff;
+  stroke-width: 1px;
+  stroke: #fff;
+}
+
+#allday {
+  float: right;
   font-size: 12px;
 }
 

@@ -2,7 +2,8 @@
 var map ='';
 var gmarkers = [];    
 var trafficlines = [];    // bike traffic line
-var station_dataset = []; // station information 
+var station_dataset = []; // station information
+var arclocs =[]; // trafficline 
 var sf_latlng = new google.maps.LatLng(37.78992,-122.3822776); // San Francisco
 var sj_latlng = new google.maps.LatLng(37.339508, -121.872193);       // San Jose
 var rc_latlng = new google.maps.LatLng(37.485217, -122.212308);       // Redwood City
@@ -191,71 +192,131 @@ function initialize(){
   var dataset = [];
   d3.json("_data/station_data_switchedranks.json", function(data) { 
     station_dataset = data.map(function(d) { return [ d["station_id"], d["station_name"], +d["lat"], +d["long"], d["rank"] ]; }); 
+
     var overlay = new google.maps.OverlayView();
-    // Add the container when the overlay is added to the map.
     overlay.onAdd = function() {
+
       var layer = d3.select(this.getPanes().overlayLayer).append("div")
           .attr("class", "stations");
+      var svg = layer.append("svg");
 
       // Draw each marker as a separate SVG element.
       // We could use a single SVG, but what size would it have?
       overlay.draw = function() {
-        var projection = this.getProjection(),
-            padding = 10;
+          // delete previous drawing
+          svg.selectAll('.arc').remove();
+          $('.marker').remove();
 
-        var marker = layer.selectAll("svg")
-            .data(d3.entries(station_dataset))
-            .each(transform) // update existing markers
-          .enter().append("svg:svg")
-            .each(transform)
-            .attr("class", "marker");
+          var markerOverlay = this;
+          var overlayProjection = markerOverlay.getProjection();
+          var googleMapProjection = function (coordinates) {
+              var googleCoordinates = new google.maps.LatLng(coordinates[1], coordinates[0]);
+              var pixelCoordinates = overlayProjection.fromLatLngToDivPixel(googleCoordinates);
+              return [pixelCoordinates.x + 4000, pixelCoordinates.y + 4000];
+          }
+          path = d3.geo.path().projection(googleMapProjection);
+    
+          arclocs =[];
 
-        // Add a circle.
-        marker.append("svg:circle")
-            .attr("r", 4.5)
-            .attr("cx", padding)
-            .attr("cy", padding)
-            .attr("fill",function(d){
-              if(d.value[4]==5){
-                return "#BD1A00";
+          // Traffic line
+          d3.json("_data/all_trips.json", function(error, data){
+              for (var i=0;i<station_dataset.length;i++){
+                for (var j=i+1;j<station_dataset.length;j++){
+                  // dataset[i][0] = station_id
+                  // dataset[i][2] = lat
+                  // dataset[i][2] = long
+                  if(i<station_dataset.length-1){
+                    var start = [station_dataset[i][3],station_dataset[i][2]];
+                    var end = [station_dataset[j][3],station_dataset[j][2]];
+                    var startcoords = googleMapProjection(start);
+                    var endcoords = googleMapProjection(end);
+                    var startx = startcoords[0];
+                    var starty = startcoords[1];
+                    var homex = endcoords[0];
+                    var homey = endcoords[1];
+                    arclocs.push([station_dataset[i][3],station_dataset[i][2],station_dataset[j][3],station_dataset[j][2],data[i][j]]); 
+                  }
+                } 
               }
-              else if(d.value[4]==4){
-                return "#DE4B53";
-              }
-              else if(d.value[4]==3){
-                return "#DDDAC1";
-              }
-              else if(d.value[4]==2){
-                return "#72B582";
-              }
-              else if(d.value[4]==1){
-                return "#438875";
-              }
-              else{
-                return "black";
-              }
-            })
-            .attr("class", "rank1");
+              svg.selectAll('.arc')
+              .data(arclocs)
+              .enter()
+              .append('path')
+              .attr('d', function(d) {
+                var startcoords = googleMapProjection([d[0], d[1]]);
+                var endcoords = googleMapProjection([d[2], d[3]]);
+                var startx = startcoords[0],
+                  starty = startcoords[1],
+                  homex = endcoords[0],
+                  homey = endcoords[1];
+                return "M" + startx + "," + starty + " Q" + (startx + homex)/2 + " " + 0.99*(starty + homey)/2 +" " + homex+" "   + homey;
+              })
+              .attr("stroke-width", function(d){
+                 return d[4]/200
+              })
+              .attr('stroke', '#FF0A0A')
+              .attr("fill", "none")
+              .attr("opacity", 0.5)
+              .attr("stroke-linecap", "round")
+              .attr('class', 'arc');
+            });
 
-        function transform(d) {
-          var m_title = '{"station_id":"'+d.value[0]+'","station_name":"'+d.value[1]+'"}';
-          d = new google.maps.LatLng(d.value[2], d.value[3]);
-          var gmarker = new google.maps.Marker({
-              position: d,
-              map: map,
-              icon: marker_image,
-              title: m_title
-          });         
-          gmarkers.push(gmarker);
-          setMarkerMessage(gmarker);
 
-          d = projection.fromLatLngToDivPixel(d);
+          var projection = this.getProjection(),
+                  padding = 10;
 
-          return d3.select(this)
-              .style("left", (d.x - padding) + "px")
-              .style("top", (d.y - padding) + "px");
-        }
+          var marker = layer.selectAll("marker")
+                  .data(d3.entries(station_dataset))
+                  .each(transform) // update existing markers
+                  .enter().append("svg:svg")
+                  .each(transform)
+                  .attr("class", "marker");
+          
+          // Add a circle.
+          marker.append("svg:circle")
+              .attr("r", 4.5)
+              .attr("cx", padding)
+              .attr("cy", padding)
+              .attr("fill",function(d){
+                if(d.value[4]==5){
+                  return "#BD1A00";
+                }
+                else if(d.value[4]==4){
+                  return "#DE4B53";
+                }
+                else if(d.value[4]==3){
+                  return "#DDDAC1";
+                }
+                else if(d.value[4]==2){
+                  return "#72B582";
+                }
+                else if(d.value[4]==1){
+                  return "#438875";
+                }
+                else{
+                  return "black";
+                }
+              })
+              .attr("class", "rank1");
 
+          function transform(d) {
+            var m_title = '{"station_id":"'+d.value[0]+'","station_name":"'+d.value[1]+'"}';
+            d = new google.maps.LatLng(d.value[2], d.value[3]);
+            var gmarker = new google.maps.Marker({
+                position: d,
+                map: map,
+                icon: marker_image,
+                title: m_title
+            });         
+            gmarkers.push(gmarker);
+            setMarkerMessage(gmarkers);
+
+            d = projection.fromLatLngToDivPixel(d);
+
+            return d3.select(this)
+                .style("left", (d.x - padding) + "px")
+                .style("top", (d.y - padding) + "px");
+          }
       };
     };
     // Bind our overlay to the map…
@@ -283,34 +344,8 @@ function initialize(){
         drawGraph(graph1, selected_stationid);
         drawSingleGraph(graph2, selected_stationid);
       }
-
     });
 
-
-    // Traffic line
-    d3.json("_data/all_trips.json", function(error, data){
-        for (var i=0;i<station_dataset.length+1;i++){
-          for (var j=i+1;j<station_dataset.length;j++){
-            // dataset[i][0] = station_id
-            // dataset[i][2] = lat
-            // dataset[i][2] = long
-             var traffic = [
-                  new google.maps.LatLng(station_dataset[i][2],station_dataset[i][3]),
-                  new google.maps.LatLng(station_dataset[j][2],station_dataset[j][3])
-             ];
-             var trafficline = new google.maps.Polyline({
-                  path: traffic,
-                  geodesic: true,
-                  strokeColor: '#FF0A0A',
-                  strokeOpacity: 0.6,
-                  //data[i][j] = # of traffic from i station to j station
-                  strokeWeight: data[i][j]/200
-             });
-             trafficlines.push(trafficline);
-             trafficline.setMap(map);   
-          } 
-        }
-    });
   });
 }
 

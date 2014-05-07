@@ -179,17 +179,17 @@ p.explain{
   width: 97.5%;
   margin:10px 0 20px 0;
 }
-.stations, .stations svg {
+/*.stations, .stations svg {
   position: absolute;
-}
-
+}*/
+/*
 .stations svg {
   width: 60px;
   height: 20px;
   padding-right: 100px;
   font: 10px sans-serif;
 }
-
+*/
 .stations circle {
   /*fill:  black;*/
   stroke: black;
@@ -313,4 +313,16 @@ path.score {
   color:#333;
   min-width:100px;
   overflow:hidden;
+}
+.stations {
+    position: relative;
+    width: 100%;
+    height: 100%;           
+}
+.stations svg {
+    position: absolute;
+    top: -4000px;
+    left: -4000px;
+    width: 8000px;
+    height: 8000px;        
 }

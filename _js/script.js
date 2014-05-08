@@ -45,7 +45,7 @@ var tip = d3.tip()
   .attr('class', 'd3-tip')
   .offset([-10, 0])
   .html(function(d) {
-    return "<p style='color:white, font-size:20px'>" + d[1] + "</p><p style='color:white,font-size:40px'>"+d[4]+ "</p>";
+    return "<p style='color:white, font-size:20px'>" + d[1] + "</p><p style='color:white,font-size:40px'>Frustration Rank: "+d[4]+ "</p>";
 });
 
 $(document).ready(function() {

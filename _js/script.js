@@ -209,94 +209,59 @@ function initialize(){
   
         arclocs =[];
 
-        // Traffic line
-        d3.json("_data/all_trips.json", function(error, data){
-            for (var i=0;i<station_dataset.length;i++){
-              for (var j=i+1;j<station_dataset.length;j++){
-                // dataset[i][0] = station_id
-                // dataset[i][2] = lat
-                // dataset[i][2] = long
-                if(i<station_dataset.length-1){
-                  var start = [station_dataset[i][3],station_dataset[i][2]];
-                  var end = [station_dataset[j][3],station_dataset[j][2]];
-                  var startcoords = googleMapProjection(start);
-                  var endcoords = googleMapProjection(end);
-                  var startx = startcoords[0];
-                  var starty = startcoords[1];
-                  var homex = endcoords[0];
-                  var homey = endcoords[1];
-                  arclocs.push([station_dataset[i][3],station_dataset[i][2],station_dataset[j][3],station_dataset[j][2],data[i][j]]); 
-                }
-              } 
-            }
-            svg.selectAll('.arc')
-            .data(arclocs)
-            .enter()
-            .append('path')
-            .attr('d', function(d) {
-              var startcoords = googleMapProjection([d[0], d[1]]);
-              var endcoords = googleMapProjection([d[2], d[3]]);
-              var startx = startcoords[0],
-                starty = startcoords[1],
-                homex = endcoords[0],
-                homey = endcoords[1];
-              return "M" + startx + "," + starty + " Q" + (startx + homex)/2 + " " + 0.99*(starty + homey)/2 +" " + homex+" "   + homey;
-            })
-            .attr("stroke-width", function(d){
-               return d[4]/200
-            })
-            .attr('stroke', '#FF0A0A')
-            .attr("fill", "none")
-            .attr("opacity", 0.5)
-            .attr("stroke-linecap", "round")
-            .attr('class', 'arc');
+        // do we already have something selected?
+        var sid = $('#station_list :selected').attr('id');
+        if(sid != 'none') {
+          sid = sid.substring(7);
+          limitMap(sid);
+        } else {
+          // Traffic line
+          d3.json("_data/all_trips.json", function(error, data){
+              for (var i=0;i<station_dataset.length;i++){
+                for (var j=i+1;j<station_dataset.length;j++){
+                  // dataset[i][0] = station_id
+                  // dataset[i][2] = lat
+                  // dataset[i][2] = long
+                  if(i<station_dataset.length-1){
+                    var start = [station_dataset[i][3],station_dataset[i][2]];
+                    var end = [station_dataset[j][3],station_dataset[j][2]];
+                    var startcoords = googleMapProjection(start);
+                    var endcoords = googleMapProjection(end);
+                    var startx = startcoords[0];
+                    var starty = startcoords[1];
+                    var homex = endcoords[0];
+                    var homey = endcoords[1];
+                    arclocs.push([station_dataset[i][3],station_dataset[i][2],station_dataset[j][3],station_dataset[j][2],data[i][j]]); 
+                  }
+                } 
+              }
+              svg.selectAll('.arc')
+              .data(arclocs)
+              .enter()
+              .append('path')
+              .attr('d', function(d) {
+                var startcoords = googleMapProjection([d[0], d[1]]);
+                var endcoords = googleMapProjection([d[2], d[3]]);
+                var startx = startcoords[0],
+                  starty = startcoords[1],
+                  homex = endcoords[0],
+                  homey = endcoords[1];
+                return "M" + startx + "," + starty + " Q" + (startx + homex)/2 + " " + 0.99*(starty + homey)/2 +" " + homex+" "   + homey;
+              })
+              .attr("stroke-width", function(d){
+                 return d[4]/200
+              })
+              .attr('stroke', '#FF0A0A')
+              .attr("fill", "none")
+              .attr("opacity", 0.5)
+              .attr("stroke-linecap", "round")
+              .attr('class', 'arc');
 
-          //adding circles
-          svg.selectAll('.circ')
-            .data(station_dataset)
-            .enter()
-            .append('svg:circle')
-              .attr('cx',function(d){
-                var circlecoord=googleMapProjection([d[3],d[2]]); //long, lat
-                return circlecoord[0];
-              })
-              .attr('cy',function(d){
-                var circlecoord=googleMapProjection([d[3],d[2]]); //long, lat
-                return circlecoord[1];
-              })
-              .attr('r', 5)
-              .attr("title",function(d){
-                return d[0];
-              })
-              .attr("fill",function(d){
-                if(d[4]==5){
-                  return "#BD1A00";
-                }
-                else if(d[4]==4){
-                  return "#DE4B53";
-                }
-                else if(d[4]==3){
-                  return "#DDDAC1";
-                }
-                else if(d[4]==2){
-                  return "#72B582";
-                }
-                else if(d[4]==1){
-                  return "#438875";
-                }
-                else{
-                  return "black";
-                }
-              })
+            // draw station circles on top of arcs
+            drawStationCircles();
+          });
+        }
 
-              .on({
-                "click": function(){
-                  var sid=d3.select(this).attr("title");
-                  limitMap(sid);
-                } //click
-              })
-              .attr('class', 'circ');
-            });
       };
     };
     // Bind our overlay to the map…
@@ -398,11 +363,67 @@ function limitMap(sid) {
         .attr("stroke-linecap", "round")
         .attr('class', 'arc');
 
-      // make sure the dropdown is set to the right thing
-      $('#station_list #station'+sid).prop('selected',true);
+    // make sure the dropdown is set to the right thing
+    $('#station_list #station'+sid).prop('selected',true);
 
-      } //if loop
-    } //for loop
+    } //if loop
+  } //for loop
+
+    // draw station circles on top of arcs
+    drawStationCircles();
+}
+
+function drawStationCircles() {
+  var overlayProjection = markerOverlay.getProjection();
+  var googleMapProjection = function (coordinates) {
+      var googleCoordinates = new google.maps.LatLng(coordinates[1], coordinates[0]);
+      var pixelCoordinates = overlayProjection.fromLatLngToDivPixel(googleCoordinates);
+      return [pixelCoordinates.x + 4000, pixelCoordinates.y + 4000];
+  }
+
+  svg.selectAll('.circ')
+    .data(station_dataset)
+    .enter()
+    .append('svg:circle')
+      .attr('cx',function(d){
+        var circlecoord=googleMapProjection([d[3],d[2]]); //long, lat
+        return circlecoord[0];
+      })
+      .attr('cy',function(d){
+        var circlecoord=googleMapProjection([d[3],d[2]]); //long, lat
+        return circlecoord[1];
+      })
+      .attr('r', 5)
+      .attr("title",function(d){
+        return d[0];
+      })
+      .attr("fill",function(d){
+        if(d[4]==5){
+          return "#BD1A00";
+        }
+        else if(d[4]==4){
+          return "#DE4B53";
+        }
+        else if(d[4]==3){
+          return "#DDDAC1";
+        }
+        else if(d[4]==2){
+          return "#72B582";
+        }
+        else if(d[4]==1){
+          return "#438875";
+        }
+        else{
+          return "black";
+        }
+      })
+      .on({
+        "click": function(){
+          var sid=d3.select(this).attr("title");
+          limitMap(sid);
+        }
+      })
+      .attr('class', 'circ');
 }
 
 //---------------------------------
@@ -875,7 +896,7 @@ $('#allday input:checkbox').click(function() {
 // initial
 function initial_station_list(){
   $.getJSON( "./_data/station_data.json", function( data ) {
-    var items = ["<option value='none'>Choose a station ...</option>"];
+    var items = ["<option id='none' value='none'>Choose a station ...</option>"];
     data.sort(function(a,b) {return a.station_name.toLowerCase() > b.station_name.toLowerCase() ? 1 : -1;});
     $.each( data, function( key, val ) {
       if (val.region == 'San Francisco'){
@@ -906,7 +927,7 @@ $('#region li').click(function(){
   }
 
   $.getJSON( "./_data/station_data.json", function( data ) {
-    var items = ["<option value='none'>Choose a station ...</option>"];
+    var items = ["<option id='none' value='none'>Choose a station ...</option>"];
     data.sort(function(a,b) {return a.station_name.toLowerCase() > b.station_name.toLowerCase() ? 1 : -1;});
     $.each( data, function( key, val ) {
       if (val.region == flag){

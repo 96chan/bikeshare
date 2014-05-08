@@ -1,5 +1,7 @@
 station_data_switchedranks.json - location of circles, and start/end location of arcs
+	this is renamed to station_data.json
 all_trips.json - amount of traffic - size of arc for all stations (not when you select a single one)
 array_scores_minify.json - time-based - metrics - used for graphs
+	renamed to data_bytime.json
 station_aggregate.json - size of arcs for just one station selected - all day
 station_data.json - used for loading the dropdown - we should replace this with the first json -- we should also only load this once.

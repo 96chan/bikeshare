@@ -89,7 +89,7 @@ function initialize(){
 
   // Load the station data. When the data comes back, create an overlay.
   var dataset = [];
-  d3.json("_data/station_data_switchedranks.json", function(data) { 
+  d3.json("_data/station_data.json", function(data) { 
     station_dataset = data.map(function(d) { return [ d["station_id"], d["station_name"], +d["lat"], +d["long"], d["rank"] ]; }); 
     console.log(station_dataset);
     var overlay = new google.maps.OverlayView();
@@ -411,13 +411,13 @@ function drawGraph(graph, stationid) {
   for(var i = 0 ; i < alldata.length; ++i) {
     if(alldata[i].s[stationindex].TO > maxoutflow)
       maxoutflow = alldata[i].s[stationindex].TO;
-    if(alldata[i].s[stationindex].TED > maxempty)
-      maxempty = alldata[i].s[stationindex].TED;
+    if(alldata[i].s[stationindex].AE > maxempty)
+      maxempty = alldata[i].s[stationindex].AE;
   }
 
   x = d3.scale.linear().domain([0, alldata.length]).range([0, w]);
   y1 = d3.scale.linear().domain([0, maxoutflow]).range([h, 0]);
-  y2 = d3.scale.linear().domain([0, 50]).range([h, 0]);
+  y2 = d3.scale.linear().domain([0, 0.4]).range([h, 0]);
 
   // create a line function that can convert data[] into x and y points
   var line = d3.svg.line()
@@ -434,7 +434,7 @@ function drawGraph(graph, stationid) {
     })
     .y(function(d) {
       // percent empty. total empty duration / 900 seconds * 100
-      return y2(d.s[stationindex].TED / 9); 
+      return y2(d.s[stationindex].AE / 9); 
     })
 
   // axes

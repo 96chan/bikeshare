@@ -28,18 +28,21 @@ var tsvg = d3.select("#timeline").append("svg:svg")
       .attr("width", tw + m[1] + m[3])
       .attr("height", 50)
       .append("svg:g")
-      .attr("transform", "translate(" + m[3] + ",0)");
+      .attr("transform", "translate(" + m[3] + ",0)")
+      .attr('id', 'tsvg');
 
 var graph1 = d3.select("#graph1").append("svg:svg")
       .attr("width", w + m[1] + m[3])
       .attr("height", h + m[0] + m[2])
       .append("svg:g")
-      .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+      .attr("transform", "translate(" + m[3] + "," + m[0] + ")")
+      .attr('id', 'graph1');
 var graph2 = d3.select("#graph2").append("svg:svg")
       .attr("width", w + m[1] + m[3])
       .attr("height", h + m[0] + m[2])
       .append("svg:g")
-      .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+      .attr("transform", "translate(" + m[3] + "," + m[0] + ")")
+      .attr('id', 'graph2');
 
 var tip = d3.tip()
   .attr('class', 'd3-tip')
@@ -632,6 +635,8 @@ function drawSingleGraph(graph, stationid) {
 // timeline
 //---------------------------------
 function drawTimeline() {
+  var ratio = w / tw; // difference between timeline and normal graphs
+
   function activateTimeline() {
     tsvg.selectAll('line').attr('class', 'timelineactive');
     tsvg.select('circle').attr('class', 'timecirclefill');
@@ -745,7 +750,7 @@ function drawTimeline() {
       .on("drag", dragmove);
 
   tsvg.append("rect")
-    .attr({"opacity": 0, "width": tw , "height": 50, 'class': 'focusbox'})
+    .attr({"opacity":0, "width":tw , "height":50, 'class':'focusbox', 'id':'tsvgfocus'})
     .on({
       "mouseover": function() {
         showHover();
@@ -767,12 +772,12 @@ function drawTimeline() {
 
         activateTimeline();
       },
-      "mousemove": mousemove
+      'mousemove': mousemove
     })
     .call(drag);
 
   graph1.append("rect")
-    .attr({"opacity": 0, "width": w , "height": h, 'class': 'focusbox'})
+    .attr({"opacity": 0, "width":w , "height":h, 'class':'focusbox', 'id':'graph1focus'})
     .on({
       "mouseover": function() {
         showHover();
@@ -780,10 +785,10 @@ function drawTimeline() {
       "mouseout":  function() {
         hideHover();
       }, 
-      "mousemove": mousemove
+      'mousemove': mousemove
     });
   graph2.append("rect")
-    .attr({"opacity": 0, "width": w , "height": h, 'class': 'focusbox'})
+    .attr({"opacity": 0, "width":w , "height":h, 'class':'focusbox', 'id':'graph2focus'})
     .on({
       "mouseover": function() {
         showHover();
@@ -791,16 +796,28 @@ function drawTimeline() {
       "mouseout":  function() {
         hideHover();
       }, 
-      "mousemove": mousemove
+      'mousemove': mousemove
     });
 
-  function mousemove() {
+  function mousemove(graphname) {
     // move it only by 15minute increments. 96 time incremenets (24 hours / 15 min)
-    var percent = (d3.mouse(this)[0]) / w;
-    var sizeOfInterval = w / 96.0; // size of each 15 minutes
-    var x = Math.round(percent*96) * sizeOfInterval; // the closest 15 minute interval in pixels
-    focus.attr("transform", "translate(" + x + ",0)");
-    focus2.attr("transform", "translate(" + x + ",0)");
+
+    if(this.id == 'tsvgfocus') {
+      // mouse is over the timeline instead of the main graphs, so we need to scale the position
+      // of the line, since timeline is smaller than main graphs 
+      // basically, the mouse position 'x' actually means a time of 'x'*'ratio'
+      var percent = (d3.mouse(this)[0]) / tw;
+      var sizeOfInterval = w / 96.0; // size of each 15 minutes
+      var x = Math.round(percent*96) * sizeOfInterval; // the closest 15 minute interval in pixels
+      focus.attr("transform", "translate(" + x + ",0)");
+      focus2.attr("transform", "translate(" + x + ",0)");
+    } else {
+      var percent = (d3.mouse(this)[0]) / w;
+      var sizeOfInterval = w / 96.0; // size of each 15 minutes
+      var x = Math.round(percent*96) * sizeOfInterval; // the closest 15 minute interval in pixels
+      focus.attr("transform", "translate(" + x + ",0)");
+      focus2.attr("transform", "translate(" + x + ",0)");
+    }
 
     var dt = new Date(2014,0,0);
     dt = new Date(dt.getTime() + 15*Math.round(percent*96)*60000);

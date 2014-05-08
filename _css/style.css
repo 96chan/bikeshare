@@ -328,12 +328,14 @@ path.score {
   fill: #333;
   stroke-width: 1px;
   stroke: #ccc;
+  cursor: pointer;
 }
 
 .timecirclefill {
   fill: #fff;
   stroke-width: 1px;
   stroke: #fff;
+  cursor: -webkit-grab;
 }
 
 #allday {

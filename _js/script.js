@@ -726,7 +726,6 @@ var drag = d3.behavior.drag()
 
 tsvg.append("rect")
   .attr({"opacity": 0, "width": tw , "height": 50})
-  .style("cursor", "pointer")
   .on({
     "mouseover": function() {
       showHover();
@@ -797,7 +796,6 @@ tsvg.append('circle')
   .attr('cx', 30)
   .attr('cy', 10)
   .attr('class', 'timecircle')
-  .style("cursor", "pointer")
   .on({
     "mouseover": function() {
       showHover();
@@ -823,7 +821,7 @@ function dragmove(d) {
       else
         return x;
   });
-  
+
   activateTimeline();
 }
 

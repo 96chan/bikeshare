@@ -41,6 +41,12 @@ var graph2 = d3.select("#graph2").append("svg:svg")
       .append("svg:g")
       .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
 
+var tip = d3.tip()
+  .attr('class', 'd3-tip')
+  .offset([-10, 0])
+  .html(function(d) {
+    return "<p style='color:white, font-size:20px'>" + d[1] + "</p><p style='color:white,font-size:40px'>"+d[4]+ "</p>";
+});
 
 $(document).ready(function() {
   initialize();
@@ -52,23 +58,6 @@ $(document).ready(function() {
 //---------------------------------
 // map
 //---------------------------------
-// When Marker cliked -- UNUSED CODE
-// function setMarkerMessage(marker) { 
-//   google.maps.event.addListener(marker, 'click', function() {
-//     var target = this;
-//     var json = $.parseJSON(JSON.stringify(eval("(" + target.getTitle() + ")")));
-//     var sid = json.station_id;
-//     // Marker content
-//     var content = "<div class='info-content'>"+json.station_name+"</div>";
-//     infowindow.setContent(content);
-//     infowindow.open(map, target);
-//     $('#station_list').val(json.station_name);
-    
-//     // Reset polylines in google map
-//     for(var i=0;i<trafficlines.length;i++){
-//       trafficlines[i].setMap(null);
-//     }
-
 function initialize(){
   // Map Style
   var styleArray =[{"featureType":"landscape","stylers":[{"saturation":-100},{"lightness":65},{"visibility":"on"}]},{"featureType":"poi","stylers":[{"saturation":-100},{"lightness":51},{"visibility":"simplified"}]},{"featureType":"road.highway","stylers":[{"saturation":-100},{"visibility":"simplified"}]},{"featureType":"road.arterial","stylers":[{"saturation":-100},{"lightness":30},{"visibility":"on"}]},{"featureType":"road.local","stylers":[{"saturation":-100},{"lightness":40},{"visibility":"on"}]},{"featureType":"transit","stylers":[{"saturation":-100},{"visibility":"simplified"}]},{"featureType":"administrative.province","stylers":[{"visibility":"off"}]},{"featureType":"water","elementType":"labels","stylers":[{"visibility":"on"},{"lightness":-25},{"saturation":-100}]},{"featureType":"water","elementType":"geometry","stylers":[{"hue":"#ffff00"},{"lightness":-25},{"saturation":-97}]},{"elementType": "labels.icon", "stylers":[{"visibility":"off"}]}];
@@ -147,6 +136,8 @@ function initialize(){
               .data(arclocs)
               .enter()
               .append('path')
+              .transition()
+              .ease('elastic')
               .attr('d', function(d) {
                 var startcoords = googleMapProjection([d[0], d[1]]);
                 var endcoords = googleMapProjection([d[2], d[3]]);
@@ -344,6 +335,7 @@ function drawStationCircles() {
       return [pixelCoordinates.x + 4000, pixelCoordinates.y + 4000];
   }
   svg.selectAll('.circ').remove();
+  svg.call(tip);
 
   svg.selectAll('.circ')
     .data(station_dataset)
@@ -387,6 +379,8 @@ function drawStationCircles() {
           drawGraphsAndMap(sid);
         }
       })
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide)
       .attr('class', 'circ');
 }
 

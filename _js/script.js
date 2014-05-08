@@ -217,7 +217,7 @@ function initialize(){
   var dataset = [];
   d3.json("_data/station_data_switchedranks.json", function(data) { 
     station_dataset = data.map(function(d) { return [ d["station_id"], d["station_name"], +d["lat"], +d["long"], d["rank"] ]; }); 
-
+    console.log(station_dataset);
     var overlay = new google.maps.OverlayView();
     overlay.onAdd = function() {
 
@@ -228,66 +228,112 @@ function initialize(){
       // Draw each marker as a separate SVG element.
       // We could use a single SVG, but what size would it have?
       overlay.draw = function() {
-          // delete previous drawing
-          svg.selectAll('.arc').remove();
-          $('.marker').remove();
+        // delete previous drawing
+        svg.selectAll('.arc').remove();
+        $('.marker').remove();
+        svg.selectAll('.circ').remove();
 
-          var markerOverlay = this;
-          var overlayProjection = markerOverlay.getProjection();
-          var googleMapProjection = function (coordinates) {
-              var googleCoordinates = new google.maps.LatLng(coordinates[1], coordinates[0]);
-              var pixelCoordinates = overlayProjection.fromLatLngToDivPixel(googleCoordinates);
-              return [pixelCoordinates.x + 4000, pixelCoordinates.y + 4000];
-          }
-          path = d3.geo.path().projection(googleMapProjection);
-    
-          arclocs =[];
+        var markerOverlay = this;
+        var overlayProjection = markerOverlay.getProjection();
+        var googleMapProjection = function (coordinates) {
+            var googleCoordinates = new google.maps.LatLng(coordinates[1], coordinates[0]);
+            var pixelCoordinates = overlayProjection.fromLatLngToDivPixel(googleCoordinates);
+            return [pixelCoordinates.x + 4000, pixelCoordinates.y + 4000];
+        }
+        path = d3.geo.path().projection(googleMapProjection);
+  
+        arclocs =[];
 
-          // Traffic line
-          d3.json("_data/all_trips.json", function(error, data){
-              for (var i=0;i<station_dataset.length;i++){
-                for (var j=i+1;j<station_dataset.length;j++){
-                  // dataset[i][0] = station_id
-                  // dataset[i][2] = lat
-                  // dataset[i][2] = long
-                  if(i<station_dataset.length-1){
-                    var start = [station_dataset[i][3],station_dataset[i][2]];
-                    var end = [station_dataset[j][3],station_dataset[j][2]];
-                    var startcoords = googleMapProjection(start);
-                    var endcoords = googleMapProjection(end);
-                    var startx = startcoords[0];
-                    var starty = startcoords[1];
-                    var homex = endcoords[0];
-                    var homey = endcoords[1];
-                    arclocs.push([station_dataset[i][3],station_dataset[i][2],station_dataset[j][3],station_dataset[j][2],data[i][j]]); 
-                  }
-                } 
+        // Traffic line
+        d3.json("_data/all_trips.json", function(error, data){
+            for (var i=0;i<station_dataset.length;i++){
+              for (var j=i+1;j<station_dataset.length;j++){
+                // dataset[i][0] = station_id
+                // dataset[i][2] = lat
+                // dataset[i][2] = long
+                if(i<station_dataset.length-1){
+                  var start = [station_dataset[i][3],station_dataset[i][2]];
+                  var end = [station_dataset[j][3],station_dataset[j][2]];
+                  var startcoords = googleMapProjection(start);
+                  var endcoords = googleMapProjection(end);
+                  var startx = startcoords[0];
+                  var starty = startcoords[1];
+                  var homex = endcoords[0];
+                  var homey = endcoords[1];
+                  arclocs.push([station_dataset[i][3],station_dataset[i][2],station_dataset[j][3],station_dataset[j][2],data[i][j]]); 
+                }
+              } 
+            }
+            svg.selectAll('.arc')
+            .data(arclocs)
+            .enter()
+            .append('path')
+            .attr('d', function(d) {
+              var startcoords = googleMapProjection([d[0], d[1]]);
+              var endcoords = googleMapProjection([d[2], d[3]]);
+              var startx = startcoords[0],
+                starty = startcoords[1],
+                homex = endcoords[0],
+                homey = endcoords[1];
+              return "M" + startx + "," + starty + " Q" + (startx + homex)/2 + " " + 0.99*(starty + homey)/2 +" " + homex+" "   + homey;
+            })
+            .attr("stroke-width", function(d){
+               return d[4]/200
+            })
+            .attr('stroke', '#FF0A0A')
+            .attr("fill", "none")
+            .attr("opacity", 0.5)
+            .attr("stroke-linecap", "round")
+            .attr('class', 'arc');
+
+          //adding circles
+          svg.selectAll('.circ')
+            .data(station_dataset)
+            .enter()
+            .append('svg:circle')
+              .attr('cx',function(d){
+                var circlecoord=googleMapProjection([d[3],d[2]]); //long, lat
+                return circlecoord[0];
+              })
+              .attr('cy',function(d){
+                var circlecoord=googleMapProjection([d[3],d[2]]); //long, lat
+                return circlecoord[1];
+              })
+              .attr('r', 5)
+              .attr("title",function(d){
+                return d[0];
+              })
+              .attr("fill",function(d){
+                if(d[4]==5){
+                  return "#BD1A00";
+                }
+                else if(d[4]==4){
+                  return "#DE4B53";
+                }
+                else if(d[4]==3){
+                  return "#DDDAC1";
+                }
+                else if(d[4]==2){
+                  return "#72B582";
+                }
+                else if(d[4]==1){
+                  return "#438875";
+                }
+                else{
+                  return "black";
+                }
+              })
+              .on('click',function(){
+                alert("hi");
+              },
+              'mouseover', function() {
+                alert('mouseover');
               }
-              svg.selectAll('.arc')
-              .data(arclocs)
-              .enter()
-              .append('path')
-              .attr('d', function(d) {
-                var startcoords = googleMapProjection([d[0], d[1]]);
-                var endcoords = googleMapProjection([d[2], d[3]]);
-                var startx = startcoords[0],
-                  starty = startcoords[1],
-                  homex = endcoords[0],
-                  homey = endcoords[1];
-                return "M" + startx + "," + starty + " Q" + (startx + homex)/2 + " " + 0.99*(starty + homey)/2 +" " + homex+" "   + homey;
-              })
-              .attr("stroke-width", function(d){
-                 return d[4]/200
-              })
-              .attr('stroke', '#FF0A0A')
-              .attr("fill", "none")
-              .attr("opacity", 0.5)
-              .attr("stroke-linecap", "round")
-              .attr('class', 'arc');
+              )
+              .attr('class', 'circ');
             });
 
-
-          var projection = this.getProjection(),
+          /*var projection = this.getProjection(),
                   padding = 10;
 
           var marker = layer.selectAll("marker")
@@ -322,9 +368,9 @@ function initialize(){
                   return "black";
                 }
               })
-              .attr("class", "rank1");
+              .attr("class", "rank1");*/
 
-          function transform(d) {
+          /*function transform(d) {
             var m_title = '{"station_id":"'+d.value[0]+'","station_name":"'+d.value[1]+'"}';
             d = new google.maps.LatLng(d.value[2], d.value[3]);
             var gmarker = new google.maps.Marker({
@@ -341,7 +387,7 @@ function initialize(){
             return d3.select(this)
                 .style("left", (d.x - padding) + "px")
                 .style("top", (d.y - padding) + "px");
-          }
+          }*/
       };
     };
     // Bind our overlay to the map…

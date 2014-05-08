@@ -263,27 +263,27 @@ function initialize(){
                 }
               } 
             }
-            // svg.selectAll('.arc')
-            // .data(arclocs)
-            // .enter()
-            // .append('path')
-            // .attr('d', function(d) {
-            //   var startcoords = googleMapProjection([d[0], d[1]]);
-            //   var endcoords = googleMapProjection([d[2], d[3]]);
-            //   var startx = startcoords[0],
-            //     starty = startcoords[1],
-            //     homex = endcoords[0],
-            //     homey = endcoords[1];
-            //   return "M" + startx + "," + starty + " Q" + (startx + homex)/2 + " " + 0.99*(starty + homey)/2 +" " + homex+" "   + homey;
-            // })
-            // .attr("stroke-width", function(d){
-            //    return d[4]/200
-            // })
-            // .attr('stroke', '#FF0A0A')
-            // .attr("fill", "none")
-            // .attr("opacity", 0.5)
-            // .attr("stroke-linecap", "round")
-            // .attr('class', 'arc');
+            svg.selectAll('.arc')
+            .data(arclocs)
+            .enter()
+            .append('path')
+            .attr('d', function(d) {
+              var startcoords = googleMapProjection([d[0], d[1]]);
+              var endcoords = googleMapProjection([d[2], d[3]]);
+              var startx = startcoords[0],
+                starty = startcoords[1],
+                homex = endcoords[0],
+                homey = endcoords[1];
+              return "M" + startx + "," + starty + " Q" + (startx + homex)/2 + " " + 0.99*(starty + homey)/2 +" " + homex+" "   + homey;
+            })
+            .attr("stroke-width", function(d){
+               return d[4]/200
+            })
+            .attr('stroke', '#FF0A0A')
+            .attr("fill", "none")
+            .attr("opacity", 0.5)
+            .attr("stroke-linecap", "round")
+            .attr('class', 'arc');
 
           //adding circles
           svg.selectAll('.circ')

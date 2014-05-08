@@ -3,5 +3,30 @@ station_data_switchedranks.json - location of circles, and start/end location of
 all_trips.json - amount of traffic - size of arc for all stations (not when you select a single one)
 array_scores_minify.json - time-based - metrics - used for graphs
 	renamed to data_bytime.json
+using:
+	use hourly avg_outflow for the graph (change the scale)
+
+	rename stations -> s
+
+	avg_emp -> AE
+	avg_outflow -> AO
+	rank -> r
+	score -> score
+	station_id -> sid
+	time -> t
+	tot_outflow_stations -> TOS
+	tot_outflow_stations\count -> TOS\c
+	tot_outflow_stations\station_id -> TOS\sid
+
+	remove:
+	avg_inflow
+	perc_emp
+	tot_empty_duration
+	tot_inflow
+	tot_inflow_stations
+	tot_outflow
+	station_name
+
+
 station_aggregate.json - size of arcs for just one station selected - all day
 station_data.json - used for loading the dropdown - we should replace this with the first json -- we should also only load this once.

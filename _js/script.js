@@ -41,12 +41,12 @@ var graph2 = d3.select("#graph2").append("svg:svg")
       .append("svg:g")
       .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
 
-var tip = d3.tip()
-  .attr('class', 'd3-tip')
-  .offset([-10, 0])
-  .html(function(d) {
-    return "<p style='color:white, font-size:20px'>" + d[1] + "</p><p style='color:white,font-size:40px'>"+d[4]+ "</p>";
-});
+// var tip = d3.tip()
+//   .attr('class', 'd3-tip')
+//   .offset([-10, 0])
+//   .html(function(d) {
+//     return "<p style='color:white, font-size:20px'>" + d[1] + "</p><p style='color:white,font-size:40px'>"+d[4]+ "</p>";
+// });
 
 $(document).ready(function() {
   initialize();
@@ -335,7 +335,7 @@ function drawStationCircles() {
       return [pixelCoordinates.x + 4000, pixelCoordinates.y + 4000];
   }
   svg.selectAll('.circ').remove();
-  svg.call(tip);
+  // svg.call(tip);
 
   svg.selectAll('.circ')
     .data(station_dataset)

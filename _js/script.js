@@ -176,7 +176,7 @@ function initialize(){
     overlay.setMap(map);
 
     // load all of our timed station metrics 
-    $.getJSON('_data/array_scores_minify.json',function(d) {
+    $.getJSON('_data/data_bytime_min.json',function(d) {
       alldata = d;
       alldata_loaded = 1;
       if(clicked_but_not_loaded == 1 && station_aggregate_loaded == 1) {
@@ -400,7 +400,7 @@ function drawGraph(graph, stationid) {
 
   // get array index for station
   for(var i = 0 ; i < alldata[0].s.length ; ++i) {
-    if(alldata[0].s[i].SID == stationid) {
+    if(alldata[0].s[i].sid == stationid) {
       stationindex = i;
     }
   }
@@ -409,8 +409,8 @@ function drawGraph(graph, stationid) {
   var maxoutflow = 0;
   var maxempty = 0;
   for(var i = 0 ; i < alldata.length; ++i) {
-    if(alldata[i].s[stationindex].TO > maxoutflow)
-      maxoutflow = alldata[i].s[stationindex].TO;
+    if(alldata[i].s[stationindex].AO > maxoutflow)
+      maxoutflow = alldata[i].s[stationindex].AO;
     if(alldata[i].s[stationindex].AE > maxempty)
       maxempty = alldata[i].s[stationindex].AE;
   }
@@ -527,7 +527,7 @@ function drawSingleGraph(graph, stationid) {
 
   // get array index for station
   for(var i = 0 ; i < alldata[0].s.length ; ++i) {
-    if(alldata[0].s[i].SID == stationid) {
+    if(alldata[0].s[i].sid == stationid) {
       // found it
       stationindex = i;
     }
@@ -536,8 +536,8 @@ function drawSingleGraph(graph, stationid) {
   // get max score
   var maxscore = 0;
   for(var i = 0 ; i < alldata.length; ++i) {
-    if(alldata[i].s[stationindex].S > maxscore)
-      maxscore = alldata[i].s[stationindex].S;
+    if(alldata[i].s[stationindex].score > maxscore)
+      maxscore = alldata[i].s[stationindex].score;
   }
   var maxdomain = Math.round((maxscore/0.6977672)*100);
 
@@ -551,7 +551,7 @@ function drawSingleGraph(graph, stationid) {
     })
     .y(function(d) { 
       // scale is a % of the max 0.6977672 (caltrain at townsend and 4th)
-      return y((d.s[stationindex].S / .6977672)*100); 
+      return y((d.s[stationindex].score / .6977672)*100); 
     })
 
   var xAxis = d3.svg.axis().scale(x).ticks(0).tickSize(0,0);

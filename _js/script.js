@@ -1,6 +1,7 @@
 
 var map ='';
 var gmarkers = [];    
+var markerOverlay;
 var trafficlines = [];    // bike traffic line
 var station_dataset = []; // station information
 var arclocs =[]; // trafficline 
@@ -12,17 +13,17 @@ var pa_latlng = new google.maps.LatLng(37.436707, -122.131716);       // Palo Al
 var infowindow = new google.maps.InfoWindow({maxWidth: 300 });
 var out_in_switch = 0; // 0: outflow, 1: inflow
 
-
 // define dimensions of graph
 var m = [35, 35, 35, 35]; // margins
 var w = 350 - m[1] - m[3]; // width
 var h = 200 - m[0] - m[2]; // height
 var tw = w - 75; //timeline width is shorter to allow for checkbox
 var x, y, y1, y2;
-var alldata;
-var alldata_loaded = 0; // global indicator of when we're done loading all data
-var clicked_but_not_loaded = 0; // they selected a station but we're not loaded yet
+var alldata, station_aggregate;
+var alldata_loaded = 0, station_aggregate_loaded = 0; // global indicator of when we're done loading all data
+var clicked_but_not_loaded = 0, clicked_but_SA_not_loaded = 0; // they selected a station but we're not loaded yet
 
+var svg; // map svg
 var tsvg = d3.select("#timeline").append("svg:svg")
       .attr("width", tw + m[1] + m[3])
       .attr("height", 50)
@@ -46,42 +47,7 @@ $(document).ready(function() {
   initial_station_list();
   toggles.init();
 });
-//---------------------------------
-// slider
-//---------------------------------
-// $( "#slider" ).slider({
-//   min: 0,
-//   max: 10,
-//   step: 1,
-//   value: 0,
-//   slide: function( event, ui ) {
-//     $('#sliderVal').text(ui.value);
-//   }
-// });
 
-// $('#sliderVal').text(0);
-
-// var timer = setInterval(increment, 1000);
-
-// function increment() {
-//   var value = $('#slider').slider('value');
-//   var newval = value+1;
-//     $('#slider').slider("value", newval);
-//   $('#sliderVal').text(newval);
-//   if(newval == 10) {
-//     clearTimeout(timer);
-//   }
-// }
-
-// $('#control').click(function() {
-//   if($("#controlimg").attr('src') == '_img/pause.png') {
-//     $('#controlimg').attr('src', '_img/play.png');
-//     clearTimeout(timer);
-//   } else {
-//     $('#controlimg').attr('src', '_img/pause.png');
-//     timer = setInterval(increment, 1000);
-//   }
-// });
 
 //---------------------------------
 // map
@@ -222,7 +188,7 @@ function initialize(){
     overlay.onAdd = function() {
       var layer = d3.select(this.getPanes().overlayMouseTarget).append("div")
           .attr("class", "stations");
-      var svg = layer.append("svg");
+      svg = layer.append("svg");
 
       // Draw each marker as a separate SVG element.
       // We could use a single SVG, but what size would it have?
@@ -232,7 +198,7 @@ function initialize(){
         $('.marker').remove();
         svg.selectAll('.circ').remove();
 
-        var markerOverlay = this;
+        markerOverlay = this;
         var overlayProjection = markerOverlay.getProjection();
         var googleMapProjection = function (coordinates) {
             var googleCoordinates = new google.maps.LatLng(coordinates[1], coordinates[0]);
@@ -324,123 +290,13 @@ function initialize(){
               })
 
               .on({
-                /*"mouseover": function() {
-                  alert('mouseover');
-                },*/
                 "click": function(){
                   var sid=d3.select(this).attr("title");
-                  var flow_latlng=[]
-                  svg.selectAll('.arc').remove();
-                  $.getJSON('_data/station_aggregate.json',function(data){
-                    var flow_stations, flow_color;
-                    for(var i=0;i<data.length;i++){
-                      if(sid == data[i].station_id){
-                        if(out_in_switch == 0){
-                          flow_stations = data[i].outflow_stations;
-                          flow_color = '#FF0A0A';
-                        }else{
-                          flow_stations = data[i].inflow_stations;
-                          flow_color = '#2ecc71';
-                        }
-                        var sid_long, sid_lat, total_cnt;
-
-                        //grabbing lat longs
-                        for(var k=0;k<station_dataset.length;k++){
-                          if(sid == station_dataset[k][0]){
-                               sid_lat = station_dataset[k][2];
-                               sid_long = station_dataset[k][3];
-                          }
-                          for(var j=0;j<flow_stations.length;j++){
-                            if(flow_stations[j].station_id==station_dataset[k][0]){
-                              flow_latlng.push([station_dataset[k][2],station_dataset[k][3],flow_stations[j].count]);
-                            }
-                          }
-                        }
-
-                        svg.selectAll('.arc')
-                          .data(flow_latlng)
-                          .enter()
-                          .append('path')
-                          .attr('d', function(d) {
-                            var startcoords = googleMapProjection([sid_long, sid_lat]);
-                            var endcoords = googleMapProjection([d[1], d[0]]);
-                            var startx = startcoords[0],
-                              starty = startcoords[1],
-                              homex = endcoords[0],
-                              homey = endcoords[1];
-                              return "M" + startx + "," + starty + " Q" + (startx + homex)/2 + " " + 0.99*(starty + homey)/2 +" " + homex+" "   + homey;
-                          })
-                          .attr("stroke-width", function(d){
-                             return d[2]/50;
-                          })
-                          .attr('stroke', '#FF0A0A')
-                          .attr("fill", "none")
-                          .attr("opacity", 0.5)
-                          .attr("stroke-linecap", "round")
-                          .attr('class', 'arc');
-                      } //if loop
-                    } //for loop
-                  })
+                  limitMap(sid);
                 } //click
               })
               .attr('class', 'circ');
             });
-
-          /*var projection = this.getProjection(),
-                  padding = 10;
-
-          var marker = layer.selectAll("marker")
-                  .data(d3.entries(station_dataset))
-                  .each(transform) // update existing markers
-                  .enter().append("svg:svg")
-                  .each(transform)
-                  .attr("class", "marker");
-          
-          // Add a circle.
-          marker.append("svg:circle")
-              .attr("r", 4.5)
-              .attr("cx", padding)
-              .attr("cy", padding)
-              .attr("fill",function(d){
-                if(d.value[4]==5){
-                  return "#BD1A00";
-                }
-                else if(d.value[4]==4){
-                  return "#DE4B53";
-                }
-                else if(d.value[4]==3){
-                  return "#DDDAC1";
-                }
-                else if(d.value[4]==2){
-                  return "#72B582";
-                }
-                else if(d.value[4]==1){
-                  return "#438875";
-                }
-                else{
-                  return "black";
-                }
-              })
-              .attr("class", "rank1");*/
-
-          /*function transform(d) {
-            var m_title = '{"station_id":"'+d.value[0]+'","station_name":"'+d.value[1]+'"}';
-            d = new google.maps.LatLng(d.value[2], d.value[3]);
-            var gmarker = new google.maps.Marker({
-                position: d,
-                map: map,
-                icon: marker_image,
-                title: m_title
-            });         
-            gmarkers.push(gmarker);
-            setMarkerMessage(gmarkers);
-
-            d = projection.fromLatLngToDivPixel(d);
-
-            return d3.select(this)
-                .style("left", (d.x - padding) + "px")
-                .style("top", (d.y - padding) + "px");
-          }*/
       };
     };
     // Bind our overlay to the map…
@@ -468,9 +324,86 @@ function initialize(){
       }
     });
 
+
+    $.getJSON('_data/station_aggregate.json',function(d) {
+      station_aggregate = d;
+      station_aggregate_loaded = 1;
+      if(clicked_but_SA_not_loaded == 1) {
+        // this means we've finally loaded all the data... but someone's already clicked on the station!
+
+        // get selected station id
+        var selected_stationid = $('#station_list :selected').attr('id').substring(7);
+      }
+    });
+
+
   });
 }
 
+function limitMap(sid) {
+  var overlayProjection = markerOverlay.getProjection();
+  var googleMapProjection = function (coordinates) {
+      var googleCoordinates = new google.maps.LatLng(coordinates[1], coordinates[0]);
+      var pixelCoordinates = overlayProjection.fromLatLngToDivPixel(googleCoordinates);
+      return [pixelCoordinates.x + 4000, pixelCoordinates.y + 4000];
+  }
+
+  var flow_latlng=[];
+  svg.selectAll('.arc').remove();
+
+  var flow_stations, flow_color;
+  for(var i=0;i<station_aggregate.length;i++){
+    if(sid == station_aggregate[i].station_id){
+      if(out_in_switch == 0){
+        flow_stations = station_aggregate[i].outflow_stations;
+        flow_color = '#FF0A0A';
+      }else{
+        flow_stations = station_aggregate[i].inflow_stations;
+        flow_color = '#2ecc71';
+      }
+      var sid_long, sid_lat, total_cnt;
+
+      //grabbing lat longs
+      for(var k=0;k<station_dataset.length;k++){
+        if(sid == station_dataset[k][0]){
+             sid_lat = station_dataset[k][2];
+             sid_long = station_dataset[k][3];
+        }
+        for(var j=0;j<flow_stations.length;j++){
+          if(flow_stations[j].station_id==station_dataset[k][0]){
+            flow_latlng.push([station_dataset[k][2],station_dataset[k][3],flow_stations[j].count]);
+          }
+        }
+      }
+
+      svg.selectAll('.arc')
+        .data(flow_latlng)
+        .enter()
+        .append('path')
+        .attr('d', function(d) {
+          var startcoords = googleMapProjection([sid_long, sid_lat]);
+          var endcoords = googleMapProjection([d[1], d[0]]);
+          var startx = startcoords[0],
+            starty = startcoords[1],
+            homex = endcoords[0],
+            homey = endcoords[1];
+            return "M" + startx + "," + starty + " Q" + (startx + homex)/2 + " " + 0.99*(starty + homey)/2 +" " + homex+" "   + homey;
+        })
+        .attr("stroke-width", function(d){
+           return d[2]/50;
+        })
+        .attr('stroke', '#FF0A0A')
+        .attr("fill", "none")
+        .attr("opacity", 0.5)
+        .attr("stroke-linecap", "round")
+        .attr('class', 'arc');
+
+      // make sure the dropdown is set to the right thing
+      $('#station_list #station'+sid).prop('selected',true);
+
+      } //if loop
+    } //for loop
+}
 
 //---------------------------------
 // graphs
@@ -987,12 +920,8 @@ $('#region li').click(function(){
 
 // list changing invokes marker in google map
 $('#station_list').change(function(){
-  for(var i=0;i<gmarkers.length;i++){
-      var json = $.parseJSON(JSON.stringify(eval("(" + gmarkers[i].getTitle() + ")")));
-      if(this.value == json.station_name){
-        new google.maps.event.trigger( gmarkers[i], 'click');
-      }
-  }
+  var selected_stationid = $('#station_list :selected').attr('id').substring(7);
+  limitMap(selected_stationid);
 });
 
 var toggles = {

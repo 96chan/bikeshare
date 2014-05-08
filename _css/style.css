@@ -336,6 +336,8 @@ path.score {
   stroke-width: 1px;
   stroke: #fff;
   cursor: -webkit-grab;
+  cursor: hand;
+  cursor: -moz-grab;
 }
 
 #allday {

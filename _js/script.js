@@ -322,13 +322,15 @@ function initialize(){
                   return "black";
                 }
               })
-              .on('click',function(){
-                alert("hi");
-              },
-              'mouseover', function() {
-                alert('mouseover');
-              }
-              )
+
+              .on({
+                "mouseover": function() {
+                  alert('mouseover');
+                },
+                "click": function(){
+                  alert("hi");
+                }
+              })
               .attr('class', 'circ');
             });
 

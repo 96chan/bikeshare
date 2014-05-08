@@ -324,12 +324,64 @@ function initialize(){
               })
 
               .on({
-                "mouseover": function() {
+                /*"mouseover": function() {
                   alert('mouseover');
-                },
+                },*/
                 "click": function(){
-                  alert("hi");
-                }
+                  var sid=d3.select(this).attr("title");
+                  var flow_latlng=[]
+                  svg.selectAll('.arc').remove();
+                  $.getJSON('_data/station_aggregate.json',function(data){
+                    var flow_stations, flow_color;
+                    for(var i=0;i<data.length;i++){
+                      if(sid == data[i].station_id){
+                        if(out_in_switch == 0){
+                          flow_stations = data[i].outflow_stations;
+                          flow_color = '#FF0A0A';
+                        }else{
+                          flow_stations = data[i].inflow_stations;
+                          flow_color = '#2ecc71';
+                        }
+                        var sid_long, sid_lat, total_cnt;
+
+                        //grabbing lat longs
+                        for(var k=0;k<station_dataset.length;k++){
+                          if(sid == station_dataset[k][0]){
+                               sid_lat = station_dataset[k][2];
+                               sid_long = station_dataset[k][3];
+                          }
+                          for(var j=0;j<flow_stations.length;j++){
+                            if(flow_stations[j].station_id==station_dataset[k][0]){
+                              flow_latlng.push([station_dataset[k][2],station_dataset[k][3],flow_stations[j].count]);
+                            }
+                          }
+                        }
+
+                        svg.selectAll('.arc')
+                          .data(flow_latlng)
+                          .enter()
+                          .append('path')
+                          .attr('d', function(d) {
+                            var startcoords = googleMapProjection([sid_long, sid_lat]);
+                            var endcoords = googleMapProjection([d[1], d[0]]);
+                            var startx = startcoords[0],
+                              starty = startcoords[1],
+                              homex = endcoords[0],
+                              homey = endcoords[1];
+                              return "M" + startx + "," + starty + " Q" + (startx + homex)/2 + " " + 0.99*(starty + homey)/2 +" " + homex+" "   + homey;
+                          })
+                          .attr("stroke-width", function(d){
+                             return d[2]/50;
+                          })
+                          .attr('stroke', '#FF0A0A')
+                          .attr("fill", "none")
+                          .attr("opacity", 0.5)
+                          .attr("stroke-linecap", "round")
+                          .attr('class', 'arc');
+                      } //if loop
+                    } //for loop
+                  })
+                } //click
               })
               .attr('class', 'circ');
             });

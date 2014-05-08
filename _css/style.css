@@ -210,6 +210,8 @@ p.tooltip {
   /*fill:  black;*/
   stroke: black;
   stroke-width: 1.5px;
+  cursor: pointer;
+  cursor: hand;
 }
 
 /* graphs */

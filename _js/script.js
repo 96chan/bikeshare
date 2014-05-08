@@ -21,7 +21,7 @@ var tw = w - 75; //timeline width is shorter to allow for checkbox
 var x, y, y1, y2;
 var alldata, station_aggregate;
 var alldata_loaded = 0, station_aggregate_loaded = 0; // global indicator of when we're done loading all data
-var clicked_but_not_loaded = 0, clicked_but_SA_not_loaded = 0; // they selected a station but we're not loaded yet
+var clicked_but_not_loaded = 0; // they selected a station but we're not loaded yet
 
 var svg; // map svg
 var tsvg = d3.select("#timeline").append("svg:svg")
@@ -52,114 +52,22 @@ $(document).ready(function() {
 //---------------------------------
 // map
 //---------------------------------
-// When Marker cliked
-function setMarkerMessage(marker) { 
-  google.maps.event.addListener(marker, 'click', function() {
-    var target = this;
-    var json = $.parseJSON(JSON.stringify(eval("(" + target.getTitle() + ")")));
-    var sid = json.station_id;
-    // Marker content
-    var content = "<div class='info-content'>"+json.station_name+"</div>";
-    infowindow.setContent(content);
-    infowindow.open(map, target);
-    $('#station_list').val(json.station_name);
+// When Marker cliked -- UNUSED CODE
+// function setMarkerMessage(marker) { 
+//   google.maps.event.addListener(marker, 'click', function() {
+//     var target = this;
+//     var json = $.parseJSON(JSON.stringify(eval("(" + target.getTitle() + ")")));
+//     var sid = json.station_id;
+//     // Marker content
+//     var content = "<div class='info-content'>"+json.station_name+"</div>";
+//     infowindow.setContent(content);
+//     infowindow.open(map, target);
+//     $('#station_list').val(json.station_name);
     
-    // Reset polylines in google map
-    for(var i=0;i<trafficlines.length;i++){
-      trafficlines[i].setMap(null);
-    }
-
-    // Draw polylines
-    $.getJSON('_data/station_aggregate.json',function(data){
-      var flow_stations, flow_color;
-      for(var i=0;i<data.length;i++){
-        if(sid == data[i].station_id){
-          if(out_in_switch == 0){
-            flow_stations = data[i].outflow_stations;
-            flow_color = '#FF0A0A';
-          }else{
-            flow_stations = data[i].inflow_stations;
-            flow_color = '#2ecc71';
-          }
-          var sid_long, sid_lat, total_cnt;
-
-          for(var k=0;k<station_dataset.length;k++){
-            if(sid == station_dataset[k][0]){
-                 sid_lat = station_dataset[k][2];
-                 sid_long = station_dataset[k][3];
-            }
-          }
-          for(var k=0;k<station_dataset.length;k++){
-            total_cnt = 0;
-            for(var j=0;j<flow_stations.length;j++){           
-              total_cnt += flow_stations[j].count;
-              if(flow_stations[j].station_id == station_dataset[k][0]){
-                 var traffic = [
-                      new google.maps.LatLng(sid_lat,sid_long),
-                      new google.maps.LatLng(station_dataset[k][2],station_dataset[k][3])
-                 ];
-                 var trafficline = new google.maps.Polyline({
-                      path: traffic,
-                      geodesic: true,
-                      strokeColor: flow_color,
-                      strokeOpacity: 0.6,
-                      strokeWeight: 30*flow_stations[j].count/total_cnt
-                 });                                
-                 trafficlines.push(trafficline);
-                 trafficline.setMap(map);                    
-              }
-            }
-          }
-        }
-      }
-    });
-    // show graph for station
-    // make sure it's done loading
-    if(alldata_loaded) {
-      drawGraph(graph1, json.station_id);
-      $('.outgoingsubtitle').removeClass('hidden');
-      $('.explain').fadeOut(250, function() {
-        $(this).remove();
-      });
-      $('#info').removeClass('hidden');
-      // info ??? tooltip
-      $('#info').hover(function(){
-        // Hover over code
-        var title = $(this).attr('title');
-        $(this).data('tipText', title).removeAttr('title');
-        $('<p class="tooltip"></p>')
-        .text(title)
-        .appendTo('body')
-        .fadeIn('slow');
-      }, function() {
-        // Hover out code
-        $(this).attr('title', $(this).data('tipText'));
-        $('.tooltip').remove();
-      }).mousemove(function(e) {
-        var mousex = e.pageX + 20; //Get X coordinates
-        var mousey = e.pageY + 10; //Get Y coordinates
-        $('.tooltip')
-        .css({ top: mousey, left: mousex })
-      });
-
-
-      drawSingleGraph(graph2, json.station_id);
-    } else {
-      // show loading image
-      $('#loadingimage').removeClass('hidden');
-      clicked_but_not_loaded = 1;
-    }
-  });
-}
-
-
-var marker_image = new google.maps.MarkerImage("_img/icon.png",
-        null, 
-        // The origin for this image is 0,0.
-        new google.maps.Point(0,0),
-        // The anchor for this image is the base of the flagpole at 0,32.
-        new google.maps.Point(15,0)
-);
+//     // Reset polylines in google map
+//     for(var i=0;i<trafficlines.length;i++){
+//       trafficlines[i].setMap(null);
+//     }
 
 function initialize(){
   // Map Style
@@ -271,8 +179,10 @@ function initialize(){
     $.getJSON('_data/array_scores_minify.json',function(d) {
       alldata = d;
       alldata_loaded = 1;
-      if(clicked_but_not_loaded == 1) {
+      if(clicked_but_not_loaded == 1 && station_aggregate_loaded == 1) {
         // this means we've finally loaded all the data... but someone's already clicked on the station!
+        // also, the other json has loaded already, so let's draw the map and graphs
+
         // show subtitle
         $('.outgoingsubtitle').removeClass('hidden');
 
@@ -286,6 +196,7 @@ function initialize(){
 
         drawGraph(graph1, selected_stationid);
         drawSingleGraph(graph2, selected_stationid);
+        limitMap(selected_stationid);
       }
     });
 
@@ -293,16 +204,68 @@ function initialize(){
     $.getJSON('_data/station_aggregate.json',function(d) {
       station_aggregate = d;
       station_aggregate_loaded = 1;
-      if(clicked_but_SA_not_loaded == 1) {
+      if(clicked_but_not_loaded == 1 && alldata_loaded == 1) {
         // this means we've finally loaded all the data... but someone's already clicked on the station!
+        // also, the other json has loaded already, so let's draw the map and graphs
+
+        // show subtitle
+        $('.outgoingsubtitle').removeClass('hidden');
+
+        // remove loading image, explain
+        $('.explain').remove();
+        $('#info').removeClass('hidden');
+        $('#loadingimage').remove();
 
         // get selected station id
         var selected_stationid = $('#station_list :selected').attr('id').substring(7);
+
+        drawGraph(graph1, selected_stationid);
+        drawSingleGraph(graph2, selected_stationid);
+        limitMap(selected_stationid);      
       }
     });
 
 
   });
+}
+
+// check data, draw maps and graphs if possible
+function drawGraphsAndMap(sid) {
+  // we need alldata_loaded (for graphs) and station_aggregate_loaded (for map)
+  if(alldata_loaded && station_aggregate_loaded) {
+    drawGraph(graph1, sid);
+    $('.outgoingsubtitle').removeClass('hidden');
+    $('.explain').fadeOut(250, function() {
+      $(this).remove();
+    });
+    $('#info').removeClass('hidden');
+    // info ??? tooltip
+    $('#info').hover(function(){
+      // Hover over code
+      var title = $(this).attr('title');
+      $(this).data('tipText', title).removeAttr('title');
+      $('<p class="tooltip"></p>')
+      .text(title)
+      .appendTo('body')
+      .fadeIn('slow');
+    }, function() {
+      // Hover out code
+      $(this).attr('title', $(this).data('tipText'));
+      $('.tooltip').remove();
+    }).mousemove(function(e) {
+      var mousex = e.pageX + 20; //Get X coordinates
+      var mousey = e.pageY + 10; //Get Y coordinates
+      $('.tooltip')
+      .css({ top: mousey, left: mousex })
+    });
+
+    drawSingleGraph(graph2, sid);
+    limitMap(sid);
+  } else {
+    // show loading image
+    $('#loadingimage').removeClass('hidden');
+    clicked_but_not_loaded = 1;
+  }
 }
 
 function limitMap(sid) {
@@ -369,8 +332,8 @@ function limitMap(sid) {
     } //if loop
   } //for loop
 
-    // draw station circles on top of arcs
-    drawStationCircles();
+  // draw station circles on top of arcs
+  drawStationCircles();
 }
 
 function drawStationCircles() {
@@ -380,6 +343,7 @@ function drawStationCircles() {
       var pixelCoordinates = overlayProjection.fromLatLngToDivPixel(googleCoordinates);
       return [pixelCoordinates.x + 4000, pixelCoordinates.y + 4000];
   }
+  svg.selectAll('.circ').remove();
 
   svg.selectAll('.circ')
     .data(station_dataset)
@@ -420,7 +384,7 @@ function drawStationCircles() {
       .on({
         "click": function(){
           var sid=d3.select(this).attr("title");
-          limitMap(sid);
+          drawGraphsAndMap(sid);
         }
       })
       .attr('class', 'circ');
@@ -942,7 +906,9 @@ $('#region li').click(function(){
 // list changing invokes marker in google map
 $('#station_list').change(function(){
   var selected_stationid = $('#station_list :selected').attr('id').substring(7);
-  limitMap(selected_stationid);
+
+  drawGraphsAndMap(selected_stationid);
+  // limitMap(selected_stationid);
 });
 
 var toggles = {

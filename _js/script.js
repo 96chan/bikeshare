@@ -41,12 +41,12 @@ var graph2 = d3.select("#graph2").append("svg:svg")
       .append("svg:g")
       .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
 
-// var tip = d3.tip()
-//   .attr('class', 'd3-tip')
-//   .offset([-10, 0])
-//   .html(function(d) {
-//     return "<p style='color:white, font-size:20px'>" + d[1] + "</p><p style='color:white,font-size:40px'>"+d[4]+ "</p>";
-// });
+var tip = d3.tip()
+  .attr('class', 'd3-tip')
+  .offset([-10, 0])
+  .html(function(d) {
+    return "<p style='color:white, font-size:20px'>" + d[1] + "</p><p style='color:white,font-size:40px'>"+d[4]+ "</p>";
+});
 
 $(document).ready(function() {
   initialize();
@@ -136,8 +136,7 @@ function initialize(){
               .data(arclocs)
               .enter()
               .append('path')
-              .transition()
-              .ease('elastic')
+              // .call(line_transition)
               .attr('d', function(d) {
                 var startcoords = googleMapProjection([d[0], d[1]]);
                 var endcoords = googleMapProjection([d[2], d[3]]);
@@ -299,6 +298,7 @@ function limitMap(sid) {
         .data(flow_latlng)
         .enter()
         .append('path')
+        .call(line_transition)        
         .attr('d', function(d) {
           var startcoords = googleMapProjection([sid_long, sid_lat]);
           var endcoords = googleMapProjection([d[1], d[0]]);
@@ -335,7 +335,6 @@ function drawStationCircles() {
       return [pixelCoordinates.x + 4000, pixelCoordinates.y + 4000];
   }
   svg.selectAll('.circ').remove();
-  // svg.call(tip);
 
   svg.selectAll('.circ')
     .data(station_dataset)
@@ -379,6 +378,7 @@ function drawStationCircles() {
           drawGraphsAndMap(sid);
         }
       })
+      .call(tip)
       .on('mouseover', tip.show)
       .on('mouseout', tip.hide)
       .attr('class', 'circ');
@@ -617,8 +617,21 @@ function drawSingleGraph(graph, stationid) {
 
   }
 }
+//---------------------------------
+// transition
+//---------------------------------
 
+function line_transition(path) {
+  path.transition()
+      .duration(1500)
+      .attrTween("stroke-dasharray", tweenDash);
+}
 
+function tweenDash() {
+  var l = this.getTotalLength(),
+      i = d3.interpolateString("0," + l, l + "," + l);
+  return function(t) { return i(t); };
+}
 
 //---------------------------------
 // timeline

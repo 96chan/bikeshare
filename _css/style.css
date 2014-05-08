@@ -207,9 +207,7 @@ p.tooltip {
 }
 */
 .stations circle {
-  /*fill:  black;*/
-  stroke: black;
-  stroke-width: 1.5px;
+  opacity: .8;
   cursor: pointer;
 }
 

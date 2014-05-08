@@ -11,7 +11,7 @@ var rc_latlng = new google.maps.LatLng(37.485217, -122.212308);       // Redwood
 var mv_latlng = new google.maps.LatLng(37.395499, -122.078598);       // Mountain View
 var pa_latlng = new google.maps.LatLng(37.436707, -122.131716);       // Palo Alto
 var infowindow = new google.maps.InfoWindow({maxWidth: 300 });
-var out_in_switch = 0; // 0: outflow, 1: inflow
+
 
 // define dimensions of graph
 var m = [35, 35, 35, 35]; // margins
@@ -41,12 +41,12 @@ var graph2 = d3.select("#graph2").append("svg:svg")
       .append("svg:g")
       .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
 
-var tip = d3.tip()
-  .attr('class', 'd3-tip')
-  .offset([-10, 0])
-  .html(function(d) {
-    return "<p style='color:white, font-size:20px'>" + d[1] + "</p><p style='color:white,font-size:40px'>"+d[4]+ "</p>";
-});
+// var tip = d3.tip()
+//   .attr('class', 'd3-tip')
+//   .offset([-10, 0])
+//   .html(function(d) {
+//     return "<p style='color:white, font-size:20px'>" + d[1] + "</p><p style='color:white,font-size:40px'>"+d[4]+ "</p>";
+// });
 
 $(document).ready(function() {
   initialize();
@@ -79,8 +79,7 @@ function initialize(){
   // Load the station data. When the data comes back, create an overlay.
   var dataset = [];
   d3.json("_data/station_data.json", function(data) { 
-    station_dataset = data.map(function(d) { return [ d["station_id"], d["station_name"], +d["lat"], +d["long"], d["rank"] ]; }); 
-    console.log(station_dataset);
+    station_dataset = data.map(function(d) { return [ d["station_id"], d["station_name"], +d["lat"], +d["long"], d["rank"], d["avg_outflow"] ]; }); 
     var overlay = new google.maps.OverlayView();
     overlay.onAdd = function() {
       var layer = d3.select(this.getPanes().overlayMouseTarget).append("div")
@@ -136,7 +135,8 @@ function initialize(){
               .data(arclocs)
               .enter()
               .append('path')
-              // .call(line_transition)
+              .transition()
+              .ease('elastic')
               .attr('d', function(d) {
                 var startcoords = googleMapProjection([d[0], d[1]]);
                 var endcoords = googleMapProjection([d[2], d[3]]);
@@ -168,6 +168,7 @@ function initialize(){
     // load all of our timed station metrics 
     $.getJSON('_data/data_bytime_min.json',function(d) {
       alldata = d;
+      console.log(alldata);
       alldata_loaded = 1;
       if(clicked_but_not_loaded == 1 && station_aggregate_loaded == 1) {
         // this means we've finally loaded all the data... but someone's already clicked on the station!
@@ -272,13 +273,8 @@ function limitMap(sid) {
   var flow_stations, flow_color;
   for(var i=0;i<station_aggregate.length;i++){
     if(sid == station_aggregate[i].station_id){
-      if(out_in_switch == 0){
-        flow_stations = station_aggregate[i].outflow_stations;
-        flow_color = '#FF0A0A';
-      }else{
-        flow_stations = station_aggregate[i].inflow_stations;
-        flow_color = '#2ecc71';
-      }
+      flow_stations = station_aggregate[i].outflow_stations;
+      flow_color = '#FF0A0A';
       var sid_long, sid_lat, total_cnt;
 
       //grabbing lat longs
@@ -298,7 +294,6 @@ function limitMap(sid) {
         .data(flow_latlng)
         .enter()
         .append('path')
-        .call(line_transition)        
         .attr('d', function(d) {
           var startcoords = googleMapProjection([sid_long, sid_lat]);
           var endcoords = googleMapProjection([d[1], d[0]]);
@@ -335,6 +330,10 @@ function drawStationCircles() {
       return [pixelCoordinates.x + 4000, pixelCoordinates.y + 4000];
   }
   svg.selectAll('.circ').remove();
+  // svg.call(tip);
+  var scale=d3.scale.linear()
+    .domain([0.007575757575757576,68.40151515151516])
+    .range([4,20]);
 
   svg.selectAll('.circ')
     .data(station_dataset)
@@ -348,7 +347,9 @@ function drawStationCircles() {
         var circlecoord=googleMapProjection([d[3],d[2]]); //long, lat
         return circlecoord[1];
       })
-      .attr('r', 5)
+      .attr('r', function(d){
+        return scale(d[5]);
+      })
       .attr("title",function(d){
         return d[0];
       })
@@ -360,7 +361,7 @@ function drawStationCircles() {
           return "#DE4B53";
         }
         else if(d[4]==3){
-          return "#DDDAC1";
+          return "#C0C0C0";
         }
         else if(d[4]==2){
           return "#72B582";
@@ -378,7 +379,6 @@ function drawStationCircles() {
           drawGraphsAndMap(sid);
         }
       })
-      .call(tip)
       .on('mouseover', tip.show)
       .on('mouseout', tip.hide)
       .attr('class', 'circ');
@@ -617,21 +617,8 @@ function drawSingleGraph(graph, stationid) {
 
   }
 }
-//---------------------------------
-// transition
-//---------------------------------
 
-function line_transition(path) {
-  path.transition()
-      .duration(1500)
-      .attrTween("stroke-dasharray", tweenDash);
-}
 
-function tweenDash() {
-  var l = this.getTotalLength(),
-      i = d3.interpolateString("0," + l, l + "," + l);
-  return function(t) { return i(t); };
-}
 
 //---------------------------------
 // timeline

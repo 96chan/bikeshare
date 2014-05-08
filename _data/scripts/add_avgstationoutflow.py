@@ -1,7 +1,7 @@
 #add total and avg outflow to station_data.json
 import json
 
-f=open("../station_data_with_scores.json","r")
+f=open("../station_data.json","r")
 data=json.loads(f.read())
 f.close()
 
@@ -18,11 +18,11 @@ for i in range(len(station_aggregate)):
 	tot_outflow_list.append(station_aggregate[i]["tot_outflow"])
 	avg_outflow_list.append(station_aggregate[i]["avg_outflow"])
 
-print "total outflow"
-print sorted(tot_outflow_list)
-print "avg outflow"
-print sorted(avg_outflow_list)
+# print "total outflow"
+# print sorted(tot_outflow_list)
+# print "avg outflow"
+# print sorted(avg_outflow_list)
 
-# o=open("station_data_with_outflow.json","w")
-# o.write(json.dumps(data,sort_keys=True))
-# o.close()
+o=open("station_data_with_outflow.json","w")
+o.write(json.dumps(data,sort_keys=True))
+o.close()

@@ -181,6 +181,7 @@ function initialize(){
         $('.explain').remove();
         $('#info').removeClass('hidden');
         $('#loadingimage').remove();
+        $('#timeline').removeClass('hidden');
 
         // get selected station id
         var selected_stationid = $('#station_list :selected').attr('id').substring(7);
@@ -206,6 +207,7 @@ function initialize(){
         $('.explain').remove();
         $('#info').removeClass('hidden');
         $('#loadingimage').remove();
+        $('#timeline').removeClass('hidden');
 
         // get selected station id
         var selected_stationid = $('#station_list :selected').attr('id').substring(7);
@@ -225,6 +227,7 @@ function drawGraphsAndMap(sid) {
   // we need alldata_loaded (for graphs) and station_aggregate_loaded (for map)
   if(alldata_loaded && station_aggregate_loaded) {
     drawGraph(graph1, sid);
+    $('#timeline').removeClass('hidden');
     $('.outgoingsubtitle').removeClass('hidden');
     $('.explain').fadeOut(250, function() {
       $(this).remove();
@@ -419,7 +422,7 @@ function drawGraph(graph, stationid) {
       return x(i); 
     })
     .y(function(d) { 
-      return y1(d.s[stationindex].TO); 
+      return y1(d.s[stationindex].AO); 
     })
 
   var emptyline = d3.svg.line()
@@ -427,7 +430,7 @@ function drawGraph(graph, stationid) {
       return x(i); 
     })
     .y(function(d) {
-      // percent empty. total empty duration / 900 seconds * 100
+      // percent empty. avg empty duration / 900 seconds * 100
       return y2(d.s[stationindex].AE / 9); 
     })
 

@@ -11,7 +11,7 @@ var rc_latlng = new google.maps.LatLng(37.485217, -122.212308);       // Redwood
 var mv_latlng = new google.maps.LatLng(37.395499, -122.078598);       // Mountain View
 var pa_latlng = new google.maps.LatLng(37.436707, -122.131716);       // Palo Alto
 var infowindow = new google.maps.InfoWindow({maxWidth: 300 });
-var selectedTime,selectedTimeX;
+var selectedTime,selectedTimeIndex;
 
 // define dimensions of graph
 var m = [35, 35, 35, 35]; // margins
@@ -833,6 +833,11 @@ function drawTimeline() {
     if(this.id == 'graph2focus' || this.id == 'graph1focus')
       x /= ratio;
 
+    var percent = x / tw;
+    var dt = new Date(2014,0,0);
+    dt = new Date(dt.getTime() + 15*Math.round(percent*96)*60000);
+    selectedTime = (dt.getMinutes() == 0) ? (dt.getHours() + ':0' + dt.getMinutes()) : (dt.getHours() + ':' + dt.getMinutes());
+
     if(x < 0)
       position=0;
     else if(x>tw)
@@ -840,9 +845,40 @@ function drawTimeline() {
     else
       position=x;
 
-    tsvg.select('circle').attr('cx',position);
+    selectedTimeIndex = parseInt(Math.round(percent*96));
 
-    activateTimeline();    
+    // get data for time, and resize arcs.
+    // alldata[0]
+    // alldata[(int)Math.round(percent*96)]
+          //     svg.selectAll('.arc')
+          //     .data(arclocs)
+          //     .enter()
+          //     .append('path')
+          //     .attr('d', function(d) {
+          //       var startcoords = googleMapProjection([d[0], d[1]]);
+          //       var endcoords = googleMapProjection([d[2], d[3]]);
+          //       var startx = startcoords[0],
+          //         starty = startcoords[1],
+          //         homex = endcoords[0],
+          //         homey = endcoords[1];
+          //       return "M" + startx + "," + starty + " Q" + (startx + homex)/2 + " " + 0.99*(starty + homey)/2 +" " + homex+" "   + homey;
+          //     })
+          //     .attr("stroke-width", function(d){
+          //        return d[4]/200
+          //     })
+          //     .attr('stroke', '#FF0A0A')
+          //     .attr("fill", "none")
+          //     .attr("opacity", 0.5)
+          //     .attr("stroke-linecap", "round")
+          //     .attr('class', 'arc');
+
+          //   // draw station circles on top of arcs
+          //   drawStationCircles();
+          // });
+
+
+    tsvg.select('circle').attr('cx',position);
+    activateTimeline();
   }
 
   function mousemove() {

@@ -13,9 +13,7 @@
       <h2><a href="#">Legend</a></h2>
       <div id="legend-detail">
         <ul>
-          <li><svg width="20" height="20"><path d="M0 10 L20 10 Z" stroke="#FF0A0A" stroke-width="2" /></svg><span>outgoing bike traffic<span></li>
-          <!-- <li><svg width="20" height="20"><circle cx="10" cy="10" r="4.5" fill="white" stroke="black"
-  stroke-width="1.5"/></svg><span>station</span></li> -->
+          <li><svg width="20" height="20"><path d="M0 10 L20 10 Z" class="arclegend" /></svg><span>outgoing bike traffic<span></li>
           <li><h3>Frustration Rank</h3></li>
           <li><span class="c-01">less<br/>frustrating</span>
             <span class="c-02">more<br/>frustrating</span></li>
@@ -58,8 +56,8 @@
           <option id="none" value="none">Choose a station ...</option>
         </select>
       </div>
+      <label id="allday" class="hidden"><input type="checkbox" name="allday" value="allday" checked><br>all day</label>
       <div id="timeline" class="hidden"></div>
-      <label id="allday" class="hidden"><input type="checkbox" name="allday" value="allday" checked>all day</label>
       <p class="subtitle">FRUSTRATION SCORE <span id="info" class="hidden" title="We calculate the frustration score by combining the chance the station is empty with the bike traffic out of the station at a particular time. The more people who use the station on a typical day, and the more likely the station is empty, then the more frustrating it is.">(??)<p>
       <p class="explain">We calculate the frustration score by combining the chance the station is empty with the bike traffic out of the station at a particular time. The more people who use the station on a typical day, and the more likely the station is empty, then the more frustrating it is.</p>
       <p class="outgoingsubtitle hidden">(More outgoing traffic + More emptiness = More Frustration)</p>
@@ -70,7 +68,6 @@
     </div>
     <script type="text/javascript" src="_js/d3.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
     <script type="text/javascript" src="_js/d3.tip.js"></script>
     <script type="text/javascript" src="_js/script.js"></script>
   </body>

@@ -839,7 +839,8 @@ function drawTimeline() {
 
   // attach mouse handlers for each svg obj
   var drag = d3.behavior.drag()
-      .on("drag", dragmove);
+      .on("drag", dragmove)
+      .on('dragend', dragend);
 
   tsvg.append("rect")
     .attr({"opacity":0, "width":tw , "height":50, 'class':'focusbox', 'id':'tsvgfocus'})
@@ -1094,17 +1095,25 @@ function drawTimeline() {
 
   function dragmove(d) {
     var x = d3.event.x;
+    if(x<0)
+      x=0;
+    else if(x>tw)
+      x=tw;
+
     tsvg.select('circle')
-      .attr('cx', function() {
-        if(x<0)
-          return 0;
-        else if(x>tw)
-          return tw;
-        else
-          return x;
-    });
+      .attr('cx', x);
 
     activateTimeline();
+  }
+  function dragend() {
+    var x = tsvg.select('circle').attr('cx');
+    var percent = x / tw;
+    var dt = new Date(2014,0,0);
+    dt = new Date(dt.getTime() + 15*Math.round(percent*96)*60000);
+    selectedTime = (dt.getMinutes() == 0) ? (dt.getHours() + ':0' + dt.getMinutes()) : (dt.getHours() + ':' + dt.getMinutes());
+
+    selectedTimeIndex = parseInt(Math.round(percent*96));
+    redrawTimedMap(selectedTimeIndex);
   }
 
   // the all day checkbox behavior

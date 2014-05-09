@@ -78,9 +78,10 @@ var tip = d3.tip()
 });
 
 var tip_time = d3.tip()
-  .attr('class', 'd3-tip')
+  .attr('class', 'd3-tip-time')
   .offset([-10, 0])
   .html(function(d) {
+    console.log(d);
         var color ='';
         if(d.r==5){
           color = "#BD1A00";
@@ -100,7 +101,7 @@ var tip_time = d3.tip()
         else{
           color = "black";
         }
-    return "<p style='color:"+color+";font-size:12px'>" + d[sid] + "</p>";
+    return "<p style='color:"+color+";font-size:12px'>" + d.station_name + "</p>";
 });
 
 var tip_line = d3.tip()
@@ -351,17 +352,18 @@ function limitMap(sid) {
     // make array/dictionary for stations and outflow and rank
     // this data is only for this time
     for(var i=0;i<alldata[selectedTimeIndex].s.length;++i){
-      timedStations[alldata[selectedTimeIndex].s[i].sid] = {ao: alldata[selectedTimeIndex].s[i].AO, r: alldata[selectedTimeIndex].s[i].r, sid: alldata[selectedTimeIndex].s[i].sid, score: alldata[selectedTimeIndex].s[i].score, tos: alldata[selectedTimeIndex].s[i].TOS, long:0, lat:0};
+      timedStations[alldata[selectedTimeIndex].s[i].sid] = {ao: alldata[selectedTimeIndex].s[i].AO, r: alldata[selectedTimeIndex].s[i].r, sid: alldata[selectedTimeIndex].s[i].sid, score: alldata[selectedTimeIndex].s[i].score, tos: alldata[selectedTimeIndex].s[i].TOS, long:0, lat:0, station_name: ''};
     }
   }
 
-
+  console.log(timedStations);
   var sid_long, sid_lat, total_cnt, sid_name, did_name;
   //grabbing lat longs
   for(var k=0;k<station_dataset.length;k++){
     if(selectedTime) {
       timedStations[station_dataset[k][0]].long=station_dataset[k][3];
       timedStations[station_dataset[k][0]].lat=station_dataset[k][2];
+      timedStations[station_dataset[k][0]].station_name=station_dataset[k][1];
     }
 
     if(sid == station_dataset[k][0]){
@@ -1042,9 +1044,11 @@ function drawTimeline() {
     // this data is only for this time
     var timedStations = []
     for(var i=0;i<alldata[selectedTimeIndex].s.length;++i){
-      timedStations[alldata[selectedTimeIndex].s[i].sid] = {ao: alldata[selectedTimeIndex].s[i].AO, r: alldata[selectedTimeIndex].s[i].r, sid: alldata[selectedTimeIndex].s[i].sid, score: alldata[selectedTimeIndex].s[i].score, tos: alldata[selectedTimeIndex].s[i].TOS, long:0, lat:0};
+      timedStations[alldata[selectedTimeIndex].s[i].sid] = {ao: alldata[selectedTimeIndex].s[i].AO, r: alldata[selectedTimeIndex].s[i].r, sid: alldata[selectedTimeIndex].s[i].sid, score: alldata[selectedTimeIndex].s[i].score, tos: alldata[selectedTimeIndex].s[i].TOS, long:0, lat:0, station_name: ''};
     }
-    console.log(timedStations);
+
+
+    //console.log(timedStations);
 
     var flow_stations, flow_color;
 
@@ -1053,6 +1057,7 @@ function drawTimeline() {
     for(var k=0;k<station_dataset.length;k++){
       timedStations[station_dataset[k][0]].long=station_dataset[k][3];
       timedStations[station_dataset[k][0]].lat=station_dataset[k][2];
+      timedStations[station_dataset[k][0]].station_name=station_dataset[k][1];
       if(selected_sid == station_dataset[k][0]){
          sid_name = station_dataset[k][1];
          sid_lat = station_dataset[k][2];
@@ -1095,11 +1100,11 @@ function drawTimeline() {
       if(timedStations[i])
         timedStationsTemp.push(timedStations[i]);
     }
-    console.log(timedStationsTemp);
+    // console.log(timedStationsTemp);
 
     // adjust circle sizes and colors
     svg.selectAll('.circ').remove();
-    svg.call(tip);
+    svg.call(tip_time);
 
     // get max for scale
     var scale=d3.scale.linear()

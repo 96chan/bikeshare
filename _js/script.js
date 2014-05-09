@@ -15,6 +15,8 @@ var infowindow = new google.maps.InfoWindow({maxWidth: 300 });
 var selectedTime,selectedTimeIndex;
 var selected_sid;
 
+var maxOutflowTimed = 0;
+
 // define dimensions of graph
 var m = [35, 35, 35, 35]; // margins
 var w = 350 - m[1] - m[3]; // width
@@ -204,7 +206,14 @@ function initialize(){
     // load all of our timed station metrics 
     $.getJSON('_data/data_bytime_min.json',function(d) {
       alldata = d;
-      console.log(alldata);
+
+      for(var i = 0 ; i < alldata[0].s.length ; ++i) {
+        for(var j = 0 ; j < alldata[i].s.length ; ++j) {
+          if(alldata[i].s[j].AO > maxOutflowTimed)
+            maxOutflowTimed = alldata[i].s[j].AO;
+        }
+      }
+
       alldata_loaded = 1;
       if(clicked_but_not_loaded == 1 && station_aggregate_loaded == 1) {
         // this means we've finally loaded all the data... but someone's already clicked on the station!
@@ -903,9 +912,10 @@ function drawTimeline() {
     // svg.selectAll('.arc').remove();
 
     // make array/dictionary for stations and outflow and rank
+    // this data is only for this time
     var timedStations = []
     for(var i=0;i<alldata[selectedTimeIndex].s.length;++i){
-      timedStations[alldata[selectedTimeIndex].s[i].sid] = {r: alldata[selectedTimeIndex].s[i].r, sid: alldata[selectedTimeIndex].s[i].sid, score: alldata[selectedTimeIndex].s[i].score, tos: alldata[selectedTimeIndex].s[i].TOS};
+      timedStations[alldata[selectedTimeIndex].s[i].sid] = {ao: alldata[selectedTimeIndex].s[i].AO, r: alldata[selectedTimeIndex].s[i].r, sid: alldata[selectedTimeIndex].s[i].sid, score: alldata[selectedTimeIndex].s[i].score, tos: alldata[selectedTimeIndex].s[i].TOS, long:0, lat:0};
     }
 
     var flow_stations, flow_color;
@@ -913,6 +923,8 @@ function drawTimeline() {
     var sid_long, sid_lat, total_cnt, sid_name, did_name;
     //grabbing lat longs
     for(var k=0;k<station_dataset.length;k++){
+      timedStations[station_dataset[k][0]].long=station_dataset[k][3];
+      timedStations[station_dataset[k][0]].lat=station_dataset[k][2];
       if(selected_sid == station_dataset[k][0]){
          sid_name = station_dataset[k][1];
          sid_lat = station_dataset[k][2];
@@ -954,7 +966,77 @@ function drawTimeline() {
     .attr("stroke-linecap", "round")
     .attr('class', 'arc');
 
+    var timedStationsTemp=[];
+    for(var i=0;i<timedStations.length;++i) {
+      if(timedStations[i])
+        timedStationsTemp.push(timedStations[i]);
+    }
 
+
+    // adjust circle sizes and colors
+    svg.selectAll('.circ').remove();
+    svg.call(tip);
+
+    // get max for scale
+    var scale=d3.scale.linear()
+      .domain([0,maxOutflowTimed])
+      .range([4,20]);
+
+    svg.selectAll('.circ')
+      .data(timedStationsTemp)
+      .enter()
+      .append('svg:circle')
+        .attr('cx',function(d){
+          var circlecoord=googleMapProjection([d.long,d.lat]); //long, lat
+          return circlecoord[0];
+        })
+        .attr('cy',function(d){
+          var circlecoord=googleMapProjection([d.long,d.lat]); //long, lat
+          return circlecoord[1];
+        })
+        .attr('r', function(d){
+          return scale(d.ao);
+        })
+        .attr('data-radius',function(d){
+          return scale(d.ao);
+        })
+        .attr("title",function(d){
+          return d.sid;
+        })
+        .attr("fill",function(d){
+          if(d.r==5){
+            return "#BD1A00";
+          }
+          else if(d.r==4){
+            return "#DE4B53";
+          }
+          else if(d.r==3){
+            return "#C0C0C0";
+          }
+          else if(d.r==2){
+            return "#72B582";
+          }
+          else if(d.r==1){
+            return "#438875";
+          }
+          else{
+            return "black";
+          }
+        })
+        .on({
+          "click": function(){
+            selected_sid = d3.select(this).attr("title");
+            drawGraphsAndMap(selected_sid);
+          }
+        })
+        .on('mouseover', tip.show)
+        .on('mouseout', tip.hide)
+        .attr('class', 'circ')
+      .datum(function(){return this.dataset;})
+      .sort(function(a,b){return d3.descending(a.radius,b.radius);});
+
+
+    // move time slider to appropriate place
     tsvg.select('circle').attr('cx',position);
     activateTimeline();
   }

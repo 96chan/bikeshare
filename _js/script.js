@@ -900,7 +900,41 @@ function drawTimeline() {
       position=x;
 
     selectedTimeIndex = parseInt(Math.round(percent*96));
+    redrawTimedMap(selectedTimeIndex);
 
+    // move time slider to appropriate place
+    tsvg.select('circle').attr('cx',position);
+    activateTimeline();
+  }
+
+  function mousemove() {
+    // move it only by 15minute increments. 96 time incremenets (24 hours / 15 min)
+
+    if(this.id == 'tsvgfocus' || this.id == 'timecircle') {
+      // mouse is over the timeline instead of the main graphs, so we need to scale the position
+      // of the line, since timeline is smaller than main graphs 
+      // basically, the mouse position 'x' actually means a time of 'x'*'ratio'
+      var percent = (d3.mouse(this)[0]) / tw;
+      var sizeOfInterval = w / 96.0; // size of each 15 minutes
+      var x = Math.round(percent*96) * sizeOfInterval; // the closest 15 minute interval in pixels
+      focus.attr("transform", "translate(" + x + ",0)");
+      focus2.attr("transform", "translate(" + x + ",0)");
+    } else {
+      var percent = (d3.mouse(this)[0]) / w;
+      var sizeOfInterval = w / 96.0; // size of each 15 minutes
+      var x = Math.round(percent*96) * sizeOfInterval; // the closest 15 minute interval in pixels
+      focus.attr("transform", "translate(" + x + ",0)");
+      focus2.attr("transform", "translate(" + x + ",0)");
+    }
+
+    var dt = new Date(2014,0,0);
+    dt = new Date(dt.getTime() + 15*Math.round(percent*96)*60000);
+    var timestr = (dt.getMinutes() == 0) ? (dt.getHours() + ':0' + dt.getMinutes()) : (dt.getHours() + ':' + dt.getMinutes());
+    timetext.text(timestr);
+    timetext2.text(timestr);
+  }
+
+  function redrawTimedMap(selectedTimeIndex) {
     var overlayProjection = markerOverlay.getProjection();
     var googleMapProjection = function (coordinates) {
         var googleCoordinates = new google.maps.LatLng(coordinates[1], coordinates[0]);
@@ -1034,38 +1068,6 @@ function drawTimeline() {
         .attr('class', 'circ')
       .datum(function(){return this.dataset;})
       .sort(function(a,b){return d3.descending(a.radius,b.radius);});
-
-
-    // move time slider to appropriate place
-    tsvg.select('circle').attr('cx',position);
-    activateTimeline();
-  }
-
-  function mousemove() {
-    // move it only by 15minute increments. 96 time incremenets (24 hours / 15 min)
-
-    if(this.id == 'tsvgfocus' || this.id == 'timecircle') {
-      // mouse is over the timeline instead of the main graphs, so we need to scale the position
-      // of the line, since timeline is smaller than main graphs 
-      // basically, the mouse position 'x' actually means a time of 'x'*'ratio'
-      var percent = (d3.mouse(this)[0]) / tw;
-      var sizeOfInterval = w / 96.0; // size of each 15 minutes
-      var x = Math.round(percent*96) * sizeOfInterval; // the closest 15 minute interval in pixels
-      focus.attr("transform", "translate(" + x + ",0)");
-      focus2.attr("transform", "translate(" + x + ",0)");
-    } else {
-      var percent = (d3.mouse(this)[0]) / w;
-      var sizeOfInterval = w / 96.0; // size of each 15 minutes
-      var x = Math.round(percent*96) * sizeOfInterval; // the closest 15 minute interval in pixels
-      focus.attr("transform", "translate(" + x + ",0)");
-      focus2.attr("transform", "translate(" + x + ",0)");
-    }
-
-    var dt = new Date(2014,0,0);
-    dt = new Date(dt.getTime() + 15*Math.round(percent*96)*60000);
-    var timestr = (dt.getMinutes() == 0) ? (dt.getHours() + ':0' + dt.getMinutes()) : (dt.getHours() + ':' + dt.getMinutes());
-    timetext.text(timestr);
-    timetext2.text(timestr);
   }
 
 

@@ -23,7 +23,7 @@ var m = [35, 35, 35, 45]; // margins
 var w = 350 - m[1] - m[3]; // width
 var h = 200 - m[0] - m[2]; // height
 var fh = 300 - m[0] - m[2]; // height for frustration graph
-var tw = w - 75; //timeline width is shorter to allow for checkbox
+var tw = w; //timeline
 var x, y, y1, y2;
 var alldata, station_aggregate;
 var alldata_loaded = 0, station_aggregate_loaded = 0; // global indicator of when we're done loading all data
@@ -850,7 +850,7 @@ function drawTimeline() {
   // the timeline
   tsvg.append('line')
     .attr('x1', 0)
-    .attr('x2', w)
+    .attr('x2', tw)
     .attr('y1', 10)
     .attr('y2', 10)
     .attr('class', 'timeline');
@@ -861,8 +861,8 @@ function drawTimeline() {
     .attr('y2', 20)
     .attr('class', 'timeline');
   tsvg.append('line')
-    .attr('x1', w)
-    .attr('x2', w)
+    .attr('x1', tw)
+    .attr('x2', tw)
     .attr('y1', 0)
     .attr('y2', 20)
     .attr('class', 'timeline');
@@ -877,19 +877,19 @@ function drawTimeline() {
   tsvg.append("text")
     .attr("class", "axislabel timelinetext")
     .attr("text-anchor", "middle")
-    .attr("x", (w/3))
+    .attr("x", (tw/3))
     .attr("y", 32)
     .text("8am");
   tsvg.append("text")
     .attr("class", "axislabel timelinetext")
     .attr("text-anchor", "middle")
-    .attr("x", (w/24)*17)
+    .attr("x", (tw/24)*17)
     .attr("y", 32)
     .text("5pm");
   tsvg.append("text")
     .attr("class", "axislabel timelinetext")
     .attr("text-anchor", "end")
-    .attr("x", w)
+    .attr("x", tw)
     .attr("y", 32)
     .text("12am");
 

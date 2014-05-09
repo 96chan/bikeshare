@@ -22,6 +22,7 @@ var maxOutflowTimed = 0;
 var m = [35, 35, 35, 35]; // margins
 var w = 350 - m[1] - m[3]; // width
 var h = 200 - m[0] - m[2]; // height
+var fh = 300 - m[0] - m[2]; // height for frustration graph
 var tw = w - 75; //timeline width is shorter to allow for checkbox
 var x, y, y1, y2;
 var alldata, station_aggregate;
@@ -44,7 +45,7 @@ var graph1 = d3.select("#graph1").append("svg:svg")
       .attr('id', 'graph1');
 var graph2 = d3.select("#graph2").append("svg:svg")
       .attr("width", w + m[1] + m[3])
-      .attr("height", h + m[0] + m[2])
+      .attr("height", fh + m[0] + m[2])
       .append("svg:g")
       .attr("transform", "translate(" + m[3] + "," + m[0] + ")")
       .attr('id', 'graph2');
@@ -718,7 +719,7 @@ function drawSingleGraph(graph, stationid) {
   var maxdomain = Math.round((maxscore/0.6977672)*100);
 
   x = d3.scale.linear().domain([0, alldata.length]).range([0, w]);
-  y = d3.scale.linear().domain([0, maxdomain]).range([h, 0]);
+  y = d3.scale.linear().domain([0, 100]).range([fh, 0]);
 
   // create a line function that can convert data[] into x and y points
   var line = d3.svg.line()
@@ -731,12 +732,12 @@ function drawSingleGraph(graph, stationid) {
     })
 
   var xAxis = d3.svg.axis().scale(x).ticks(0).tickSize(0,0);
-  var yAxisLeft = d3.svg.axis().scale(y).ticks(0).tickSize(0,0).tickValues(y.domain()).orient("left");
+  var yAxisLeft = d3.svg.axis().scale(y).ticks(0).tickSize(0,0).tickValues([0,25,50,75,100]).orient("left");
 
   if(graph.select("path.score").empty()) {
     graph.append("svg:g")
           .attr("class", "x axis")
-          .attr("transform", "translate(0," + h + ")")
+          .attr("transform", "translate(0," + fh + ")")
           .call(xAxis);
 
     graph.append("svg:g")
@@ -755,7 +756,7 @@ function drawSingleGraph(graph, stationid) {
       .attr('class', 'labelbox');
 
     graph.append('svg:text')
-      .attr('x', -0)
+      .attr('x', -50)
       .attr('y', -24)
       .attr('alignment-baseline', 'start')
       .attr('text-anchor', 'end')
@@ -767,33 +768,33 @@ function drawSingleGraph(graph, stationid) {
       .attr("class", "axislabel timetext")
       .attr("text-anchor", "start")
       .attr("x", 0)
-      .attr("y", h+13)
+      .attr("y", fh+13)
       .text("12am");
     graph.append("text")
       .attr("class", "axislabel timetext")
       .attr("text-anchor", "middle")
       .attr("x", (w/3))
-      .attr("y", h+13)
+      .attr("y", fh+13)
       .text("8am");
     graph.append("text")
       .attr("class", "axislabel timetext")
       .attr("text-anchor", "middle")
       .attr("x", (w/24)*17)
-      .attr("y", h+13)
+      .attr("y", fh+13)
       .text("5pm");
     graph.append("text")
       .attr("class", "axislabel timetext")
       .attr("text-anchor", "end")
       .attr("x", w)
-      .attr("y", h+13)
+      .attr("y", fh+13)
       .text("12am");
   } else {
     var linepath = graph.select("path.score").transition().attr("d", line(alldata));
     var maxdomain = Math.round((maxscore/0.6977672)*100);
 
-    y = d3.scale.linear().domain([0, maxdomain]).range([h, 0]);
+    y = d3.scale.linear().domain([0, 100]).range([fh, 0]);
 
-    yAxisLeft = d3.svg.axis().scale(y).ticks(0).tickSize(0,0).tickValues(y.domain()).orient("left");
+    yAxisLeft = d3.svg.axis().scale(y).ticks(0).tickSize(0,0).tickValues([0,25,50,75,100]).orient("left");
 
     graph.select(".y3").transition().call(yAxisLeft);
 

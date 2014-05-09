@@ -13,6 +13,7 @@ var mv_latlng = new google.maps.LatLng(37.395499, -122.078598);       // Mountai
 var pa_latlng = new google.maps.LatLng(37.436707, -122.131716);       // Palo Alto
 var infowindow = new google.maps.InfoWindow({maxWidth: 300 });
 var selectedTime,selectedTimeIndex;
+var selected_sid;
 
 // define dimensions of graph
 var m = [35, 35, 35, 35]; // margins
@@ -136,9 +137,7 @@ function initialize(){
         arclocs =[];
 
         // do we already have something selected?
-        var sid = $('#station_list :selected').attr('id');
-        if(sid != 'none') {
-          sid = sid.substring(7);
+        if(selected_sid) {
           limitMap(sid);
         } else {
           // Traffic line
@@ -221,12 +220,9 @@ function initialize(){
         $('#timeline').removeClass('hidden');
         $('#allday').removeClass('hidden');
 
-        // get selected station id
-        var selected_stationid = $('#station_list :selected').attr('id').substring(7);
-
-        drawGraph(graph1, selected_stationid);
-        drawSingleGraph(graph2, selected_stationid);
-        limitMap(selected_stationid);
+        drawGraph(graph1, selected_sid);
+        drawSingleGraph(graph2, selected_sid);
+        limitMap(selected_sid);
       }
     });
 
@@ -248,12 +244,9 @@ function initialize(){
         $('#timeline').removeClass('hidden');
         $('#allday').removeClass('hidden');
 
-        // get selected station id
-        var selected_stationid = $('#station_list :selected').attr('id').substring(7);
-
-        drawGraph(graph1, selected_stationid);
-        drawSingleGraph(graph2, selected_stationid);
-        limitMap(selected_stationid);
+        drawGraph(graph1, selected_sid);
+        drawSingleGraph(graph2, selected_sid);
+        limitMap(selected_sid);
       }
     });
 
@@ -314,31 +307,34 @@ function limitMap(sid) {
   var flow_latlng=[];
   svg.selectAll('.arc').remove();
 
+  var sid_long, sid_lat, total_cnt, sid_name, did_name;
+  //grabbing lat longs
+  for(var k=0;k<station_dataset.length;k++){
+    if(sid == station_dataset[k][0]){
+         sid_name = station_dataset[k][1];
+         sid_lat = station_dataset[k][2];
+         sid_long = station_dataset[k][3];
+    }
+    else{continue;}
+  }
+
   var flow_stations, flow_color;
   for(var i=0;i<station_aggregate.length;i++){
     if(sid == station_aggregate[i].station_id){
       flow_stations = station_aggregate[i].outflow_stations;
       flow_color = '#FF0A0A';
-      var sid_long, sid_lat, total_cnt, sid_name, did_name;
+    }
+  }
 
-      //grabbing lat longs
-      for(var k=0;k<station_dataset.length;k++){
-        if(sid == station_dataset[k][0]){
-             sid_name = station_dataset[k][1];
-             sid_lat = station_dataset[k][2];
-             sid_long = station_dataset[k][3];
-        }
-        else{continue;}
-      }
-      for (var k=0;k<station_dataset.length;k++){
-        for(var j=0;j<flow_stations.length;j++){
-          if(flow_stations[j].station_id==station_dataset[k][0]){
+  for (var k=0;k<station_dataset.length;k++){
+    for(var j=0;j<flow_stations.length;j++){
+      if(flow_stations[j].station_id==station_dataset[k][0]){
 
-            did_name =station_dataset[k][1];
-            flow_latlng.push([station_dataset[k][2],station_dataset[k][3],flow_stations[j].count,sid_name,did_name]);
-          }
-        }
+        did_name =station_dataset[k][1];
+        flow_latlng.push([station_dataset[k][2],station_dataset[k][3],flow_stations[j].count,sid_name,did_name]);
       }
+    }
+  }
   svg.call(tip_line);
   // make transition only if selecting different station
   if(sid != pre_sid){
@@ -391,11 +387,9 @@ function limitMap(sid) {
   }
   pre_sid =sid;
 
-    // make sure the dropdown is set to the right thing
-    $('#station_list #station'+sid).prop('selected',true);
+  // make sure the dropdown is set to the right thing
+  $('#station_list #station'+sid).prop('selected',true);
 
-    } //if loop
-  } //for loop
   // draw station circles on top of arcs
   drawStationCircles();
 }
@@ -453,8 +447,8 @@ function drawStationCircles() {
       })
       .on({
         "click": function(){
-          var sid=d3.select(this).attr("title");
-          drawGraphsAndMap(sid);
+          selected_sid = d3.select(this).attr("title");
+          drawGraphsAndMap(selected_sid);
         }
       })
       .on('mouseover', tip.show)
@@ -894,33 +888,88 @@ function drawTimeline() {
     selectedTimeIndex = parseInt(Math.round(percent*96));
 
     // get data for time, and resize arcs.
-    // alldata[0]
-    // alldata[(int)Math.round(percent*96)]
-          //     svg.selectAll('.arc')
-          //     .data(arclocs)
-          //     .enter()
-          //     .append('path')
-          //     .attr('d', function(d) {
-          //       var startcoords = googleMapProjection([d[0], d[1]]);
-          //       var endcoords = googleMapProjection([d[2], d[3]]);
-          //       var startx = startcoords[0],
-          //         starty = startcoords[1],
-          //         homex = endcoords[0],
-          //         homey = endcoords[1];
-          //       return "M" + startx + "," + starty + " Q" + (startx + homex)/2 + " " + 0.99*(starty + homey)/2 +" " + homex+" "   + homey;
-          //     })
-          //     .attr("stroke-width", function(d){
-          //        return d[4]/200
-          //     })
-          //     .attr('stroke', '#FF0A0A')
-          //     .attr("fill", "none")
-          //     .attr("opacity", 0.5)
-          //     .attr("stroke-linecap", "round")
-          //     .attr('class', 'arc');
+              for (var i=0;i<station_dataset.length;i++){
+                for (var j=i+1;j<station_dataset.length;j++){
+                  // dataset[i][0] = station_id
+                  // dataset[i][2] = lat
+                  // dataset[i][2] = long
+                  if(i<station_dataset.length-1){
+                    var start = [station_dataset[i][3],station_dataset[i][2]];
+                    var end = [station_dataset[j][3],station_dataset[j][2]];
+                    var startcoords = googleMapProjection(start);
+                    var endcoords = googleMapProjection(end);
+                    var startx = startcoords[0];
+                    var starty = startcoords[1];
+                    var homex = endcoords[0];
+                    var homey = endcoords[1];
+                    arclocs.push([station_dataset[i][3],station_dataset[i][2],station_dataset[j][3],station_dataset[j][2],data[i][j]]); 
+                  }
+                } 
+              }
 
-          //   // draw station circles on top of arcs
-          //   drawStationCircles();
-          // });
+  // var overlayProjection = markerOverlay.getProjection();
+  // var googleMapProjection = function (coordinates) {
+  //     var googleCoordinates = new google.maps.LatLng(coordinates[1], coordinates[0]);
+  //     var pixelCoordinates = overlayProjection.fromLatLngToDivPixel(googleCoordinates);
+  //     return [pixelCoordinates.x + 4000, pixelCoordinates.y + 4000];
+  // }
+
+  // var flow_latlng=[];
+  // // svg.selectAll('.arc').remove();
+
+  // // make array/dictionary for stations and outflow and rank
+  // var timedStations = []
+  // for(var i=0;i<alldata[selectedTimeIndex].s.length;++i){
+  //   timedStations[alldata[selectedTimeIndex].s[i].sid] = {r: alldata[selectedTimeIndex].s[i].r, sid: alldata[selectedTimeIndex].s[i].sid, score: alldata[selectedTimeIndex].s[i].score, tos: alldata[selectedTimeIndex].s[i].TOS};
+  // }
+
+  // var flow_stations, flow_color;
+
+  // var sid_long, sid_lat, total_cnt, sid_name, did_name;
+  // //grabbing lat longs
+  // for(var k=0;k<station_dataset.length;k++){
+  //   if(selected_sid == station_dataset[k][0]){
+  //      sid_name = station_dataset[k][1];
+  //      sid_lat = station_dataset[k][2];
+  //      sid_long = station_dataset[k][3];
+  //   }
+  //   else{continue;}
+  // }
+  // for(var i=0;i<station_aggregate.length;i++){
+  //   if(selected_sid == station_aggregate[i].station_id){
+  //     // flow_stations = station_aggregate[i].outflow_stations;
+  //     flow_color = '#FF0A0A';
+
+  //     for (var k=0;k<station_dataset.length;k++){
+  //       for(var j=0;j<flow_stations.length;j++){
+  //         if(flow_stations[j].station_id==station_dataset[k][0]){
+
+  //           did_name =station_dataset[k][1];
+  //           flow_latlng.push([station_dataset[k][2],station_dataset[k][3],flow_stations[j].count,sid_name,did_name]);
+  //         }
+  //       }
+  //     }
+  //       svg.selectAll('.arc')
+  //       .data(flow_latlng)
+  //       .enter()
+  //       .append('path')
+  //       .attr('d', function(d) {
+  //         var startcoords = googleMapProjection([sid_long, sid_lat]);
+  //         var endcoords = googleMapProjection([d[1], d[0]]);
+  //         var startx = startcoords[0],
+  //           starty = startcoords[1],
+  //           homex = endcoords[0],
+  //           homey = endcoords[1];
+  //           return "M" + startx + "," + starty + " Q" + (startx + homex)/2 + " " + 0.99*(starty + homey)/2 +" " + homex+" "   + homey;
+  //       })
+  //       .attr("stroke-width", function(d){
+  //          return line_width(d[2]);
+  //       })
+  //       .attr('stroke', '#FF0A0A')
+  //       .attr("fill", "none")
+  //       .attr("opacity", 0.5)
+  //       .attr("stroke-linecap", "round")
+  //       .attr('class', 'arc');
 
 
     tsvg.select('circle').attr('cx',position);
@@ -1056,9 +1105,8 @@ $('#region li').click(function(){
 
 // list changing invokes marker in google map
 $('#station_list').change(function(){
-  var selected_stationid = $('#station_list :selected').attr('id').substring(7);
-
-  drawGraphsAndMap(selected_stationid);
+  selected_sid = $('#station_list :selected').attr('id').substring(7);
+  drawGraphsAndMap(selected_sid);
 });
 
 var toggles = {

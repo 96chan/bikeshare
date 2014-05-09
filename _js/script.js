@@ -516,7 +516,7 @@ function drawGraph(graph, stationid) {
       .attr('y', -24)
       .attr('alignment-baseline', 'start')
       .attr('text-anchor', 'end')
-      .text('outgoing traffic (# bikes)')
+      .text('hourly traffic (# bikes)')
       .attr('class', 'outflowtext')
       .attr('transform', 'rotate(-90)');
     graph.append('svg:text')

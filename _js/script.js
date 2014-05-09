@@ -758,20 +758,7 @@ function drawTimeline() {
       "mouseout":  function() {
         hideHover();
       },
-      "click": function() {
-        var x = d3.mouse(this)[0];
-        var position;
-        if(x < 0)
-          position=0;
-        else if(x>tw)
-          position=tw;
-        else
-          position=x;
-
-        tsvg.select('circle').attr('cx',position);
-
-        activateTimeline();
-      },
+      'click': mouseclick,
       'mousemove': mousemove
     })
     .call(drag);
@@ -784,7 +771,8 @@ function drawTimeline() {
       },
       "mouseout":  function() {
         hideHover();
-      }, 
+      },
+      'click': mouseclick,
       'mousemove': mousemove
     });
   graph2.append("rect")
@@ -795,14 +783,34 @@ function drawTimeline() {
       },
       "mouseout":  function() {
         hideHover();
-      }, 
+      },
+      'click': mouseclick,
       'mousemove': mousemove
     });
 
-  function mousemove(graphname) {
+  function mouseclick() {
+    var x = d3.mouse(this)[0];
+    var position;
+
+    if(this.id == 'graph2focus' || this.id == 'graph1focus')
+      x /= ratio;
+
+    if(x < 0)
+      position=0;
+    else if(x>tw)
+      position=tw;
+    else
+      position=x;
+
+    tsvg.select('circle').attr('cx',position);
+
+    activateTimeline();    
+  }
+
+  function mousemove() {
     // move it only by 15minute increments. 96 time incremenets (24 hours / 15 min)
 
-    if(this.id == 'tsvgfocus') {
+    if(this.id == 'tsvgfocus' || this.id == 'timecircle') {
       // mouse is over the timeline instead of the main graphs, so we need to scale the position
       // of the line, since timeline is smaller than main graphs 
       // basically, the mouse position 'x' actually means a time of 'x'*'ratio'
@@ -833,6 +841,7 @@ function drawTimeline() {
     .attr('cx', 30)
     .attr('cy', 10)
     .attr('class', 'timecircle')
+    .attr('id', 'timecircle')
     .on({
       "mouseover": function() {
         showHover();

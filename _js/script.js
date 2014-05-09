@@ -1198,6 +1198,8 @@ function drawTimeline() {
       selectedTimeIndex = null;
 
       // redraw
+      limitMap(selected_sid);
+
     } else {
       // unchecked. enable timelime
       activateTimeline();

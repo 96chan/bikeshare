@@ -2,9 +2,9 @@
 var map ='';
 var gmarkers = [];    
 var markerOverlay;
-var trafficlines = [];    // bike traffic line
 var station_dataset = []; // station information
 var arclocs =[]; // trafficline 
+var pre_sid; // previous station id 
 var sf_latlng = new google.maps.LatLng(37.78992,-122.3822776); // San Francisco
 var sj_latlng = new google.maps.LatLng(37.339508, -121.872193);       // San Jose
 var rc_latlng = new google.maps.LatLng(37.485217, -122.212308);       // Redwood City
@@ -63,7 +63,6 @@ function initialize(){
   var styleArray =[{"featureType":"landscape","stylers":[{"saturation":-100},{"lightness":65},{"visibility":"on"}]},{"featureType":"poi","stylers":[{"saturation":-100},{"lightness":51},{"visibility":"simplified"}]},{"featureType":"road.highway","stylers":[{"saturation":-100},{"visibility":"simplified"}]},{"featureType":"road.arterial","stylers":[{"saturation":-100},{"lightness":30},{"visibility":"on"}]},{"featureType":"road.local","stylers":[{"saturation":-100},{"lightness":40},{"visibility":"on"}]},{"featureType":"transit","stylers":[{"saturation":-100},{"visibility":"simplified"}]},{"featureType":"administrative.province","stylers":[{"visibility":"off"}]},{"featureType":"water","elementType":"labels","stylers":[{"visibility":"on"},{"lightness":-25},{"saturation":-100}]},{"featureType":"water","elementType":"geometry","stylers":[{"hue":"#ffff00"},{"lightness":-25},{"saturation":-97}]},{"elementType": "labels.icon", "stylers":[{"visibility":"off"}]}];
 
   var styledMap = new google.maps.StyledMapType(styleArray,{name: "Styled Map"});
-
   var mapOptions = {
     zoom: 14,
     center: sf_latlng,
@@ -135,8 +134,6 @@ function initialize(){
               .data(arclocs)
               .enter()
               .append('path')
-              .transition()
-              .ease('elastic')
               .attr('d', function(d) {
                 var startcoords = googleMapProjection([d[0], d[1]]);
                 var endcoords = googleMapProjection([d[2], d[3]]);
@@ -289,8 +286,32 @@ function limitMap(sid) {
           }
         }
       }
-
+  // make transition only if selecting different station
+  if(sid != pre_sid){
       svg.selectAll('.arc')
+        .data(flow_latlng)
+        .enter()
+        .append('path')
+        .attr('d', function(d) {
+          var startcoords = googleMapProjection([sid_long, sid_lat]);
+          var endcoords = googleMapProjection([d[1], d[0]]);
+          var startx = startcoords[0],
+            starty = startcoords[1],
+            homex = endcoords[0],
+            homey = endcoords[1];
+            return "M" + startx + "," + starty + " Q" + (startx + homex)/2 + " " + 0.99*(starty + homey)/2 +" " + homex+" "   + homey;
+        })
+        .call(line_transition)
+        .attr("stroke-width", function(d){
+           return d[2]/50;
+        })
+        .attr('stroke', '#FF0A0A')
+        .attr("fill", "none")
+        .attr("opacity", 0.5)
+        .attr("stroke-linecap", "round")
+        .attr('class', 'arc');
+  }else{
+        svg.selectAll('.arc')
         .data(flow_latlng)
         .enter()
         .append('path')
@@ -311,13 +332,14 @@ function limitMap(sid) {
         .attr("opacity", 0.5)
         .attr("stroke-linecap", "round")
         .attr('class', 'arc');
+  }
+  pre_sid =sid;
 
     // make sure the dropdown is set to the right thing
     $('#station_list #station'+sid).prop('selected',true);
 
     } //if loop
   } //for loop
-
   // draw station circles on top of arcs
   drawStationCircles();
 }
@@ -382,6 +404,22 @@ function drawStationCircles() {
       .on('mouseover', tip.show)
       .on('mouseout', tip.hide)
       .attr('class', 'circ');
+}
+
+//---------------------------------
+// Transition
+//---------------------------------
+
+function line_transition(path) {
+    path.transition()
+        .duration(1500)
+        .attrTween("stroke-dasharray", tweenDash);
+}
+
+function tweenDash() {
+  var l = this.getTotalLength(),
+      i = d3.interpolateString("0," + l, l + "," + l);
+  return function(t) { return i(t); };
 }
 
 //---------------------------------

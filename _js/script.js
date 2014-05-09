@@ -11,7 +11,7 @@ var rc_latlng = new google.maps.LatLng(37.485217, -122.212308);       // Redwood
 var mv_latlng = new google.maps.LatLng(37.395499, -122.078598);       // Mountain View
 var pa_latlng = new google.maps.LatLng(37.436707, -122.131716);       // Palo Alto
 var infowindow = new google.maps.InfoWindow({maxWidth: 300 });
-
+var selectedTime,selectedTimeX;
 
 // define dimensions of graph
 var m = [35, 35, 35, 35]; // margins
@@ -223,10 +223,11 @@ function initialize(){
 
         drawGraph(graph1, selected_stationid);
         drawSingleGraph(graph2, selected_stationid);
-        limitMap(selected_stationid);    
+        limitMap(selected_stationid);
       }
     });
 
+  drawTimeline(); // draw timeline once at start
 
   });
 }
@@ -265,7 +266,6 @@ function drawGraphsAndMap(sid) {
 
     drawSingleGraph(graph2, sid);
     limitMap(sid);
-    drawTimeline();
   } else {
     // show loading image
     $('#loadingimage').removeClass('hidden');
@@ -477,22 +477,21 @@ function drawGraph(graph, stationid) {
   y1 = d3.scale.linear().domain([0, maxoutflow]).range([h, 0]);
   y2 = d3.scale.linear().domain([0, 0.5]).range([h, 0]);
 
-  // create a line function that can convert data[] into x and y points
   var line = d3.svg.line()
-    .x(function(d,i) { 
-      return x(i); 
+    .x(function(d,i) {
+      return x(i);
     })
-    .y(function(d) { 
-      return y1(d.s[stationindex].AO); 
+    .y(function(d) {
+      return y1(d.s[stationindex].AO*4); // hourly rate
     })
 
   var emptyline = d3.svg.line()
-    .x(function(d,i) { 
-      return x(i); 
+    .x(function(d,i) {
+      return x(i);
     })
     .y(function(d) {
       // percent empty. avg empty duration / 900 seconds * 100
-      return y2(d.s[stationindex].AE / 9); 
+      return y2(d.s[stationindex].AE / 9);
     })
 
   // axes
@@ -532,7 +531,7 @@ function drawGraph(graph, stationid) {
       .attr('y', -24)
       .attr('alignment-baseline', 'start')
       .attr('text-anchor', 'end')
-      .text('outgoing traffic (# bikes)')
+      .text('hourly traffic (# bikes)')
       .attr('class', 'outflowtext')
       .attr('transform', 'rotate(-90)');
     graph.append('svg:text')
@@ -712,6 +711,7 @@ function drawTimeline() {
     focus.style("display", "none");
     focus2.style("display", "none");
   }
+  tsvg.selectAll().remove();
 
   // the timeline
   tsvg.append('line')
@@ -811,20 +811,7 @@ function drawTimeline() {
       "mouseout":  function() {
         hideHover();
       },
-      "click": function() {
-        var x = d3.mouse(this)[0];
-        var position;
-        if(x < 0)
-          position=0;
-        else if(x>tw)
-          position=tw;
-        else
-          position=x;
-
-        tsvg.select('circle').attr('cx',position);
-
-        activateTimeline();
-      },
+      'click': mouseclick,
       'mousemove': mousemove
     })
     .call(drag);
@@ -837,7 +824,8 @@ function drawTimeline() {
       },
       "mouseout":  function() {
         hideHover();
-      }, 
+      },
+      'click': mouseclick,
       'mousemove': mousemove
     });
   graph2.append("rect")
@@ -848,14 +836,34 @@ function drawTimeline() {
       },
       "mouseout":  function() {
         hideHover();
-      }, 
+      },
+      'click': mouseclick,
       'mousemove': mousemove
     });
 
-  function mousemove(graphname) {
+  function mouseclick() {
+    var x = d3.mouse(this)[0];
+    var position;
+
+    if(this.id == 'graph2focus' || this.id == 'graph1focus')
+      x /= ratio;
+
+    if(x < 0)
+      position=0;
+    else if(x>tw)
+      position=tw;
+    else
+      position=x;
+
+    tsvg.select('circle').attr('cx',position);
+
+    activateTimeline();    
+  }
+
+  function mousemove() {
     // move it only by 15minute increments. 96 time incremenets (24 hours / 15 min)
 
-    if(this.id == 'tsvgfocus') {
+    if(this.id == 'tsvgfocus' || this.id == 'timecircle') {
       // mouse is over the timeline instead of the main graphs, so we need to scale the position
       // of the line, since timeline is smaller than main graphs 
       // basically, the mouse position 'x' actually means a time of 'x'*'ratio'
@@ -886,6 +894,7 @@ function drawTimeline() {
     .attr('cx', 30)
     .attr('cy', 10)
     .attr('class', 'timecircle')
+    .attr('id', 'timecircle')
     .on({
       "mouseover": function() {
         showHover();

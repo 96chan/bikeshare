@@ -74,14 +74,40 @@ var tip = d3.tip()
         else{
           color = "black";
         }
-    return "<p style='color:"+color+";font-size:12px'>" + d[1] + "</p>";
+    return "<p style='color:"+color+";font-size:12px'>" + d[1] + "</p><div style='text-align:center'><span style='display:inline-block;color:white;font-size:10px;text-align:left;margin-right:12px'>Frustration Rank: "+d[4]+"</span><span style='display:inline-block;color:white;font-size:10px;text-align:left'>Avg Outflow: "+Number((d[5]).toFixed(1))+" rides per day</span></div>";
+});
+
+var tip_time = d3.tip()
+  .attr('class', 'd3-tip')
+  .offset([-10, 0])
+  .html(function(d) {
+        var color ='';
+        if(d.r==5){
+          color = "#BD1A00";
+        }
+        else if(d.r==4){
+          color = "#DE4B53";
+        }
+        else if(d.r==3){
+          color = "#C0C0C0";
+        }
+        else if(d.r==2){
+          color = "#72B582";
+        }
+        else if(d.r==1){
+          color = "#438875";
+        }
+        else{
+          color = "black";
+        }
+    return "<p style='color:"+color+";font-size:12px'>" + d[sid] + "</p>";
 });
 
 var tip_line = d3.tip()
   .attr('class', 'd3-tip-line')
   .offset([0, 0])
   .html(function(d) {
-    return "<div style='text-align:left;display:inline-block;margin-right:10px'><p style='color:#f1c40f;font-size:20px;margin-bottom:5px'>Total Bike Riders</p><p style='color:white;font-size:10px'>from " + d[3] + "</p><p style='color:white;font-size:10px'> to " + d[4] + "</p></div><div style='display:inline-block;font-size:40px'>"+ d[2]+"</div>";
+    return "<div style='text-align:left;display:inline-block;margin-right:10px'><span style='color:#f1c40f;font-size:12px;margin-bottom:5px'>"+d[2]+"</span><span style='color:#f1c40f;font-size:10px;margin-bottom:5px'> Rides Per Day</span><p style='color:white;font-size:9px'>from " + d[3] + "</p><p style='color:white;font-size:9px'> to " + d[4] + "</p></div>";
 });
 
 $(document).ready(function() {
@@ -542,11 +568,7 @@ function drawStationCircles(timedStations) {
         }
       })
       .attr('class', 'circ')
-    .datum(function(){return this.dataset;})
-    .sort(function(a,b){return d3.descending(a.radius,b.radius);});
-
-  svg.selectAll('.circ')
-    .data(station_dataset)
+    .sort(function(a,b){return a[5]<b[5];})
     .on('mouseover', tip.show)
     .on('mouseout', tip.hide);
 }
@@ -1032,6 +1054,7 @@ function drawTimeline() {
     for(var i=0;i<alldata[selectedTimeIndex].s.length;++i){
       timedStations[alldata[selectedTimeIndex].s[i].sid] = {ao: alldata[selectedTimeIndex].s[i].AO, r: alldata[selectedTimeIndex].s[i].r, sid: alldata[selectedTimeIndex].s[i].sid, score: alldata[selectedTimeIndex].s[i].score, tos: alldata[selectedTimeIndex].s[i].TOS, long:0, lat:0};
     }
+    console.log(timedStations);
 
     var flow_stations, flow_color;
 
@@ -1086,7 +1109,7 @@ function drawTimeline() {
       if(timedStations[i])
         timedStationsTemp.push(timedStations[i]);
     }
-
+    console.log(timedStationsTemp);
 
     // adjust circle sizes and colors
     svg.selectAll('.circ').remove();
@@ -1144,11 +1167,10 @@ function drawTimeline() {
             drawGraphsAndMap(selected_sid);
           }
         })
-        .on('mouseover', tip.show)
-        .on('mouseout', tip.hide)
         .attr('class', 'circ')
-      .datum(function(){return this.dataset;})
-      .sort(function(a,b){return d3.descending(a.radius,b.radius);});
+    .sort(function(a,b){return a.ao<b.ao;})
+    .on('mouseover', tip_time.show)
+    .on('mouseout', tip_time.hide);
   }
 
 

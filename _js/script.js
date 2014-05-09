@@ -305,6 +305,8 @@ function drawGraphsAndMap(sid) {
   }
 }
 
+// limit map to outflows from one station
+// make sure you pay attention to the selectedTime too
 function limitMap(sid) {
   var overlayProjection = markerOverlay.getProjection();
   var googleMapProjection = function (coordinates) {
@@ -316,9 +318,25 @@ function limitMap(sid) {
   var flow_latlng=[];
   svg.selectAll('.arc').remove();
 
+  var timedStations = []
+
+  if(selectedTime) {
+    // make array/dictionary for stations and outflow and rank
+    // this data is only for this time
+    for(var i=0;i<alldata[selectedTimeIndex].s.length;++i){
+      timedStations[alldata[selectedTimeIndex].s[i].sid] = {ao: alldata[selectedTimeIndex].s[i].AO, r: alldata[selectedTimeIndex].s[i].r, sid: alldata[selectedTimeIndex].s[i].sid, score: alldata[selectedTimeIndex].s[i].score, tos: alldata[selectedTimeIndex].s[i].TOS, long:0, lat:0};
+    }
+  }
+
+
   var sid_long, sid_lat, total_cnt, sid_name, did_name;
   //grabbing lat longs
   for(var k=0;k<station_dataset.length;k++){
+    if(selectedTime) {
+      timedStations[station_dataset[k][0]].long=station_dataset[k][3];
+      timedStations[station_dataset[k][0]].lat=station_dataset[k][2];
+    }
+
     if(sid == station_dataset[k][0]){
          sid_name = station_dataset[k][1];
          sid_lat = station_dataset[k][2];
@@ -328,22 +346,38 @@ function limitMap(sid) {
   }
 
   var flow_stations, flow_color;
-  for(var i=0;i<station_aggregate.length;i++){
-    if(sid == station_aggregate[i].station_id){
-      flow_stations = station_aggregate[i].outflow_stations;
-      flow_color = '#FF0A0A';
-    }
-  }
 
-  for (var k=0;k<station_dataset.length;k++){
-    for(var j=0;j<flow_stations.length;j++){
-      if(flow_stations[j].station_id==station_dataset[k][0]){
-
-        did_name =station_dataset[k][1];
-        flow_latlng.push([station_dataset[k][2],station_dataset[k][3],flow_stations[j].count,sid_name,did_name]);
+  if(selectedTime) {
+    flow_stations = timedStations[selected_sid].tos;
+  } else {
+    for(var i=0;i<station_aggregate.length;i++){
+      if(sid == station_aggregate[i].station_id){
+        flow_stations = station_aggregate[i].outflow_stations;
+        flow_color = '#FF0A0A';
       }
     }
   }
+
+
+  if(selectedTime) {
+    for(var k=0;k<station_dataset.length;k++){
+      did_name =station_dataset[k][1];
+      for(var j=0;j<flow_stations.length;++j) {
+        if(flow_stations[j].sid == station_dataset[k][0])
+          flow_latlng.push([station_dataset[k][2],station_dataset[k][3],4*(flow_stations[j].c),sid_name,did_name]);
+      }
+    }
+  } else {
+    for(var k=0;k<station_dataset.length;k++){
+      for(var j=0;j<flow_stations.length;j++){
+        if(flow_stations[j].station_id==station_dataset[k][0]){
+          did_name =station_dataset[k][1];
+            flow_latlng.push([station_dataset[k][2],station_dataset[k][3],flow_stations[j].count,sid_name,did_name]);
+        }
+      }
+    }
+  }
+
   svg.call(tip_line);
   // make transition only if selecting different station
   if(sid != pre_sid){
@@ -400,65 +434,100 @@ function limitMap(sid) {
   $('#station_list #station'+sid).prop('selected',true);
 
   // draw station circles on top of arcs
-  drawStationCircles();
+  drawStationCircles(timedStations);
 }
 
-function drawStationCircles() {
+
+// make sure you pay attention to the selectedTime too
+function drawStationCircles(timedStations) {
   var overlayProjection = markerOverlay.getProjection();
   var googleMapProjection = function (coordinates) {
       var googleCoordinates = new google.maps.LatLng(coordinates[1], coordinates[0]);
       var pixelCoordinates = overlayProjection.fromLatLngToDivPixel(googleCoordinates);
       return [pixelCoordinates.x + 4000, pixelCoordinates.y + 4000];
   }
+
+  var timedStationsTemp=[];
+  if(selectedTime) {
+    for(var i=0;i<timedStations.length;++i) {
+      if(timedStations[i])
+        timedStationsTemp.push(timedStations[i]);
+    }
+  }
+
   svg.selectAll('.circ').remove();
   svg.call(tip);
-  var scale=d3.scale.linear()
-    .domain([0.007575757575757576,68.40151515151516])
-    .range([4,20]);
+
+  if(selectedTime) {
+    var scale=d3.scale.linear()
+      .domain([0,maxOutflowTimed])
+      .range([4,20]);
+  } else {
+    var scale=d3.scale.linear()
+      .domain([0.007575757575757576,68.40151515151516])
+      .range([4,20]);
+  }
 
   svg.selectAll('.circ')
-    .data(station_dataset)
+    .data(function() {return (selectedTime) ? timedStationsTemp : station_dataset;})
     .enter()
     .append('svg:circle')
       .attr('cx',function(d){
-        var circlecoord=googleMapProjection([d[3],d[2]]); //long, lat
+        if(selectedTime)
+          var circlecoord=googleMapProjection([d.long,d.lat]); //long, lat
+        else
+          var circlecoord=googleMapProjection([d[3],d[2]]); //long, lat
         return circlecoord[0];
       })
       .attr('cy',function(d){
-        var circlecoord=googleMapProjection([d[3],d[2]]); //long, lat
+        if(selectedTime)
+          var circlecoord=googleMapProjection([d.long,d.lat]); //long, lat
+        else
+          var circlecoord=googleMapProjection([d[3],d[2]]); //long, lat
         return circlecoord[1];
       })
       .attr('r', function(d){
-        return scale(d[5]);
+        if(selectedTime)
+          return scale(d.ao);
+        else
+          return scale(d[5]);
       })
       .attr('data-radius',function(d){
-        return scale(d[5]);
+        if(selectedTime)
+          return scale(d.ao);
+        else
+          return scale(d[5]);
       })
       .attr("title",function(d){
-        return d[0];
+        if(selectedTime)
+          return d.sid;
+        else
+          return d[0];
       })
       .attr("fill",function(d){
-        if(d[4]==5){
+        if(selectedTime)
+          var rank = d.r;
+        else
+          var rank = d[4];
+        if(rank==5){
           return "#BD1A00";
         }
-        else if(d[4]==4){
+        else if(rank==4){
           return "#DE4B53";
         }
-        else if(d[4]==3){
+        else if(rank==3){
           return "#C0C0C0";
         }
-        else if(d[4]==2){
+        else if(rank==2){
           return "#72B582";
         }
-        else if(d[4]==1){
+        else if(rank==1){
           return "#438875";
         }
         else{
           return "black";
         }
       })
-      // .on('mouseover', tip.show)
-      // .on('mouseout', tip.hide)
       .on({
         "click": function(){
           selected_sid = d3.select(this).attr("title");
@@ -637,8 +706,8 @@ function drawSingleGraph(graph, stationid) {
   // get max score
   var maxscore = 0;
   for(var i = 0 ; i < alldata.length; ++i) {
-    if(alldata[i].s[stationindex].score > maxscore)
-      maxscore = alldata[i].s[stationindex].score;
+    if(alldata[i].s[stationindex].s > maxscore)
+      maxscore = alldata[i].s[stationindex].s;
   }
   var maxdomain = Math.round((maxscore/0.6977672)*100);
 
@@ -652,7 +721,7 @@ function drawSingleGraph(graph, stationid) {
     })
     .y(function(d) { 
       // scale is a % of the max 0.6977672 (caltrain at townsend and 4th)
-      return y((d.s[stationindex].score / .6977672)*100); 
+      return y((d.s[stationindex].s / .6977672)*100); 
     })
 
   var xAxis = d3.svg.axis().scale(x).ticks(0).tickSize(0,0);
@@ -949,7 +1018,6 @@ function drawTimeline() {
     }
 
     var flow_latlng=[];
-    // svg.selectAll('.arc').remove();
 
     // make array/dictionary for stations and outflow and rank
     // this data is only for this time
@@ -978,7 +1046,7 @@ function drawTimeline() {
     for(var k=0;k<station_dataset.length;k++){
       did_name =station_dataset[k][1];
       for(var j=0;j<flow_stations.length;++j) {
-        if(flow_stations[j].sid == station_data[k][0])
+        if(flow_stations[j].sid == station_dataset[k][0])
           flow_latlng.push([station_dataset[k][2],station_dataset[k][3],4*(flow_stations[j].c),sid_name,did_name]);
       }
     }
@@ -1126,6 +1194,10 @@ function drawTimeline() {
     if($(this).is(':checked')) {
       // all day is checked, disable the timeline
       deactivateTimeline();
+      selectedTime = null;
+      selectedTimeIndex = null;
+
+      // redraw
     } else {
       // unchecked. enable timelime
       activateTimeline();

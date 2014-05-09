@@ -606,7 +606,7 @@ function drawGraph(graph, stationid) {
   maxoutflow *= 4; // hourly rate instead of 15minute
 
   x = d3.scale.linear().domain([0, alldata.length]).range([0, w]);
-  y1 = d3.scale.linear().domain([0, maxoutflow]).range([h, 0]);
+  y1 = d3.scale.linear().domain([0, 20]).range([h, 0]);
   y2 = d3.scale.linear().domain([0, 0.5]).range([h, 0]);
 
   var line = d3.svg.line()

@@ -1148,7 +1148,7 @@ function drawTimeline() {
   // drag/click behavior for timeline circle
   tsvg.append('circle')
     .attr('r', 6)
-    .attr('cx', 30)
+    .attr('cx', tw/3)
     .attr('cy', 10)
     .attr('class', 'timecircle')
     .attr('id', 'timecircle')
@@ -1203,6 +1203,14 @@ function drawTimeline() {
     } else {
       // unchecked. enable timelime
       activateTimeline();
+      var x = tsvg.select('circle').attr('cx');
+      var percent = x / tw;
+      var dt = new Date(2014,0,0);
+      dt = new Date(dt.getTime() + 15*Math.round(percent*96)*60000);
+      selectedTime = (dt.getMinutes() == 0) ? (dt.getHours() + ':0' + dt.getMinutes()) : (dt.getHours() + ':' + dt.getMinutes());
+
+      selectedTimeIndex = parseInt(Math.round(percent*96));
+      redrawTimedMap(selectedTimeIndex);
     }
   });
 

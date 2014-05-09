@@ -48,7 +48,26 @@ var tip = d3.tip()
   .attr('class', 'd3-tip')
   .offset([-10, 0])
   .html(function(d) {
-    return "<p style='color:#82c7bc;font-size:20px'>" + d[1] + "</p><div style='text-align:center'><span style='display:inline-block;color:white;font-size:10px;text-align:left'>Frustration <br>Rank</span><span style='display:inline-block;color:white;font-size:40px;margin-right:20px'>"+d[4]+"</span><span style='display:inline-block;color:white;font-size;10px;text-align:left'>Avg.<br>Outflow</span><span style='display:inline-block;color:white;font-size:40px'>"+Number((d[5]).toFixed(1))+"</span></div>";
+        var color ='';
+        if(d[4]==5){
+          color = "#BD1A00";
+        }
+        else if(d[4]==4){
+          color = "#DE4B53";
+        }
+        else if(d[4]==3){
+          color = "#C0C0C0";
+        }
+        else if(d[4]==2){
+          color = "#72B582";
+        }
+        else if(d[4]==1){
+          color = "#438875";
+        }
+        else{
+          color = "black";
+        }
+    return "<p style='color:"+color+";font-size:20px'>" + d[1] + "</p><div style='text-align:center'><span style='display:inline-block;color:white;font-size:10px;text-align:left'>Frustration <br>Rank</span><span style='display:inline-block;color:white;font-size:40px;margin-right:20px'>"+d[4]+"</span><span style='display:inline-block;color:white;font-size;10px;text-align:left'>Avg.<br>Outflow</span><span style='display:inline-block;color:white;font-size:40px'>"+Number((d[5]).toFixed(1))+"</span></div>";
 });
 
 var tip_line = d3.tip()
@@ -303,6 +322,7 @@ function limitMap(sid) {
       for (var k=0;k<station_dataset.length;k++){
         for(var j=0;j<flow_stations.length;j++){
           if(flow_stations[j].station_id==station_dataset[k][0]){
+
             did_name =station_dataset[k][1];
             flow_latlng.push([station_dataset[k][2],station_dataset[k][3],flow_stations[j].count,sid_name,did_name]);
           }

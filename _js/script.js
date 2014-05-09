@@ -6,6 +6,7 @@ var station_dataset = []; // station information
 var arclocs =[]; // trafficline 
 var pre_sid; // previous station id 
 var line_width; // trafficline
+var select_line_width; // trafficline
 var sf_latlng = new google.maps.LatLng(37.78992,-122.3822776); // San Francisco
 var sj_latlng = new google.maps.LatLng(37.339508, -121.872193);       // San Jose
 var rc_latlng = new google.maps.LatLng(37.485217, -122.212308);       // Redwood City
@@ -151,7 +152,8 @@ function initialize(){
                           return d3.min(array);
                         });
               
-              line_width = d3.scale.linear().range([0,15]).domain([min, max]);
+              line_width = d3.scale.linear().range([0,17]).domain([min, max]);
+              select_line_width = d3.scale.linear().range([0.5,20]).domain([min, max]);
 
               for (var i=0;i<station_dataset.length;i++){
                 for (var j=i+1;j<station_dataset.length;j++){
@@ -396,7 +398,11 @@ function limitMap(sid) {
         })
         .call(line_transition)
         .attr("stroke-width", function(d){
+          if(selectedTime)
+           return select_line_width(d[2]);
+         else
            return line_width(d[2]);
+
         })
         .attr('stroke', '#FF0A0A')
         .attr("fill", "none")
@@ -1066,7 +1072,7 @@ function drawTimeline() {
         return "M" + startx + "," + starty + " Q" + (startx + homex)/2 + " " + 0.99*(starty + homey)/2 +" " + homex+" "   + homey;
     })
     .attr("stroke-width", function(d){
-       return line_width(d[2]);
+       return select_line_width(d[2]);
     })
     .attr('stroke', '#FF0A0A')
     .attr("fill", "none")

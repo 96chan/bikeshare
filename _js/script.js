@@ -216,10 +216,6 @@ function initialize(){
               .attr("stroke-width", function(d){
                  return line_width(d[4])
               })
-              .attr('stroke', '#FF0A0A')
-              .attr("fill", "none")
-              .attr("opacity", 0.5)
-              .attr("stroke-linecap", "round")
               .attr('class', 'arc');
 
             // draw station circles on top of arcs
@@ -433,10 +429,6 @@ function limitMap(sid) {
            return line_width(d[2]);
 
         })
-        .attr('stroke', '#FF0A0A')
-        .attr("fill", "none")
-        .attr("opacity", 0.5)
-        .attr("stroke-linecap", "round")
         .attr('class', 'arc')
         .on('mouseover', tip_line.show)
         .on('mouseout', tip_line.hide);
@@ -457,10 +449,6 @@ function limitMap(sid) {
         .attr("stroke-width", function(d){
            return line_width(d[2]);
         })
-        .attr('stroke', '#FF0A0A')
-        .attr("fill", "none")
-        .attr("opacity", 0.5)
-        .attr("stroke-linecap", "round")
         .attr('class', 'arc');
   }
   pre_sid =sid;
@@ -1100,10 +1088,6 @@ function drawTimeline() {
     .attr("stroke-width", function(d){
        return select_line_width(d[2]);
     })
-    .attr('stroke', '#FF0A0A')
-    .attr("fill", "none")
-    .attr("opacity", 0.5)
-    .attr("stroke-linecap", "round")
     .attr('class', 'arc');
 
     var timedStationsTemp=[];

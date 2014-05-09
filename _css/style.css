@@ -350,6 +350,13 @@ path.score {
   font-size: 12px;
 }
 
+.arc {
+  stroke: #d28546;
+  fill: none;
+  opacity: 0.5;
+  stroke-linecap: round;
+}
+
 /* slider controls and play/pause button */
 #slider {
     top: 4px;

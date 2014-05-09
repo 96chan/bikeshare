@@ -357,40 +357,6 @@ path.score {
   stroke-linecap: round;
 }
 
-/* slider controls and play/pause button */
-#slider {
-    top: 4px;
-    position: relative;
-    width: 80%;
-    margin: 0 auto;
-    display: inline-block;
-}
-
-.ui-slider .ui-slider-handle {
-    width: 1em !important;
-    margin-left: -0.35em !important;
-    cursor: default;
-}
-
-#sliderVal {
-    display:inline-block;
-    margin-left: 30px;
-}
-
-#control {
-    display: block;
-    float: left;
-    width:30px;
-    height:30px;
-    cursor:pointer;
-    vertical-align: middle;
-    /*background-image:url('_img/pause.png');*/
-}
-.info-content{
-  color:#333;
-  min-width:100px;
-  overflow:hidden;
-}
 .stations {
     position: relative;
     width: 100%;

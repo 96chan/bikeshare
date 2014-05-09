@@ -72,7 +72,7 @@ var tip = d3.tip()
         else{
           color = "black";
         }
-    return "<p style='color:"+color+";font-size:20px'>" + d[1] + "</p><div style='text-align:center'><span style='display:inline-block;color:white;font-size:10px;text-align:left'>Frustration <br>Rank</span><span style='display:inline-block;color:white;font-size:40px;margin-right:20px'>"+d[4]+"</span><span style='display:inline-block;color:white;font-size;10px;text-align:left'>Avg.<br>Outflow</span><span style='display:inline-block;color:white;font-size:40px'>"+Number((d[5]).toFixed(1))+"</span></div>";
+    return "<p style='color:"+color+";font-size:12px'>" + d[1] + "</p>";
 });
 
 var tip_line = d3.tip()
@@ -457,17 +457,22 @@ function drawStationCircles() {
           return "black";
         }
       })
+      // .on('mouseover', tip.show)
+      // .on('mouseout', tip.hide)
       .on({
         "click": function(){
           selected_sid = d3.select(this).attr("title");
           drawGraphsAndMap(selected_sid);
         }
       })
-      .on('mouseover', tip.show)
-      .on('mouseout', tip.hide)
       .attr('class', 'circ')
     .datum(function(){return this.dataset;})
     .sort(function(a,b){return d3.descending(a.radius,b.radius);});
+
+  svg.selectAll('.circ')
+    .data(station_dataset)
+    .on('mouseover', tip.show)
+    .on('mouseout', tip.hide);
 }
 
 //---------------------------------

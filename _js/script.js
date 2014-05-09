@@ -153,7 +153,7 @@ function initialize(){
                         });
               
               line_width = d3.scale.linear().range([0,17]).domain([min, max]);
-              select_line_width = d3.scale.linear().range([0.5,20]).domain([min, max]);
+              select_line_width = d3.scale.linear().range([0,10]).domain([min, max]);
 
               for (var i=0;i<station_dataset.length;i++){
                 for (var j=i+1;j<station_dataset.length;j++){

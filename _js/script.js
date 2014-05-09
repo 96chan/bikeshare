@@ -422,6 +422,9 @@ function drawStationCircles() {
       .attr('r', function(d){
         return scale(d[5]);
       })
+      .attr('data-radius',function(d){
+        return scale(d[5]);
+      })
       .attr("title",function(d){
         return d[0];
       })
@@ -453,7 +456,9 @@ function drawStationCircles() {
       })
       .on('mouseover', tip.show)
       .on('mouseout', tip.hide)
-      .attr('class', 'circ');
+      .attr('class', 'circ')
+    .datum(function(){return this.dataset;})
+    .sort(function(a,b){return d3.descending(a.radius,b.radius);});
 }
 
 //---------------------------------

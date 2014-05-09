@@ -28,18 +28,21 @@ var tsvg = d3.select("#timeline").append("svg:svg")
       .attr("width", tw + m[1] + m[3])
       .attr("height", 50)
       .append("svg:g")
-      .attr("transform", "translate(" + m[3] + ",0)");
+      .attr("transform", "translate(" + m[3] + ",0)")
+      .attr('id', 'tsvg');
 
 var graph1 = d3.select("#graph1").append("svg:svg")
       .attr("width", w + m[1] + m[3])
       .attr("height", h + m[0] + m[2])
       .append("svg:g")
-      .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+      .attr("transform", "translate(" + m[3] + "," + m[0] + ")")
+      .attr('id', 'graph1');
 var graph2 = d3.select("#graph2").append("svg:svg")
       .attr("width", w + m[1] + m[3])
       .attr("height", h + m[0] + m[2])
       .append("svg:g")
-      .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+      .attr("transform", "translate(" + m[3] + "," + m[0] + ")")
+      .attr('id', 'graph2');
 
 var tip = d3.tip()
   .attr('class', 'd3-tip')
@@ -178,6 +181,8 @@ function initialize(){
         $('.explain').remove();
         $('#info').removeClass('hidden');
         $('#loadingimage').remove();
+        $('#timeline').removeClass('hidden');
+        $('#allday').removeClass('hidden');
 
         // get selected station id
         var selected_stationid = $('#station_list :selected').attr('id').substring(7);
@@ -203,13 +208,15 @@ function initialize(){
         $('.explain').remove();
         $('#info').removeClass('hidden');
         $('#loadingimage').remove();
+        $('#timeline').removeClass('hidden');
+        $('#allday').removeClass('hidden');
 
         // get selected station id
         var selected_stationid = $('#station_list :selected').attr('id').substring(7);
 
         drawGraph(graph1, selected_stationid);
         drawSingleGraph(graph2, selected_stationid);
-        limitMap(selected_stationid);      
+        limitMap(selected_stationid);    
       }
     });
 
@@ -222,6 +229,8 @@ function drawGraphsAndMap(sid) {
   // we need alldata_loaded (for graphs) and station_aggregate_loaded (for map)
   if(alldata_loaded && station_aggregate_loaded) {
     drawGraph(graph1, sid);
+    $('#timeline').removeClass('hidden');
+    $('#allday').removeClass('hidden');
     $('.outgoingsubtitle').removeClass('hidden');
     $('.explain').fadeOut(250, function() {
       $(this).remove();
@@ -249,6 +258,7 @@ function drawGraphsAndMap(sid) {
 
     drawSingleGraph(graph2, sid);
     limitMap(sid);
+    drawTimeline();
   } else {
     // show loading image
     $('#loadingimage').removeClass('hidden');
@@ -446,10 +456,11 @@ function drawGraph(graph, stationid) {
     if(alldata[i].s[stationindex].AE > maxempty)
       maxempty = alldata[i].s[stationindex].AE;
   }
+  maxoutflow *= 4; // hourly rate instead of 15minute
 
   x = d3.scale.linear().domain([0, alldata.length]).range([0, w]);
   y1 = d3.scale.linear().domain([0, maxoutflow]).range([h, 0]);
-  y2 = d3.scale.linear().domain([0, 0.4]).range([h, 0]);
+  y2 = d3.scale.linear().domain([0, 0.5]).range([h, 0]);
 
   // create a line function that can convert data[] into x and y points
   var line = d3.svg.line()
@@ -457,7 +468,7 @@ function drawGraph(graph, stationid) {
       return x(i); 
     })
     .y(function(d) { 
-      return y1(d.s[stationindex].TO); 
+      return y1(d.s[stationindex].AO); 
     })
 
   var emptyline = d3.svg.line()
@@ -465,7 +476,7 @@ function drawGraph(graph, stationid) {
       return x(i); 
     })
     .y(function(d) {
-      // percent empty. total empty duration / 900 seconds * 100
+      // percent empty. avg empty duration / 900 seconds * 100
       return y2(d.s[stationindex].AE / 9); 
     })
 
@@ -661,229 +672,246 @@ function drawSingleGraph(graph, stationid) {
 //---------------------------------
 // timeline
 //---------------------------------
-function activateTimeline() {
-  tsvg.selectAll('line').attr('class', 'timelineactive');
-  tsvg.select('circle').attr('class', 'timecirclefill');
-  tsvg.selectAll('text').attr('class', 'timelinetextactive');
-  $('#allday input').prop('checked', false);
-}
-function deactivateTimeline() {
-  tsvg.selectAll('line').attr('class', 'timeline');
-  tsvg.select('circle').attr('class', 'timecircle');
-  tsvg.selectAll('text').attr('class', 'timelinetext');
-  $('#allday input').prop('checked', true);
-}
-function showHover() {
-  if(!graph1.select("path.score").empty()) {
-    focus.style("display", null);
-    focus2.style("display", null);
+function drawTimeline() {
+  var ratio = w / tw; // difference between timeline and normal graphs
+
+  function activateTimeline() {
+    tsvg.selectAll('line').attr('class', 'timelineactive');
+    tsvg.select('circle').attr('class', 'timecirclefill');
+    tsvg.selectAll('text').attr('class', 'timelinetextactive');
+    $('#allday input').prop('checked', false);
   }
-}
-function hideHover() {
-  focus.style("display", "none");
-  focus2.style("display", "none");
-}
+  function deactivateTimeline() {
+    tsvg.selectAll('line').attr('class', 'timeline');
+    tsvg.select('circle').attr('class', 'timecircle');
+    tsvg.selectAll('text').attr('class', 'timelinetext');
+    $('#allday input').prop('checked', true);
+  }
+  function showHover() {
+    if(!graph1.select("path.empty").empty()) {
+      focus.style("display", null);
+      focus2.style("display", null);
+    }
+  }
+  function hideHover() {
+    focus.style("display", "none");
+    focus2.style("display", "none");
+  }
 
-// the timeline
-tsvg.append('line')
-  .attr('x1', 0)
-  .attr('x2', tw)
-  .attr('y1', 10)
-  .attr('y2', 10)
-  .attr('class', 'timeline');
-tsvg.append('line')
-  .attr('x1', 0)
-  .attr('x2', 0)
-  .attr('y1', 0)
-  .attr('y2', 20)
-  .attr('class', 'timeline');
-tsvg.append('line')
-  .attr('x1', tw)
-  .attr('x2', tw)
-  .attr('y1', 0)
-  .attr('y2', 20)
-  .attr('class', 'timeline');
+  // the timeline
+  tsvg.append('line')
+    .attr('x1', 0)
+    .attr('x2', tw)
+    .attr('y1', 10)
+    .attr('y2', 10)
+    .attr('class', 'timeline');
+  tsvg.append('line')
+    .attr('x1', 0)
+    .attr('x2', 0)
+    .attr('y1', 0)
+    .attr('y2', 20)
+    .attr('class', 'timeline');
+  tsvg.append('line')
+    .attr('x1', tw)
+    .attr('x2', tw)
+    .attr('y1', 0)
+    .attr('y2', 20)
+    .attr('class', 'timeline');
 
-// timeline time labels
-tsvg.append("text")
-  .attr("class", "axislabel timelinetext")
-  .attr("text-anchor", "middle")
-  .attr("x", 0)
-  .attr("y", 32)
-  .text("12am");
-tsvg.append("text")
-  .attr("class", "axislabel timelinetext")
-  .attr("text-anchor", "middle")
-  .attr("x", (tw/3))
-  .attr("y", 32)
-  .text("8am");
-tsvg.append("text")
-  .attr("class", "axislabel timelinetext")
-  .attr("text-anchor", "middle")
-  .attr("x", (tw/24)*17)
-  .attr("y", 32)
-  .text("5pm");
-tsvg.append("text")
-  .attr("class", "axislabel timelinetext")
-  .attr("text-anchor", "middle")
-  .attr("x", tw)
-  .attr("y", 32)
-  .text("12am");
+  // timeline time labels
+  tsvg.append("text")
+    .attr("class", "axislabel timelinetext")
+    .attr("text-anchor", "middle")
+    .attr("x", 0)
+    .attr("y", 32)
+    .text("12am");
+  tsvg.append("text")
+    .attr("class", "axislabel timelinetext")
+    .attr("text-anchor", "middle")
+    .attr("x", (tw/3))
+    .attr("y", 32)
+    .text("8am");
+  tsvg.append("text")
+    .attr("class", "axislabel timelinetext")
+    .attr("text-anchor", "middle")
+    .attr("x", (tw/24)*17)
+    .attr("y", 32)
+    .text("5pm");
+  tsvg.append("text")
+    .attr("class", "axislabel timelinetext")
+    .attr("text-anchor", "middle")
+    .attr("x", tw)
+    .attr("y", 32)
+    .text("12am");
 
-// hover/focus line and times for each graph
-var focus = graph1.append("g")
-  .attr("class","focus")
-  .style("display", "none");
-focus.append("line")
-  .attr({
-    "x1": 0,
-    "y1": 15,
-    "x2": 0,
-    "y2": h,
-    'class': 'focusLine'
-  });
-var timetext = focus.append('text')
-  .attr('class', 'axislabel timetext')
-  .attr('text-anchor', 'middle')
-  .attr('x', 0)
-  .attr('y', 10)
-  .attr('class', 'timetext')
-  .text('0');
+  // hover/focus line and times for each graph
+  var focus = graph1.append("g")
+    .attr("class","focus")
+    .style("display", "none");
+  focus.append("line")
+    .attr({
+      "x1": 0,
+      "y1": 15,
+      "x2": 0,
+      "y2": h,
+      'class': 'focusLine'
+    });
+  var timetext = focus.append('text')
+    .attr('class', 'axislabel timetext')
+    .attr('text-anchor', 'middle')
+    .attr('x', 0)
+    .attr('y', 10)
+    .attr('class', 'timetext')
+    .text('0');
 
-var focus2 = graph2.append("g")
-  .attr("class","focus")
-  .style("display", "none");
-focus2.append("line")
-  .attr({
-    "x1": 0,
-    "y1": 15,
-    "x2": 0,
-    "y2": h,
-    'class': 'focusLine'
-  });
-var timetext2 = focus2.append('text')
-  .attr('class', 'axislabel timetext')
-  .attr('text-anchor', 'middle')
-  .attr('x', 0)
-  .attr('y', 10)
-  .attr('class', 'timetext')
-  .text('0');
+  var focus2 = graph2.append("g")
+    .attr("class","focus")
+    .style("display", "none");
+  focus2.append("line")
+    .attr({
+      "x1": 0,
+      "y1": 15,
+      "x2": 0,
+      "y2": h,
+      'class': 'focusLine'
+    });
+  var timetext2 = focus2.append('text')
+    .attr('class', 'axislabel timetext')
+    .attr('text-anchor', 'middle')
+    .attr('x', 0)
+    .attr('y', 10)
+    .attr('class', 'timetext')
+    .text('0');
 
-// attach mouse handlers for each svg obj
-var drag = d3.behavior.drag()
-    .on("drag", dragmove);
+  // attach mouse handlers for each svg obj
+  var drag = d3.behavior.drag()
+      .on("drag", dragmove);
 
-tsvg.append("rect")
-  .attr({"opacity": 0, "width": tw , "height": 50})
-  .on({
-    "mouseover": function() {
-      showHover();
-    },
-    "mouseout":  function() {
-      hideHover();
-    },
-    "click": function() {
-      var x = d3.mouse(this)[0];
-      var position;
-      if(x < 0)
-        position=0;
-      else if(x>tw)
-        position=tw;
-      else
-        position=x;
+  tsvg.append("rect")
+    .attr({"opacity":0, "width":tw , "height":50, 'class':'focusbox', 'id':'tsvgfocus'})
+    .on({
+      "mouseover": function() {
+        showHover();
+      },
+      "mouseout":  function() {
+        hideHover();
+      },
+      "click": function() {
+        var x = d3.mouse(this)[0];
+        var position;
+        if(x < 0)
+          position=0;
+        else if(x>tw)
+          position=tw;
+        else
+          position=x;
 
-      tsvg.select('circle').attr('cx',position);
+        tsvg.select('circle').attr('cx',position);
 
-      activateTimeline();
-    },
-    "mousemove": mousemove
-  })
-  .call(drag);
+        activateTimeline();
+      },
+      'mousemove': mousemove
+    })
+    .call(drag);
 
-graph1.append("rect")
-  .attr({"opacity": 0, "width": w , "height": h})
-  .on({
-    "mouseover": function() {
-      showHover();
-    },
-    "mouseout":  function() {
-      hideHover();
-    }, 
-    "mousemove": mousemove
-  });
-graph2.append("rect")
-  .attr({"opacity": 0, "width": w , "height": h})
-  .on({
-    "mouseover": function() {
-      showHover();
-    },
-    "mouseout":  function() {
-      hideHover();
-    }, 
-    "mousemove": mousemove
-  });
+  graph1.append("rect")
+    .attr({"opacity": 0, "width":w , "height":h, 'class':'focusbox', 'id':'graph1focus'})
+    .on({
+      "mouseover": function() {
+        showHover();
+      },
+      "mouseout":  function() {
+        hideHover();
+      }, 
+      'mousemove': mousemove
+    });
+  graph2.append("rect")
+    .attr({"opacity": 0, "width":w , "height":h, 'class':'focusbox', 'id':'graph2focus'})
+    .on({
+      "mouseover": function() {
+        showHover();
+      },
+      "mouseout":  function() {
+        hideHover();
+      }, 
+      'mousemove': mousemove
+    });
 
-function mousemove() {
-  // move it only by 15minute increments. 96 time incremenets (24 hours / 15 min)
-  var percent = (d3.mouse(this)[0]) / w;
-  var sizeOfInterval = w / 96.0; // size of each 15 minutes
-  var x = Math.round(percent*96) * sizeOfInterval; // the closest 15 minute interval in pixels
-  focus.attr("transform", "translate(" + x + ",0)");
-  focus2.attr("transform", "translate(" + x + ",0)");
+  function mousemove(graphname) {
+    // move it only by 15minute increments. 96 time incremenets (24 hours / 15 min)
 
-  var dt = new Date(2014,0,0);
-  dt = new Date(dt.getTime() + 15*Math.round(percent*96)*60000);
-  var timestr = (dt.getMinutes() == 0) ? (dt.getHours() + ':0' + dt.getMinutes()) : (dt.getHours() + ':' + dt.getMinutes());
-  timetext.text(timestr);
-  timetext2.text(timestr);
-}
+    if(this.id == 'tsvgfocus') {
+      // mouse is over the timeline instead of the main graphs, so we need to scale the position
+      // of the line, since timeline is smaller than main graphs 
+      // basically, the mouse position 'x' actually means a time of 'x'*'ratio'
+      var percent = (d3.mouse(this)[0]) / tw;
+      var sizeOfInterval = w / 96.0; // size of each 15 minutes
+      var x = Math.round(percent*96) * sizeOfInterval; // the closest 15 minute interval in pixels
+      focus.attr("transform", "translate(" + x + ",0)");
+      focus2.attr("transform", "translate(" + x + ",0)");
+    } else {
+      var percent = (d3.mouse(this)[0]) / w;
+      var sizeOfInterval = w / 96.0; // size of each 15 minutes
+      var x = Math.round(percent*96) * sizeOfInterval; // the closest 15 minute interval in pixels
+      focus.attr("transform", "translate(" + x + ",0)");
+      focus2.attr("transform", "translate(" + x + ",0)");
+    }
+
+    var dt = new Date(2014,0,0);
+    dt = new Date(dt.getTime() + 15*Math.round(percent*96)*60000);
+    var timestr = (dt.getMinutes() == 0) ? (dt.getHours() + ':0' + dt.getMinutes()) : (dt.getHours() + ':' + dt.getMinutes());
+    timetext.text(timestr);
+    timetext2.text(timestr);
+  }
 
 
-// drag/click behavior for timeline circle
-tsvg.append('circle')
-  .attr('r', 6)
-  .attr('cx', 30)
-  .attr('cy', 10)
-  .attr('class', 'timecircle')
-  .on({
-    "mouseover": function() {
-      showHover();
-    },
-    "mouseout": function() {
-      hideHover();
-    },
-    "click": function() {
-      activateTimeline();
-    },
-    "mousemove": mousemove
-  })
-  .call(drag);
+  // drag/click behavior for timeline circle
+  tsvg.append('circle')
+    .attr('r', 6)
+    .attr('cx', 30)
+    .attr('cy', 10)
+    .attr('class', 'timecircle')
+    .on({
+      "mouseover": function() {
+        showHover();
+      },
+      "mouseout": function() {
+        hideHover();
+      },
+      "click": function() {
+        activateTimeline();
+      },
+      "mousemove": mousemove
+    })
+    .call(drag);
 
-function dragmove(d) {
-  var x = d3.event.x;
-  tsvg.select('circle')
-    .attr('cx', function() {
-      if(x<0)
-        return 0;
-      else if(x>tw)
-        return tw;
-      else
-        return x;
-  });
+  function dragmove(d) {
+    var x = d3.event.x;
+    tsvg.select('circle')
+      .attr('cx', function() {
+        if(x<0)
+          return 0;
+        else if(x>tw)
+          return tw;
+        else
+          return x;
+    });
 
-  activateTimeline();
-}
-
-// the all day checkbox behavior
-$('#allday input:checkbox').click(function() {
-  if($(this).is(':checked')) {
-    // all day is checked, disable the timeline
-    deactivateTimeline();
-  } else {
-    // unchecked. enable timelime
     activateTimeline();
   }
-});
+
+  // the all day checkbox behavior
+  $('#allday input:checkbox').click(function() {
+    if($(this).is(':checked')) {
+      // all day is checked, disable the timeline
+      deactivateTimeline();
+    } else {
+      // unchecked. enable timelime
+      activateTimeline();
+    }
+  });
+
+}
 
 
 //---------------------------------
@@ -940,7 +968,6 @@ $('#station_list').change(function(){
   var selected_stationid = $('#station_list :selected').attr('id').substring(7);
 
   drawGraphsAndMap(selected_stationid);
-  // limitMap(selected_stationid);
 });
 
 var toggles = {

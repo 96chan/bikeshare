@@ -48,7 +48,14 @@ var tip = d3.tip()
   .attr('class', 'd3-tip')
   .offset([-10, 0])
   .html(function(d) {
-    return "<p style='color:white, font-size:20px'>" + d[1] + "</p><p style='color:white,font-size:40px'>Frustration Rank: "+d[4]+ "</p>";
+    return "<p style='color:#82c7bc;font-size:20px'>" + d[1] + "</p><div style='text-align:center'><span style='display:inline-block;color:white;font-size:10px;text-align:left'>Frustration <br>Rank</span><span style='display:inline-block;color:white;font-size:40px;margin-right:20px'>"+d[4]+"</span><span style='display:inline-block;color:white;font-size;10px;text-align:left'>Avg.<br>Outflow</span><span style='display:inline-block;color:white;font-size:40px'>"+Number((d[5]).toFixed(1))+"</span></div>";
+});
+
+var tip_line = d3.tip()
+  .attr('class', 'd3-tip-line')
+  .offset([0, 0])
+  .html(function(d) {
+    return "<div style='text-align:left;display:inline-block;margin-right:10px'><p style='color:#f1c40f;font-size:20px;margin-bottom:5px'>Total Bike Riders</p><p style='color:white;font-size:10px'>from " + d[3] + "</p><p style='color:white;font-size:10px'> to " + d[4] + "</p></div><div style='display:inline-block;font-size:40px'>"+ d[2]+"</div>";
 });
 
 $(document).ready(function() {
@@ -282,20 +289,26 @@ function limitMap(sid) {
     if(sid == station_aggregate[i].station_id){
       flow_stations = station_aggregate[i].outflow_stations;
       flow_color = '#FF0A0A';
-      var sid_long, sid_lat, total_cnt;
+      var sid_long, sid_lat, total_cnt, sid_name, did_name;
 
       //grabbing lat longs
       for(var k=0;k<station_dataset.length;k++){
         if(sid == station_dataset[k][0]){
+             sid_name = station_dataset[k][1];
              sid_lat = station_dataset[k][2];
              sid_long = station_dataset[k][3];
         }
+        else{continue;}
+      }
+      for (var k=0;k<station_dataset.length;k++){
         for(var j=0;j<flow_stations.length;j++){
           if(flow_stations[j].station_id==station_dataset[k][0]){
-            flow_latlng.push([station_dataset[k][2],station_dataset[k][3],flow_stations[j].count]);
+            did_name =station_dataset[k][1];
+            flow_latlng.push([station_dataset[k][2],station_dataset[k][3],flow_stations[j].count,sid_name,did_name]);
           }
         }
       }
+  svg.call(tip_line);
   // make transition only if selecting different station
   if(sid != pre_sid){
       svg.selectAll('.arc')
@@ -319,7 +332,9 @@ function limitMap(sid) {
         .attr("fill", "none")
         .attr("opacity", 0.5)
         .attr("stroke-linecap", "round")
-        .attr('class', 'arc');
+        .attr('class', 'arc')
+        .on('mouseover', tip_line.show)
+        .on('mouseout', tip_line.hide);
   }else{
         svg.selectAll('.arc')
         .data(flow_latlng)

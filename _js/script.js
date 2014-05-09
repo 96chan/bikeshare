@@ -19,7 +19,7 @@ var selected_sid;
 var maxOutflowTimed = 0;
 
 // define dimensions of graph
-var m = [35, 35, 35, 35]; // margins
+var m = [35, 35, 35, 45]; // margins
 var w = 350 - m[1] - m[3]; // width
 var h = 200 - m[0] - m[2]; // height
 var fh = 300 - m[0] - m[2]; // height for frustration graph
@@ -31,7 +31,7 @@ var clicked_but_not_loaded = 0; // they selected a station but we're not loaded 
 
 var svg; // map svg
 var tsvg = d3.select("#timeline").append("svg:svg")
-      .attr("width", tw + m[1] + m[3])
+      .attr("width", w + m[1] + m[3])
       .attr("height", 50)
       .append("svg:g")
       .attr("transform", "translate(" + m[3] + ",0)")
@@ -848,7 +848,7 @@ function drawTimeline() {
   // the timeline
   tsvg.append('line')
     .attr('x1', 0)
-    .attr('x2', tw)
+    .attr('x2', w)
     .attr('y1', 10)
     .attr('y2', 10)
     .attr('class', 'timeline');
@@ -859,8 +859,8 @@ function drawTimeline() {
     .attr('y2', 20)
     .attr('class', 'timeline');
   tsvg.append('line')
-    .attr('x1', tw)
-    .attr('x2', tw)
+    .attr('x1', w)
+    .attr('x2', w)
     .attr('y1', 0)
     .attr('y2', 20)
     .attr('class', 'timeline');
@@ -868,26 +868,26 @@ function drawTimeline() {
   // timeline time labels
   tsvg.append("text")
     .attr("class", "axislabel timelinetext")
-    .attr("text-anchor", "middle")
+    .attr("text-anchor", "start")
     .attr("x", 0)
     .attr("y", 32)
     .text("12am");
   tsvg.append("text")
     .attr("class", "axislabel timelinetext")
     .attr("text-anchor", "middle")
-    .attr("x", (tw/3))
+    .attr("x", (w/3))
     .attr("y", 32)
     .text("8am");
   tsvg.append("text")
     .attr("class", "axislabel timelinetext")
     .attr("text-anchor", "middle")
-    .attr("x", (tw/24)*17)
+    .attr("x", (w/24)*17)
     .attr("y", 32)
     .text("5pm");
   tsvg.append("text")
     .attr("class", "axislabel timelinetext")
-    .attr("text-anchor", "middle")
-    .attr("x", tw)
+    .attr("text-anchor", "end")
+    .attr("x", w)
     .attr("y", 32)
     .text("12am");
 
@@ -936,7 +936,7 @@ function drawTimeline() {
       .on('dragend', dragend);
 
   tsvg.append("rect")
-    .attr({"opacity":0, "width":tw , "height":50, 'class':'focusbox', 'id':'tsvgfocus'})
+    .attr({"opacity":0, "width":w , "height":50, 'class':'focusbox', 'id':'tsvgfocus'})
     .on({
       "mouseover": function() {
         showHover();
@@ -1008,7 +1008,7 @@ function drawTimeline() {
       // mouse is over the timeline instead of the main graphs, so we need to scale the position
       // of the line, since timeline is smaller than main graphs 
       // basically, the mouse position 'x' actually means a time of 'x'*'ratio'
-      var percent = (d3.mouse(this)[0]) / tw;
+      var percent = (d3.mouse(this)[0]) / w;
       var sizeOfInterval = w / 96.0; // size of each 15 minutes
       var x = Math.round(percent*96) * sizeOfInterval; // the closest 15 minute interval in pixels
       focus.attr("transform", "translate(" + x + ",0)");

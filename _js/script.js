@@ -5,6 +5,7 @@ var markerOverlay;
 var station_dataset = []; // station information
 var arclocs =[]; // trafficline 
 var pre_sid; // previous station id 
+var line_width; // trafficline
 var sf_latlng = new google.maps.LatLng(37.78992,-122.3822776); // San Francisco
 var sj_latlng = new google.maps.LatLng(37.339508, -121.872193);       // San Jose
 var rc_latlng = new google.maps.LatLng(37.485217, -122.212308);       // Redwood City
@@ -43,6 +44,7 @@ var graph2 = d3.select("#graph2").append("svg:svg")
       .append("svg:g")
       .attr("transform", "translate(" + m[3] + "," + m[0] + ")")
       .attr('id', 'graph2');
+
 
 var tip = d3.tip()
   .attr('class', 'd3-tip')
@@ -141,6 +143,15 @@ function initialize(){
         } else {
           // Traffic line
           d3.json("_data/all_trips.json", function(error, data){
+              var max = d3.max(data, function(array) {
+                          return d3.max(array);
+                        });
+              var min = d3.min(data, function(array) {
+                          return d3.min(array);
+                        });
+              
+              line_width = d3.scale.linear().range([0,15]).domain([min, max]);
+
               for (var i=0;i<station_dataset.length;i++){
                 for (var j=i+1;j<station_dataset.length;j++){
                   // dataset[i][0] = station_id
@@ -173,7 +184,7 @@ function initialize(){
                 return "M" + startx + "," + starty + " Q" + (startx + homex)/2 + " " + 0.99*(starty + homey)/2 +" " + homex+" "   + homey;
               })
               .attr("stroke-width", function(d){
-                 return d[4]/200
+                 return line_width(d[4])
               })
               .attr('stroke', '#FF0A0A')
               .attr("fill", "none")
@@ -346,7 +357,7 @@ function limitMap(sid) {
         })
         .call(line_transition)
         .attr("stroke-width", function(d){
-           return d[2]/50;
+           return line_width(d[2]);
         })
         .attr('stroke', '#FF0A0A')
         .attr("fill", "none")
@@ -370,7 +381,7 @@ function limitMap(sid) {
             return "M" + startx + "," + starty + " Q" + (startx + homex)/2 + " " + 0.99*(starty + homey)/2 +" " + homex+" "   + homey;
         })
         .attr("stroke-width", function(d){
-           return d[2]/50;
+           return line_width(d[2]);
         })
         .attr('stroke', '#FF0A0A')
         .attr("fill", "none")

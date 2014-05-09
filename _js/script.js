@@ -11,7 +11,7 @@ var rc_latlng = new google.maps.LatLng(37.485217, -122.212308);       // Redwood
 var mv_latlng = new google.maps.LatLng(37.395499, -122.078598);       // Mountain View
 var pa_latlng = new google.maps.LatLng(37.436707, -122.131716);       // Palo Alto
 var infowindow = new google.maps.InfoWindow({maxWidth: 300 });
-
+var selectedTime,selectedTimeX;
 
 // define dimensions of graph
 var m = [35, 35, 35, 35]; // margins
@@ -216,10 +216,11 @@ function initialize(){
 
         drawGraph(graph1, selected_stationid);
         drawSingleGraph(graph2, selected_stationid);
-        limitMap(selected_stationid);    
+        limitMap(selected_stationid);
       }
     });
 
+  drawTimeline(); // draw timeline once at start
 
   });
 }
@@ -258,7 +259,6 @@ function drawGraphsAndMap(sid) {
 
     drawSingleGraph(graph2, sid);
     limitMap(sid);
-    drawTimeline();
   } else {
     // show loading image
     $('#loadingimage').removeClass('hidden');
@@ -697,6 +697,7 @@ function drawTimeline() {
     focus.style("display", "none");
     focus2.style("display", "none");
   }
+  tsvg.selectAll().remove();
 
   // the timeline
   tsvg.append('line')

@@ -1,15 +1,19 @@
-station_data_switchedranks.json - location of circles, and start/end location of arcs
-	this is renamed to station_data.json
-all_trips.json - amount of traffic - size of arc for all stations (not when you select a single one)
-array_scores_minify.json - time-based - metrics - used for graphs
-	renamed to data_bytime.json
+ 
+station_data.json - used for location, color, and size of circles, and start/end location of arcs
+	contains 
+		sid, lat, long, score, rank, 
+		avg_outflow - average number of outgoing rides per day over the entire day.
+
+all_trips.json - square matrix, amount of traffic - size of arc for all stations (not when you select a single one)
+
+data_bytime.json- time-based - metrics - used for graphs
 using:
 	use hourly avg_outflow for the graph (change the scale)
 
 	rename stations -> s
 
 	avg_emp -> AE
-	avg_outflow -> AO
+	avg_outflow -> AO - average number of outgoing rides per day during that 15 min interval.
 	rank -> r
 	score -> score
 	station_id -> sid
@@ -29,4 +33,3 @@ using:
 
 
 station_aggregate.json - size of arcs for just one station selected - all day
-station_data.json - used for loading the dropdown - we should replace this with the first json -- we should also only load this once.

@@ -929,7 +929,7 @@ function drawTimeline() {
       "x1": 0,
       "y1": 15,
       "x2": 0,
-      "y2": h,
+      "y2": fh,
       'class': 'focusLine'
     });
   var timetext2 = focus2.append('text')
@@ -972,7 +972,7 @@ function drawTimeline() {
       'mousemove': mousemove
     });
   graph2.append("rect")
-    .attr({"opacity": 0, "width":w , "height":h, 'class':'focusbox', 'id':'graph2focus'})
+    .attr({"opacity": 0, "width":w , "height":fh, 'class':'focusbox', 'id':'graph2focus'})
     .on({
       "mouseover": function() {
         showHover();
@@ -1205,7 +1205,14 @@ function drawTimeline() {
     tsvg.select('circle')
       .attr('cx', x);
 
+    var percent = x / tw;
+    var dt = new Date(2014,0,0);
+    dt = new Date(dt.getTime() + 15*Math.round(percent*96)*60000);
+    selectedTime = (dt.getMinutes() == 0) ? (dt.getHours() + ':0' + dt.getMinutes()) : (dt.getHours() + ':' + dt.getMinutes());
+    selectedTimeIndex = parseInt(Math.round(percent*96));
+
     activateTimeline();
+    redrawTimedMap(selectedTimeIndex);
   }
   function dragend() {
     var x = tsvg.select('circle').attr('cx');

@@ -295,6 +295,8 @@ function initialize(){
 
 // check data, draw maps and graphs if possible
 function drawGraphsAndMap(sid) {
+  $('#introp').slideUp();
+
   // we need alldata_loaded (for graphs) and station_aggregate_loaded (for map)
   if(alldata_loaded && station_aggregate_loaded) {
     drawGraph(graph1, sid);

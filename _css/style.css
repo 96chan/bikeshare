@@ -207,7 +207,7 @@ p.tooltip {
 }
 */
 .stations circle {
-  opacity: .8;
+  opacity: 1;
   cursor: pointer;
 }
 

@@ -462,22 +462,21 @@ function drawGraph(graph, stationid) {
   y1 = d3.scale.linear().domain([0, maxoutflow]).range([h, 0]);
   y2 = d3.scale.linear().domain([0, 0.5]).range([h, 0]);
 
-  // create a line function that can convert data[] into x and y points
   var line = d3.svg.line()
-    .x(function(d,i) { 
-      return x(i); 
+    .x(function(d,i) {
+      return x(i);
     })
-    .y(function(d) { 
-      return y1(d.s[stationindex].AO); 
+    .y(function(d) {
+      return y1(d.s[stationindex].AO*4); // hourly rate
     })
 
   var emptyline = d3.svg.line()
-    .x(function(d,i) { 
-      return x(i); 
+    .x(function(d,i) {
+      return x(i);
     })
     .y(function(d) {
       // percent empty. avg empty duration / 900 seconds * 100
-      return y2(d.s[stationindex].AE / 9); 
+      return y2(d.s[stationindex].AE / 9);
     })
 
   // axes

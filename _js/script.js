@@ -5,6 +5,7 @@ var markerOverlay;
 var station_dataset = []; // station information
 var arclocs =[]; // trafficline 
 var pre_sid; // previous station id 
+var line_width; // trafficline
 var sf_latlng = new google.maps.LatLng(37.78992,-122.3822776); // San Francisco
 var sj_latlng = new google.maps.LatLng(37.339508, -121.872193);       // San Jose
 var rc_latlng = new google.maps.LatLng(37.485217, -122.212308);       // Redwood City
@@ -44,11 +45,38 @@ var graph2 = d3.select("#graph2").append("svg:svg")
       .attr("transform", "translate(" + m[3] + "," + m[0] + ")")
       .attr('id', 'graph2');
 
+
 var tip = d3.tip()
   .attr('class', 'd3-tip')
   .offset([-10, 0])
   .html(function(d) {
-    return "<p style='color:white, font-size:20px'>" + d[1] + "</p><p style='color:white,font-size:40px'>Frustration Rank: "+d[4]+ "</p>";
+        var color ='';
+        if(d[4]==5){
+          color = "#BD1A00";
+        }
+        else if(d[4]==4){
+          color = "#DE4B53";
+        }
+        else if(d[4]==3){
+          color = "#C0C0C0";
+        }
+        else if(d[4]==2){
+          color = "#72B582";
+        }
+        else if(d[4]==1){
+          color = "#438875";
+        }
+        else{
+          color = "black";
+        }
+    return "<p style='color:"+color+";font-size:20px'>" + d[1] + "</p><div style='text-align:center'><span style='display:inline-block;color:white;font-size:10px;text-align:left'>Frustration <br>Rank</span><span style='display:inline-block;color:white;font-size:40px;margin-right:20px'>"+d[4]+"</span><span style='display:inline-block;color:white;font-size;10px;text-align:left'>Avg.<br>Outflow</span><span style='display:inline-block;color:white;font-size:40px'>"+Number((d[5]).toFixed(1))+"</span></div>";
+});
+
+var tip_line = d3.tip()
+  .attr('class', 'd3-tip-line')
+  .offset([0, 0])
+  .html(function(d) {
+    return "<div style='text-align:left;display:inline-block;margin-right:10px'><p style='color:#f1c40f;font-size:20px;margin-bottom:5px'>Total Bike Riders</p><p style='color:white;font-size:10px'>from " + d[3] + "</p><p style='color:white;font-size:10px'> to " + d[4] + "</p></div><div style='display:inline-block;font-size:40px'>"+ d[2]+"</div>";
 });
 
 $(document).ready(function() {
@@ -115,6 +143,15 @@ function initialize(){
         } else {
           // Traffic line
           d3.json("_data/all_trips.json", function(error, data){
+              var max = d3.max(data, function(array) {
+                          return d3.max(array);
+                        });
+              var min = d3.min(data, function(array) {
+                          return d3.min(array);
+                        });
+              
+              line_width = d3.scale.linear().range([0,15]).domain([min, max]);
+
               for (var i=0;i<station_dataset.length;i++){
                 for (var j=i+1;j<station_dataset.length;j++){
                   // dataset[i][0] = station_id
@@ -147,7 +184,7 @@ function initialize(){
                 return "M" + startx + "," + starty + " Q" + (startx + homex)/2 + " " + 0.99*(starty + homey)/2 +" " + homex+" "   + homey;
               })
               .attr("stroke-width", function(d){
-                 return d[4]/200
+                 return line_width(d[4])
               })
               .attr('stroke', '#FF0A0A')
               .attr("fill", "none")
@@ -282,20 +319,27 @@ function limitMap(sid) {
     if(sid == station_aggregate[i].station_id){
       flow_stations = station_aggregate[i].outflow_stations;
       flow_color = '#FF0A0A';
-      var sid_long, sid_lat, total_cnt;
+      var sid_long, sid_lat, total_cnt, sid_name, did_name;
 
       //grabbing lat longs
       for(var k=0;k<station_dataset.length;k++){
         if(sid == station_dataset[k][0]){
+             sid_name = station_dataset[k][1];
              sid_lat = station_dataset[k][2];
              sid_long = station_dataset[k][3];
         }
+        else{continue;}
+      }
+      for (var k=0;k<station_dataset.length;k++){
         for(var j=0;j<flow_stations.length;j++){
           if(flow_stations[j].station_id==station_dataset[k][0]){
-            flow_latlng.push([station_dataset[k][2],station_dataset[k][3],flow_stations[j].count]);
+
+            did_name =station_dataset[k][1];
+            flow_latlng.push([station_dataset[k][2],station_dataset[k][3],flow_stations[j].count,sid_name,did_name]);
           }
         }
       }
+  svg.call(tip_line);
   // make transition only if selecting different station
   if(sid != pre_sid){
       svg.selectAll('.arc')
@@ -313,13 +357,15 @@ function limitMap(sid) {
         })
         .call(line_transition)
         .attr("stroke-width", function(d){
-           return d[2]/50;
+           return line_width(d[2]);
         })
         .attr('stroke', '#FF0A0A')
         .attr("fill", "none")
         .attr("opacity", 0.5)
         .attr("stroke-linecap", "round")
-        .attr('class', 'arc');
+        .attr('class', 'arc')
+        .on('mouseover', tip_line.show)
+        .on('mouseout', tip_line.hide);
   }else{
         svg.selectAll('.arc')
         .data(flow_latlng)
@@ -335,7 +381,7 @@ function limitMap(sid) {
             return "M" + startx + "," + starty + " Q" + (startx + homex)/2 + " " + 0.99*(starty + homey)/2 +" " + homex+" "   + homey;
         })
         .attr("stroke-width", function(d){
-           return d[2]/50;
+           return line_width(d[2]);
         })
         .attr('stroke', '#FF0A0A')
         .attr("fill", "none")
